@@ -83,7 +83,11 @@ float ellipseBottom(float x,float centerX,float centerY,vec2 radius){
 }
 float cloudBottom(float x,vec2 center,float scale){
   float local=(x-center.x)/scale;
-  float bottom=max(ellipseBottom(local,0.,0.,vec2(.37,.074)),ellipseBottom(local,.265,-.018,vec2(.12,.073)));
+  float bottom=ellipseBottom(local,0.,0.,vec2(.37,.074));
+  bottom=max(bottom,ellipseBottom(local,-.19,-.045,vec2(.12,.096)));
+  bottom=max(bottom,ellipseBottom(local,-.055,-.091,vec2(.15,.139)));
+  bottom=max(bottom,ellipseBottom(local,.115,-.068,vec2(.13,.115)));
+  bottom=max(bottom,ellipseBottom(local,.265,-.018,vec2(.12,.073)));
   return bottom> -1.?center.y+bottom*scale/aspect:-1.;
 }
 float rainOrigin(float x){
@@ -172,15 +176,30 @@ vec3 sea(vec2 uv,float horizon,float reflectionCenter){
   color=light(color,vec3(1.,.85,.52)*reflection*glint*.24);
   return light(color,vec3(.85,.47,.22)*exp(-depth*65.)*.10);
 }
+float fogShore(vec2 uv){
+  vec2 q=(uv-vec2(.67,.802))/vec2(.235,.042);
+  float angle=atan(q.y,q.x);
+  return length(q)-1.+.025*sin(angle*7.)+.015*sin(angle*13.+.7);
+}
 vec3 fogCoast(vec3 color,vec2 uv){
-  float waterline=.758;
+  float waterline=.748,shore=fogShore(uv);
   if(uv.y>waterline){
     float depth=clamp((uv.y-waterline)/(1.-waterline),0.,1.);
-    vec3 water=mix(vec3(.47,.56,.59),vec3(.31,.42,.47),depth);
-    float ripple=pow(max(0.,sin(uv.y*390.+.45*sin(uv.x*27.+elapsed*.2))),14.);
-    color=mix(water,vec3(.62,.69,.68),ripple*.055);
-    float reflection=exp(-pow((uv.x-.68)/(.016+depth*.10),2.))*exp(-depth*7.);
-    color=light(color,vec3(.87,.68,.35)*reflection*ripple*.12);
+    vec3 water=mix(vec3(.47,.56,.59),vec3(.28,.39,.44),sqrt(depth));
+    float rows=sqrt(depth)*29.,row=floor(rows),columns=mix(58.,15.,depth);
+    float x=uv.x+.004*sin(elapsed*.27+row*1.8);
+    float tile=floor(x*columns+hash(vec2(row,31.))*7.);
+    float seed=hash(vec2(tile,row)),local=fract(x*columns+hash(vec2(row,31.))*7.);
+    float crest=.46+.12*sin(elapsed*(.34+seed*.15)+row*1.7);
+    float ripple=(1.-smoothstep(.035,.14,abs(fract(rows)-crest)))*smoothstep(.10,.18,local)*(1.-smoothstep(.43+seed*.23,.55+seed*.23,local));
+    water=mix(water,vec3(.57,.64,.65),ripple*(.14+.10*depth));
+    float reflection=exp(-pow((uv.x-.68)/(.016+depth*.10),2.))*exp(-depth*5.);
+    water=light(water,vec3(.87,.68,.35)*reflection*ripple*.17);
+    // Expanding, broken shoreline ripples bind the rock skirt to the surrounding water.
+    float coastal=pow(max(0.,sin(shore*26.-elapsed*.75)),10.)*exp(-max(0.,shore)*3.);
+    coastal*=smoothstep(-.03,.08,shore)*smoothstep(.790,.816,uv.y)*(.55+.45*sin(uv.x*91.+1.));
+    water=mix(water,vec3(.67,.71,.68),coastal*.16);
+    color=mix(color,water,smoothstep(waterline,.786,uv.y));
   }
   vec2 lamp=vec2(.68,.584);
   // Project a slow back-and-forth beacon through the fog, fading as it faces the viewer.
@@ -190,14 +209,32 @@ vec3 fogCoast(vec3 color,vec2 uv){
   beam*=(1.-smoothstep(reach*.65,reach,abs(dx)))*smoothstep(.021,.035,abs(dx));
   beam*=smoothstep(-.04,.04,sweep*dx)*abs(sweep);
   color=light(color,vec3(1.,.81,.43)*beam*.48);
-  float islandX=(uv.x-.67)/.21;
-  float islandTop=.802-.043*sqrt(max(0.,1.-islandX*islandX))+.002*sin(uv.x*87.);
-  float islandBottom=.820+.003*sin(uv.x*63.);
-  if(abs(islandX)<1.&&uv.y>islandTop&&uv.y<islandBottom){
-    float ledge=1.-smoothstep(.005,.014,uv.y-islandTop);
-    vec3 rock=mix(vec3(.24,.32,.34),vec3(.42,.47,.44),ledge);
-    rock*=.92+.08*(1.-islandX);
-    color=rock;
+  float land=1.-smoothstep(-.035,.050,shore);
+  if(land>0.){
+    vec2 ground=(uv-vec2(.67,.802))/vec2(.235,.042);
+    float hill=sqrt(max(0.,1.-dot(ground,ground)));
+    vec3 groundNormal=normalize(vec3(ground.x*.35,ground.y*.55,hill+.15));
+    float diffuse=clamp(dot(groundNormal,normalize(vec3(-.4,-.35,.85))),0.,1.);
+    vec3 rock=mix(vec3(.31,.39,.39),vec3(.46,.49,.43),diffuse*.80);
+    float wet=smoothstep(-.28,.035,shore);
+    rock=mix(rock,vec3(.30,.39,.40),wet*.55);
+    // A contact shadow starts below the tower and stretches across the same island surface.
+    vec2 contact=(uv-vec2(.686,.787))/vec2(.044,.008);
+    float contactShadow=exp(-dot(contact,contact));
+    float castShadow=exp(-pow(segment(uv,vec2(.684,.781),vec2(.75,.803))/.010,2.));
+    rock*=1.-contactShadow*.25-castShadow*.13;
+    color=mix(color,rock,land);
+  }
+  for(int i=0;i<4;i++){
+    float n=float(i),seed=hash(vec2(n,53.));
+    vec2 center=vec2(.50+n*.105,.820+.004*sin(n*2.1));
+    vec2 q=(uv-center)/vec2(.014+seed*.009,.0035+seed*.0015);
+    float shape=1.-dot(q,q);
+    if(shape>0.){
+      float glint=clamp(.55-.24*q.x-.18*q.y,0.,1.);
+      vec3 wetRock=mix(vec3(.25,.34,.36),vec3(.43,.48,.45),glint);
+      color=mix(color,wetRock,coverage(shape*.004)*.75);
+    }
   }
   // A tapered cylinder: stable side shading gives the tower volume without dirty noise.
   float height=clamp((.777-uv.y)/.173,0.,1.),halfWidth=mix(.030,.020,height);
@@ -210,8 +247,14 @@ vec3 fogCoast(vec3 color,vec2 uv){
     if(abs(dx-.005)<.003&&uv.y>.680&&uv.y<.696)stone=vec3(.26,.32,.33);
     color=mix(color,stone,coverage(tower));
   }
-  float foundation=min(.035-abs(dx),min(uv.y-.773,.785-uv.y)*aspect);
-  color=mix(color,vec3(.53,.58,.54),coverage(foundation));
+  float foundation=min(.036-abs(dx),min(uv.y-.773,.783-uv.y)*aspect);
+  vec3 foundationStone=mix(vec3(.63,.65,.57),vec3(.37,.45,.44),smoothstep(-.026,.027,dx));
+  color=mix(color,foundationStone,coverage(foundation));
+  float stepBase=min(.041-abs(dx+.001),min(uv.y-.781,.790-uv.y)*aspect);
+  color=mix(color,foundationStone*.90,coverage(stepBase));
+  // A narrow foreground gravel lip occludes the plinth's bottom edge, embedding it in the ground.
+  float gravel=exp(-pow((uv.y-(.789+.0018*sin(uv.x*210.)))/.0032,2.))*(1.-smoothstep(.034,.052,abs(dx)));
+  color=mix(color,vec3(.36,.42,.39),gravel*.70);
   float lantern=min(.025-abs(dx),min(uv.y-.566,.604-uv.y)*aspect);
   if(lantern>0.){
     float glass=step(abs(dx),.019)*step(uv.y,.598)*step(.571,uv.y);
@@ -371,11 +414,12 @@ void main(){
     color=birds(color,uv,scene==10);
   }
   if(scene==3||scene==4){
-    float origin=rainOrigin(uv.x);
+    float footprint=rainOrigin(uv.x),origin=footprint;
     float sourceX=uv.x+max(0.,uv.y-max(0.,origin))*.16;
     origin=rainOrigin(sourceX);
     float fall=uv.y-origin;
-    float rainMask=origin>=0.&&fall>=0.?(1.-cloudCoverMask):0.;
+    // Drifted source coordinates must not create rain beyond the visible cloud footprint.
+    float rainMask=footprint>=0.&&origin>=0.&&fall>=0.?(1.-cloudCoverMask):0.;
     for(int layer=0;layer<3;layer++){
       float n=float(layer),columns=47.-n*10.,rows=18.-n*3.,speed=(scene==4?1.18:.81)+n*.37;
       vec2 rainUV=vec2(sourceX,fall);

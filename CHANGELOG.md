@@ -19,6 +19,7 @@
 - Rebuild the dawn/sunset sea with a level horizon, perspective wavelets, widening broken gold reflections and staggered glints; soften sunlight into broad atmospheric bands.
 - Differentiate dawn and sunset composition, cloud proportions, bird passages and reflected light. Add solar granulation, lunar surface detail, brighter three-layer star fields and finer, visibly advecting fog around a broader, volume-shaded island lighthouse with a slowly sweeping warm beacon. Restore rounded dawn cloud proportions and distinguish the windy scene with a smaller, haze-filtered pale-gold sun.
 - Attach precipitation to moving cloud bases and mask it from cloud faces. Couple scene transmission, cloud lighting and sun shafts; refine wind into three depths of soft trails while retaining the established flattened cloud style.
+- Keep cloud-meter palettes at full track scale, soften short-fill ends and strengthen the percentage symbol. Integrate the fog lighthouse with contact shadows, wet rocks, a feathered shoreline and perspective water ripples. Restrict drifted rain to the current cloud footprint and use all cloud lobes for its base. Give sunrise and sunset distinct diagrams in the same stroke system.
 - Retain the existing installation identity and local preferences.
 - Pause APK work while the browser design is refined; publish source and repository foundations only. Real weather fetching and verified in-app updating remain pending.
 

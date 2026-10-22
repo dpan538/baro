@@ -2,18 +2,11 @@ import { WEATHER_PRESETS, resolveWeatherScene, resolveTimeContext } from './weat
 import { FineWeatherRenderer } from './weather-shader.js';
 import { formatScreenWeather, airQualityStatus } from './open-meteo.js';
 import { LANGUAGES, labelPair, conditionPair, uvText, sceneName, localWindow } from './i18n.js';
-import { resolveWeatherIcon, weatherIconMarkup } from './weather-icons.js';
+import { resolveWeatherIcon, weatherIconMarkup, solarIconMarkup } from './weather-icons.js';
 import { formatUnitWeather, WIND_UNITS } from './weather-units.js';
 import { SettingsController } from './settings.js';
 import { APP_META } from './app-meta.js';
 
-const rays = document.querySelector('#sun-rays');
-for(let i=0;i<=12;i++){
-  const angle=Math.PI+i*Math.PI/12;
-  const point=r=>[86+Math.cos(angle)*r,98+Math.sin(angle)*r].join(' ');
-  const path=document.createElementNS('http://www.w3.org/2000/svg','path');
-  path.setAttribute('d','M'+point(29)+'L'+point(65)+'M'+point(73)+'L'+point(80));rays.append(path);
-}
 const rootElement=document.documentElement;
 const appParams=new URL(location.href).searchParams;
 const embedded=parent!==window;
@@ -88,6 +81,7 @@ function renderScreen(){
   }else document.querySelector('#solar-caption').textContent=english?'SOLAR DATA UNAVAILABLE':'日出日落数据暂缺';
   document.querySelector('#solar-event-time').textContent=eventTime;document.querySelector('#solar-period').textContent=period;
   const solar=document.querySelector('#solar-icon');solar.dataset.event=time.event??'unavailable';
+  solar.innerHTML=solarIconMarkup(time.event);
   solar.setAttribute('aria-label',(english?time.event==='sunrise'?'Next sunrise ':'Sunset ':time.event==='sunrise'?'下次日出 ':'日落 ')+eventTime);
   document.querySelector('#solar-caption').hidden=!document.querySelector('#solar-caption').textContent;
   settingsController.render();
@@ -103,7 +97,11 @@ function renderScreen(){
   const cover=document.querySelector('.cover-track');cover.setAttribute('aria-label',english?'Cloud cover':'云量');
   if(Number.isFinite(weather.cloudCover)){cover.setAttribute('aria-valuenow',weather.cloudCover);cover.removeAttribute('aria-valuetext');}
   else{cover.removeAttribute('aria-valuenow');cover.setAttribute('aria-valuetext',english?'Unavailable':'暂无数据');}
-  document.querySelector('.cover-fill').style.width=(weather.cloudCover??0)+'%';
+  const cloudPercentage=Number.isFinite(weather.cloudCover)?Math.max(0,Math.min(100,weather.cloudCover)):0;
+  const coverFill=document.querySelector('.cover-fill');
+  coverFill.style.width=cloudPercentage+'%';
+  // Paint the palette at track scale instead of compressing all colours into a short fill.
+  coverFill.style.setProperty('--cover-paint-width',(10000/Math.max(1,cloudPercentage))+'%');
   gauge('.gauge-uv',weather.uvIndex,11,(english?'UV index ':'紫外线指数 ')+display.uvIndex+', '+display.uvLabel);
   gauge('.gauge-humidity',weather.humidity,100,(english?'Humidity ':'湿度 ')+display.humidity+'%');
   gauge('.gauge-precipitation',weather.precipitationProbability,100,display.precipitationWindow+(english?' precipitation chance ':' 降水概率 ')+display.precipitationProbability+'%');

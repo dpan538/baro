@@ -78,10 +78,10 @@ h1 .label-secondary { font: 400 2.45cqw/1.2 var(--mono); letter-spacing: -.055em
 .gauge-precipitation { background: linear-gradient(#0878e8,#a6c5df 50%,var(--accent-yellow)); }
 .gauge-visibility { background: linear-gradient(var(--accent-yellow),#d1dfeb 50%,var(--accent-blue)); }
 .cloud-cover { display: grid; grid-template-columns: 25% minmax(0, 1fr); align-items: center; gap: 2cqw; padding: 1.2cqw 4.4cqw;background:var(--paper); }
-.cover-track { position: relative; height: 8.8cqw; max-height: 8.4cqh; overflow: hidden; border-radius: 1.4cqw; background: var(--cover-track); }
-.cover-fill { position: absolute; inset: 0 auto 0 0; width: 32%; background: linear-gradient(90deg,var(--cover-colors)); border-radius: 1.4cqw; }
+.cover-track { position: relative; height: 8.8cqw; max-height: 8.4cqh; overflow: hidden; border-radius: 1.4cqw; background:linear-gradient(#fcfcf8c9,#fcfcf8c9),linear-gradient(90deg,var(--cover-colors)); }
+.cover-fill { position: absolute; inset: 0 auto 0 0; width: 32%; background:linear-gradient(90deg,var(--cover-colors));background-size:var(--cover-paint-width,100%) 100%;background-repeat:no-repeat;mask-image:linear-gradient(90deg,#000 max(0px,calc(100% - 1.8cqw)),transparent);border-radius:1.4cqw 0 0 1.4cqw; }
 .cover-value { position: relative; display: flex; align-items: baseline; gap: .4cqw; padding: .6cqw 1.8cqw; font-size: 6.4cqw; line-height: 1; font-weight: 400; letter-spacing: -.055em; }
-.cover-percent { font-size: .45em; letter-spacing: -.02em; color: #4e5d4d; }
+.cover-percent { font-size:.52em;letter-spacing:var(--tracking-number);color:var(--ink); }
 .visual-panel { container-type: size; min-width: 0; min-height: 0; position: relative; overflow: hidden; background: #abc8dc; border-left: 1px solid #a4b3ba; }
 .weather-artwork { position: absolute; inset: 0; }
 .weather-pixels { display: block; width: 100%; height: 100%; image-rendering: pixelated; }

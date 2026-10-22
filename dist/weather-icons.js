@@ -11,6 +11,28 @@ export function resolveWeatherIcon(weather) {
   return (night ? 'night-' : '') + scene;
 }
 
+// Solar-event diagrams share a viewBox and stroke, but retain distinct silhouettes.
+export function solarIconMarkup(event) {
+  const line=path=>`<path d="${path}"/>`;
+  let body='';
+  if(event==='sunrise'){
+    for(let i=0;i<=12;i++){
+      const angle=Math.PI+i*Math.PI/12;
+      const point=r=>[86+Math.cos(angle)*r,98+Math.sin(angle)*r].join(' ');
+      body+=line('M'+point(29)+'L'+point(65)+'M'+point(73)+'L'+point(80));
+    }
+  }else if(event==='sunset'){
+    body=line('M40 91A46 46 0 0 1 132 91M6 91H166M61 99H111');
+    for(let i=0;i<=6;i++){
+      const angle=Math.PI+i*Math.PI/6;
+      const point=r=>[86+Math.cos(angle)*r,91+Math.sin(angle)*r].join(' ');
+      body+=line('M'+point(55)+'L'+point(73));
+    }
+    body+=line('M86 61V81M78 73L86 81L94 73');
+  }else body=line('M36 86H136M74 64H98');
+  return `<g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="butt" stroke-linejoin="round">${body}</g>`;
+}
+
 export function weatherIconMarkup(key) {
   const line = path => `<path d="${path}"/>`;
   // The same 32-unit canvas as the gear and navigation icons. Keep secondary
