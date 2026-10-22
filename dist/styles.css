@@ -4,6 +4,9 @@
 :root {
   color-scheme: light; --frame: #191e1d; --paper: #fcfcf8; --ink: #151d1c; --muted: #58664f; --line: #bec6b8;
   --mono: 'Roboto Mono', 'MiSans', monospace; --sans: Inter, 'MiSans', sans-serif; --chinese: 'MiSans', Inter, sans-serif;
+  --tracking-label: -.02em; --tracking-text: -.015em; --tracking-number: -.02em; --tracking-display: -.04em; --tracking-time: .01em;
+  --icon-stroke: clamp(2px, .34cqw, 3.4px); --graphic-stroke: var(--icon-stroke);
+  --hero-row-gap: 1.6cqw;
   --edge: clamp(5px, .65vmin, 12px); --radius: clamp(14px, 1.4vmin, 26px);
 }
 * { box-sizing: border-box; }
@@ -26,7 +29,7 @@ h1 .label-secondary { font: 400 2.45cqw/1.2 var(--mono); letter-spacing: -.055em
 .location, .heading-bottom time { margin: 0; font: 400 2.5cqw/1.3 var(--mono); letter-spacing: -.015em; white-space: nowrap; }
 .weather-hero { display: grid; grid-template-columns: 1.16fr 1fr; align-items: center; gap: 1.2cqw; padding: 1.8cqw 4.4cqw; border-bottom: 1px solid var(--line); }
 .current-weather { min-width: 0; }
-.current-temperature { display: flex; align-items: baseline; gap: .16em; width: max-content; font-size: min(37cqw, 24.4cqh); font-weight: 400; font-variant-numeric: lining-nums; line-height: .94; letter-spacing: -.075em; }
+.current-temperature { display: flex; align-items: baseline; gap: .025em; width: max-content; font-size: min(37cqw, 24.4cqh); font-weight: 400; font-variant-numeric: lining-nums; line-height: .94; letter-spacing: -.075em; }
 .temperature-degree { display: inline-flex; align-items: baseline; font-size: .3em; line-height: 1; letter-spacing: -.04em; margin: 0; }
 .weather-description { display: flex; flex-direction: column; gap: .8cqw; font: 450 4.3cqw/1.2 var(--chinese); letter-spacing: -.02em; margin: 1.8cqw 0 0 .4cqw; }
 #condition-secondary { font: 400 2.9cqw/1.2 var(--sans); letter-spacing: -.015em; color: #4c5a50; }
@@ -38,8 +41,8 @@ h1 .label-secondary { font: 400 2.45cqw/1.2 var(--mono); letter-spacing: -.055em
 .time-summary .metric-label { align-items: center; gap: .3cqw; }
 .time-summary .metric-label .label-primary { font-size: 2.9cqw; }
 .time-summary .metric-label .label-secondary { font-size: 2.1cqw; }
-.clock-value { font-size: 5.7cqw; font-weight: 400; line-height: 1.15; letter-spacing: -.04em; margin: 1cqw 0 0; }
-.clock-value small { font-size: .65em; color: #52604d; margin-left: .12em; }
+.clock-value { font-size: 5.7cqw; font-weight: 400; line-height: 1.15; letter-spacing: .01em; font-variant-numeric: tabular-nums; margin: 1cqw 0 0; }
+.clock-value small { font-size: .65em; color: #52604d; margin-left: .25em; letter-spacing: 0; }
 .primary-metrics { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--line); background: #f3f5ed; }
 .primary-metric { padding: 2.4cqw 4.4cqw; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
 .primary-metric:first-child { border-right: 1px solid var(--line); }
@@ -116,7 +119,7 @@ h1 .label-secondary { font: 400 2.45cqw/1.2 var(--mono); letter-spacing: -.055em
 .location-group{display:flex;align-items:center;gap:1.1cqw;min-width:0;flex-wrap:wrap}
 .local-datetime{display:flex;align-items:baseline;gap:1.4cqw;flex-shrink:0}
 .heading-bottom time{font-size:2.05cqw}
-#scene-clock{font-size:2.65cqw;color:#172c24}
+#scene-clock{font-size:2.05cqw;color:#172c24}
 .location{font-size:2.2cqw}
 :root[data-language='en'] .location{font-size:2.15cqw}
 .air-quality{display:inline-flex;align-items:center;gap:.7cqw;color:#506345;font:400 1.7cqw/1.4 var(--chinese);white-space:nowrap}
@@ -125,10 +128,10 @@ h1 .label-secondary { font: 400 2.45cqw/1.2 var(--mono); letter-spacing: -.055em
 .temperature-range{display:flex;gap:2.1cqw;margin:1.1cqw 0 .5cqw .6cqw;font:400 2.8cqw/1.2 var(--mono);color:#52614e;letter-spacing:-.05em}
 .temperature-range span:first-child{color:#695333}
 .condition-heading{display:flex;align-items:center;gap:1.2cqw;margin-top:1.6cqw}
-#condition-icon{width:8cqw;height:6cqw;flex-shrink:0}
+#condition-icon{width:7.5cqw;height:7.5cqw;flex-shrink:0}
 .weather-description{font-size:3.8cqw;gap:.5cqw;margin:0;letter-spacing:-.025em}
 #condition-secondary{font-size:2.55cqw}
-.current-temperature{font-size:min(34cqw,22cqh);letter-spacing:-.065em}
+.current-temperature{font-size:min(28cqw,22cqh);letter-spacing:var(--tracking-display)}
 .solar-caption{margin:1cqw 0 0;font:400 1.85cqw/1.3 var(--chinese);color:#5c6b53;letter-spacing:.04em}
 .weather-icon{width:34cqw;max-height:16.8cqh;margin-bottom:1cqw}
 :root[data-language='en'] .weather-description{font-size:3.9cqw}
@@ -182,7 +185,7 @@ h1 .label-secondary { font: 400 2.45cqw/1.2 var(--mono); letter-spacing: -.055em
 .palette-button:hover{background:#edf0e6}.palette-button:focus-visible{outline:2px solid #376989;outline-offset:2px}
 .palette-button .palette-dots{gap:.8cqw}.palette-button .palette-dots i{width:1.65cqw;height:1.65cqw}
 .temperature-scale{font:inherit;line-height:inherit;letter-spacing:inherit;margin:0;position:static}
-.current-temperature[data-long='true']{font-size:min(26cqw,19.5cqh)}
+.current-temperature[data-long='true']{font-size:min(20cqw,19.5cqh)}
 .settings-panel{overflow:hidden}
 .settings-header{display:block;min-height:0;padding:1.6cqw 4.4cqw 0}
 .settings-heading-row,.settings-title-group{display:flex;align-items:center;justify-content:space-between;gap:1.2cqw}.settings-title-group{justify-content:flex-start}
@@ -206,9 +209,47 @@ h1 .label-secondary { font: 400 2.45cqw/1.2 var(--mono); letter-spacing: -.055em
 .scenes-header{display:flex;justify-content:space-between;align-items:center;padding:1.6cqw 4.4cqw;border-bottom:1px solid var(--line);flex-shrink:0}.scenes-note{font:400 2.3cqw/1.55 var(--chinese);color:#5a6d58;margin:2.2cqw 4.4cqw;flex-shrink:0}
 .scene-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.7cqw;overflow:auto;min-height:0;padding:0 4.4cqw 3cqw;flex:1;align-content:start;overscroll-behavior:contain}
 .scene-card{display:grid;grid-template-columns:7.5cqw minmax(0,1fr);column-gap:1.3cqw;row-gap:.45cqw;text-align:left;align-items:center;border:1px solid var(--line);border-radius:1cqw;background:#f4f6ef;padding:1.8cqw;min-width:0;cursor:pointer;color:var(--ink)}.scene-card[aria-pressed='true']{background:#e3eadc;border-color:#607b66}.scene-card:hover{background:#eaf0e3}.scene-card svg{grid-row:1/4;width:7.5cqw;height:6.5cqw}.scene-card .scene-name{font:450 2.4cqw/1.35 var(--chinese);overflow-wrap:anywhere}.scene-card .scene-city{font:400 1.85cqw/1.4 var(--chinese);color:#5a6d58;overflow-wrap:anywhere}.scene-card .scene-time{font:400 1.85cqw/1.5 var(--mono);white-space:nowrap;letter-spacing:-.05em}
-@media(min-aspect-ratio:17/10){.current-temperature[data-long='true']{font-size:min(24cqw,17.5cqh)}}
+@media(min-aspect-ratio:17/10){.current-temperature[data-long='true']{font-size:min(20cqw,17.5cqh)}}
 @media(orientation:portrait){.title-group{gap:.5cqw}h1 .label-secondary{font-size:2.35cqw}.palette-button{padding:.5cqw;min-width:36px;min-height:36px}.palette-button .palette-dots i{width:1.2cqw;height:1.2cqw}}
 
 .more-button{min-width:44px;min-height:44px;padding:0 1cqw;border:0;border-radius:6px;background:transparent;color:var(--ink);font:600 3cqw/1 var(--sans);letter-spacing:.1em;cursor:pointer}.more-button:hover{background:#edf0e6}
 .wind-options{grid-template-columns:repeat(3,minmax(0,1fr))}
 .github-feedback{margin:2cqw 0 0 1cqw}.settings-detail .about-version{font:400 2cqw/1.5 var(--mono);color:var(--muted)}
+
+.clock-value small:empty{display:none}
+
+/* Shared two-column hero grid: solar and temperature rows use the same tracks. */
+.weather-hero{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto auto auto auto;column-gap:0;row-gap:var(--hero-row-gap);align-items:baseline;align-content:center;padding:.8cqw 0}
+.weather-hero:has(.solar-caption[hidden]){grid-template-rows:auto auto auto}
+.current-weather,.time-summary{display:contents}
+.current-temperature{grid-column:1;grid-row:1;justify-self:start;margin-left:4.4cqw;padding-top:.8cqw}
+.weather-icon{grid-column:2;grid-row:1;justify-self:center;align-self:baseline;width:34cqw;height:auto;max-height:none;margin:0}
+.temperature-range{grid-column:1;grid-row:2;justify-self:start;margin:0 4.4cqw;line-height:1.2}
+.time-summary .metric-label{grid-column:2;grid-row:2;justify-self:center;align-self:baseline;margin:0;line-height:1.2}
+.condition-heading{grid-column:1;grid-row:3;align-self:baseline;position:relative;min-width:0;min-height:7.5cqw;margin:0 4.4cqw;padding-left:8.7cqw}
+#condition-icon{position:absolute;left:0;top:50%;transform:translateY(-50%)}
+.clock-value{grid-column:2;grid-row:3;justify-self:center;align-self:baseline;margin:0}
+.solar-caption{grid-column:2;grid-row:4;justify-self:center;margin:0;text-align:center}
+.settings-open{position:relative;width:max(44px,5.8cqw);height:max(44px,5.8cqw);padding:0;border-radius:0;background:transparent;justify-items:end}
+.settings-open svg{width:4.2cqw;height:4.2cqw}
+.settings-open:hover{background:transparent}.settings-open:focus-visible{outline:none;box-shadow:none}
+.settings-open:focus-visible::after{content:'';position:absolute;bottom:0;left:32%;right:32%;height:2px;background:#376989}
+.cover-track{display:flex;align-items:center}.cover-value{height:100%;width:100%;display:flex;align-items:center;padding:0 1.8cqw}
+.cover-reading{display:inline-flex;align-items:baseline;gap:.4cqw;font:inherit;line-height:1;letter-spacing:inherit}
+@media(min-aspect-ratio:17/10){.information-panel{grid-template-rows:14% 33% 15% 26% 12%}}
+
+/* Shared type roles and monoline icon geometry. */
+h1 .label-primary,.metric-label .label-primary{line-height:1.2;letter-spacing:var(--tracking-label)}
+:root[data-language='en'] h1 .label-primary,:root[data-language='en'] .metric-label .label-primary{font-family:var(--mono);font-weight:400;letter-spacing:var(--tracking-label)}
+.current-temperature{font-family:var(--sans);font-weight:400;font-variant-numeric:tabular-nums;letter-spacing:var(--tracking-display)}
+.temperature-degree,.temperature-scale,.metric-unit,.condition-unit,.cover-percent{font-family:var(--sans);font-weight:400;letter-spacing:var(--tracking-number)}
+.primary-metric p,.condition p,.cover-value,.cover-reading{font-family:var(--sans);font-weight:400;font-variant-numeric:tabular-nums;letter-spacing:var(--tracking-number)}
+.clock-value{font-family:var(--sans);font-weight:400;font-variant-numeric:tabular-nums;letter-spacing:var(--tracking-time)}
+.temperature-range,.location,.heading-bottom time,.settings-index,.setting-value,.scene-card .scene-time{font-family:var(--mono);font-weight:400;letter-spacing:var(--tracking-number)}
+.weather-description,.condition-detail,.condition-unit,.setting-note,.setting-options button,.text-button,.primary-button,.detail-link{font-family:var(--sans);letter-spacing:var(--tracking-text)}
+:root[data-language='en'] .weather-description{letter-spacing:var(--tracking-text)}
+#condition-icon path,#condition-icon circle,.scene-card svg path,.scene-card svg circle,.icon-button svg path,.icon-button svg circle{vector-effect:non-scaling-stroke;stroke-width:var(--icon-stroke);stroke-linecap:butt;stroke-linejoin:round}
+#solar-icon path{vector-effect:non-scaling-stroke;stroke-width:var(--graphic-stroke);stroke-linecap:butt}
+.settings-nav button,.category-title .label-primary,.settings-detail .detail-kicker{letter-spacing:var(--tracking-label)}
+.air-quality,.solar-caption,.scene-card .scene-name,.scene-card .scene-city,.scenes-note,.settings-detail p,.settings-detail label,.settings-detail h2,.settings-detail h3{letter-spacing:var(--tracking-text)}
+.source-button,.settings-footer{letter-spacing:var(--tracking-number)}

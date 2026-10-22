@@ -55,7 +55,7 @@ export class SettingsController{
     document.querySelector('#check-updates').addEventListener('click',()=>{this.status.update=APP_META.updateUrl?(deviceServices.external(APP_META.updateUrl)?'updateOpened':'updateUnconfigured'):'updateUnconfigured';this.render();});
     document.querySelector('#copy-feedback').addEventListener('click',async()=>{const message=document.querySelector('#feedback-message').value.trim();if(!message){this.status.feedback='feedbackEmpty';this.render();return;}const state=getState();const report=`${APP_META.name} v${this.version.version} (${this.version.build})\nLanguage: ${state.language}; Pixels: ${state.pixelStyle}; Units: ${state.temperatureUnit.toUpperCase()}, ${state.windUnit}\n\n${message}`;this.status.feedback=await deviceServices.copy(report)?'feedbackCopied':'feedbackFailed';this.render();});
     for(const [key,weather] of Object.entries(WEATHER_PRESETS)){
-      const button=document.createElement('button');button.type='button';button.className='scene-card';button.dataset.sceneButton=key;button.innerHTML='<svg viewBox="0 0 172 106" aria-hidden="true">'+weatherIconMarkup(resolveWeatherIcon(weather))+'</svg><span class="scene-name"></span><span class="scene-city"></span><span class="scene-time"></span>';
+      const button=document.createElement('button');button.type='button';button.className='scene-card';button.dataset.sceneButton=key;button.innerHTML='<svg viewBox="0 0 32 32" aria-hidden="true">'+weatherIconMarkup(resolveWeatherIcon(weather))+'</svg><span class="scene-name"></span><span class="scene-city"></span><span class="scene-time"></span>';
       button.addEventListener('click',()=>{selectScene(key);this.close('scenes-open');});document.querySelector('#scene-grid').append(button);
     }
   }

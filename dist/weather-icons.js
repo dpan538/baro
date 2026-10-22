@@ -13,44 +13,39 @@ export function resolveWeatherIcon(weather) {
 
 export function weatherIconMarkup(key) {
   const line = path => `<path d="${path}"/>`;
-  const star = (x, y, size = 5) => line(`M${x-size} ${y}H${x+size}M${x} ${y-size}V${y+size}`);
-  const sun = (x = 86, y = 53, radius = 24) => {
+  // The same 32-unit canvas as the gear and navigation icons. Keep secondary
+  // marks sparse so they retain the same optical weight at small sizes.
+  const sun = (x = 16, y = 16, radius = 6) => {
     let result = `<circle cx="${x}" cy="${y}" r="${radius}"/>`;
-    for (let ray = 0; ray < 12; ray++) {
-      const angle = ray * Math.PI / 6;
+    for (let ray = 0; ray < 8; ray++) {
+      const angle = ray * Math.PI / 4;
       const point = r => `${x + Math.cos(angle)*r} ${y + Math.sin(angle)*r}`;
-      result += line('M' + point(radius+9) + 'L' + point(radius+17));
+      result += line('M' + point(radius+3) + 'L' + point(radius+6));
     }
     return result;
   };
-  const moon = '<path d="M100 12A39 39 0 1 0 120 79A33 33 0 0 1 100 12Z"/>';
-  const smallMoon = `<g transform="translate(1 -2) scale(.57)">${moon}</g>`;
-  const cloud = '<path fill="var(--paper)" d="M41 70H131C144 70 150 60 145 50C141 42 133 39 125 41C123 23 98 17 86 34C73 26 57 33 56 46C41 41 29 52 33 63C34 67 37 70 41 70Z"/>';
+  const moon = line('M20 4A12 12 0 1 0 28 22A12 12 0 0 1 20 4Z');
+  const smallMoon = line('M12 3A8 8 0 1 0 19 15A8 8 0 0 1 12 3Z');
+  const cloud = '<path fill="var(--paper)" d="M8 21H25A5 5 0 0 0 26 11A8 8 0 0 0 11 9A6 6 0 0 0 8 21Z"/>';
   let body;
   if (key === 'sunrise' || key === 'sunset') {
-    body = '';
-    for (let ray = 0; ray <= 12; ray++) {
-      const angle = Math.PI + ray * Math.PI / 12;
-      const point = r => `${86 + Math.cos(angle)*r} ${77 + Math.sin(angle)*r}`;
-      body += line('M' + point(25) + 'L' + point(58) + 'M' + point(65) + 'L' + point(71));
-    }
-    body += line('M18 81H70M102 81H154');
-    body += key === 'sunrise' ? line('M86 104V87M79 94L86 87L93 94') : line('M86 87V104M79 97L86 104L93 97');
+    body = line('M3 21H29M9 17A7 7 0 0 1 23 17M16 3V6M5 7L7 9M27 7L25 9');
+    body += key === 'sunrise' ? line('M16 30V25M13 28L16 25L19 28') : line('M16 25V30M13 27L16 30L19 27');
   } else if (key === 'sun') body = sun();
-  else if (key === 'moon') body = moon + star(134, 28) + star(37, 32, 3) + star(130, 85, 3);
-  else if (key === 'unknown') body = line('M54 53H118') + '<circle cx="86" cy="53" r="37" stroke-dasharray="4 7"/>';
+  else if (key === 'moon') body = moon;
+  else if (key === 'unknown') body = '<circle cx="16" cy="16" r="12"/>' + line('M11 16H21');
   else {
     const night = key.startsWith('night-');
     const type = key.replace(/^night-/, '');
-    const sky = type === 'storm' ? '' : night ? smallMoon : type === 'partly' ? sun(59, 33, 17) : '';
+    const sky = type === 'storm' ? '' : night ? smallMoon : type === 'partly' ? sun(10, 10, 4) : '';
     body = sky + cloud;
-    if (type === 'rain') body += line('M60 80L53 94M90 80L83 94M120 80L113 94');
-    if (type === 'storm') body += '<path fill="currentColor" stroke="none" d="M92 74L78 91H89L83 104L109 84H96L103 74Z"/>';
+    if (type === 'rain') body += line('M10 25L8 29M18 25L16 29M26 25L24 29');
+    if (type === 'storm') body += line('M18 24L14 27H18L15 31');
     if (type === 'snow') {
-      for (const x of [56, 87, 118]) body += star(x, 91, 7) + line(`M${x-5} 86L${x+5} 96M${x-5} 96L${x+5} 86`);
+      for (const x of [11, 23]) body += line(`M${x} 25V31M${x-2.6} 26.5L${x+2.6} 29.5M${x-2.6} 29.5L${x+2.6} 26.5`);
     }
-    if (type === 'fog') body = sky + line('M29 45H143M41 61H154M19 77H131M42 93H149');
-    if (type === 'wind') body = sky + line('M20 43H109C128 43 128 18 111 18C104 18 100 22 100 28M34 61H139C156 61 156 84 142 84C136 84 133 81 133 76M19 80H100M49 95H111');
+    if (type === 'fog') body = line('M5 9H27M3 16H25M7 23H29');
+    if (type === 'wind') body = line('M3 12H21A4 4 0 1 0 17 8M3 20H25A4 4 0 1 1 21 24');
   }
-  return `<g fill="none" stroke="currentColor" stroke-width="${key.endsWith('storm') ? 2.8 : 2.3}" stroke-linecap="butt" stroke-linejoin="round">${body}</g>`;
+  return `<g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="butt" stroke-linejoin="round">${body}</g>`;
 }

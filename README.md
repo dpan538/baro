@@ -10,7 +10,7 @@ Bilingual, built for the big screen. Data by Open-Meteo.
 [![Code license: MIT](https://img.shields.io/badge/code-MIT-4c6b5b)](LICENSE)
 ![Android 10+](https://img.shields.io/badge/Android-10%2B-4c6b5b)
 
-[**Run the web preview**](PREVIEW.md) · [Project status](docs/IMPLEMENTATION-STATUS.md) · [中文说明](#中文说明) · [Architecture](docs/ARCHITECTURE.md) · [English screenshot](docs/images/weather-english.png)
+[**Run the web preview**](PREVIEW.md) · [Project status](docs/IMPLEMENTATION-STATUS.md) · [中文说明](#中文说明) · [Architecture](docs/ARCHITECTURE.md) · [UI system](docs/DESIGN-SYSTEM.md) · [English screenshot](docs/images/weather-english.png)
 
 > **Current status:** this is a weather-screen design prototype with clearly labelled sample data. We are refining the browser layout first; APK packaging and publishing are paused. Open-Meteo adapters are tested against recorded responses, but live forecast fetching is not connected yet.
 

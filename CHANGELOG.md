@@ -7,7 +7,11 @@
 - Initialize the public source repository with a Gradle wrapper, CI, issue and pull-request templates, contribution and distribution documentation.
 - Remove simultaneous bilingual mode; Chinese and English are separate choices, and old bilingual preferences fall back to Chinese.
 - Fix the oversized degree symbol and independently positioned C/F by typesetting °C/°F as one unit, adding a clear gap and aligning it to the temperature baseline.
-- Retain the existing installation identity, local preferences, simplified thunderstorm icon and 768/96-column pixel modes.
+- Unify the complete weather icon family with the controls: 32-unit geometry, bolder shared strokes and fewer decorative details.
+- Centralize typography and tighten label/body tracking; retain readable tabular solar times and baseline-aligned temperature units.
+- Align the hero to equal columns and shared text baselines, standardize its vertical spacing, size the unframed gear to the title and center cloud-cover readings.
+- Require informative English commit titles and detailed descriptions, followed by a short Chinese summary.
+- Retain the existing installation identity, local preferences and 768/96-column pixel modes.
 - Pause APK work while the browser design is refined; publish source and repository foundations only. Real weather fetching and verified in-app updating remain pending.
 
 ## Earlier local previews
