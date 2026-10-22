@@ -1,0 +1,10 @@
+* text=auto
+*.sh text eol=lf
+android/gradlew text eol=lf
+*.bat text eol=crlf
+*.pdf binary
+*.png binary
+*.woff2 binary
+*.ttf binary
+*.jar binary
+*OFL.txt -text whitespace=-blank-at-eol

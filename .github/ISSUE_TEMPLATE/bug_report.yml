@@ -1,0 +1,30 @@
+name: Bug report / 问题反馈
+description: Report a problem in BARO / 反馈使用中遇到的问题
+title: '[Bug] '
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Version / 版本
+      placeholder: '0.9.2 (11)'
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and Android / 设备与系统
+      placeholder: 'Tablet model, Android version'
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps and actual result / 操作步骤与实际结果
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result / 预期结果
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot or additional context / 截图或补充说明
