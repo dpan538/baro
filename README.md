@@ -20,7 +20,7 @@ Bilingual, built for the big screen. Data by Open-Meteo.
 
 - A nearly fullscreen tablet layout: weather information on the left, animated pixel sky on the right.
 - Eleven sample scenarios with distinct cities, local times, temperatures and conditions. The three coloured dots open the scene library.
-- A shared weather system with 768-column fine artwork and 96-column block artwork, ordered dithering, and an eight-second animation loop targeting 24 fps.
+- A shared weather system with native-density fine artwork up to 1536 columns and 96-column block artwork, ordered dithering, and an eight-second animation loop targeting 24 fps.
 - Separate Chinese and English interfaces; °C/°F and km/h, m/s and mph controls.
 - Daily highs/lows, feels-like temperature, humidity, UV index, precipitation chance, visibility and cloud cover. Sunrise/sunset follows the scenario's local time.
 - A left-panel settings screen with seven primary appearance, unit, location and version controls; cache, sources and feedback live under the footer menu.

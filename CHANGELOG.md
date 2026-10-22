@@ -12,7 +12,9 @@
 - Align the hero to equal columns and shared text baselines, standardize its vertical spacing, size the unframed gear to the title and center cloud-cover readings.
 - Enlarge the header date to match the original clock size; increase the gear a further 10% while preserving their shared right edge.
 - Require informative English commit titles and detailed descriptions, followed by a short Chinese summary.
-- Retain the existing installation identity, local preferences and 768/96-column pixel modes.
+- Unify city, air-quality, date and clock typography on one header baseline; increase the title row's top inset.
+- Refine fine artwork with an adaptive native-density grid up to 1536 columns, clean geometric contours, softer edge coverage and lower-contrast dithering. Keep the 96-column block style.
+- Retain the existing installation identity and local preferences.
 - Pause APK work while the browser design is refined; publish source and repository foundations only. Real weather fetching and verified in-app updating remain pending.
 
 ## Earlier local previews

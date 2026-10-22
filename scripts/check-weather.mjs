@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { createWeatherFrame, resolveWeatherScene, WEATHER_PRESETS, WEATHER_CODE_GROUPS, MOTION } from '../dist/weather-art.js';
+import { resolvePixelGrid, FINE_MOTION } from '../dist/weather-shader.js';
 
 const names=Object.keys(WEATHER_PRESETS);
 for(const name of names) {
@@ -26,4 +27,17 @@ for (const [group,codes] of Object.entries(WEATHER_CODE_GROUPS)) {
 }
 assert.equal(resolveWeatherScene({...WEATHER_PRESETS.storm,period:'sunset',isDay:false}),'storm');
 assert.equal(resolveWeatherScene({...WEATHER_PRESETS.overcast,windSpeed:40,period:'sunset'}),'overcast');
+assert.deepEqual(resolvePixelGrid(1728,2304),{columns:1536,rows:2048},'3.4K split panel uses the denser fine grid');
+assert.deepEqual(resolvePixelGrid(800,1200),{columns:800,rows:1200},'smaller panels render one logical cell per native pixel');
+assert.deepEqual(resolvePixelGrid(1728,2304,'block'),{columns:96,rows:128},'block mode keeps its established grid');
+for(const [width,height,limit] of [[320,480,4096],[1440,960,4096],[3456,2304,4096],[3840,2160,4096],[300,6000,1024],[6000,300,1024],[1,1,4096]]){
+  for(const style of ['fine','block']){
+    const {columns,rows}=resolvePixelGrid(width,height,style,limit);
+    assert(Number.isInteger(columns)&&Number.isInteger(rows)&&columns>0&&rows>0);
+    assert(columns<=limit&&rows<=limit,'both texture dimensions must fit the GPU limit');
+    assert(Math.abs(columns*height-rows*width)<=Math.max(width,height),'grid aspect must stay within one texel of the panel');
+    if(style==='fine')assert(columns<=Math.min(width,FINE_MOTION.columns)&&rows<=height,'fine mode must not oversample the native canvas');
+  }
+}
 console.log(`Verified ${names.length} weather states at three panel shapes: weather mapping, valid pixels, motion and eight-second loops.`);
+console.log('Verified native-density fine grids, the 3.4K tablet split, block-mode sizing, aspect preservation and GPU texture limits.');

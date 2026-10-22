@@ -95,7 +95,7 @@ function renderScreen(){
   document.querySelector('[data-temperature-scale]').textContent=temperatureUnit.toUpperCase();
   document.querySelector('.current-temperature').dataset.long=String(display.temperature.length>=3);
   const aq=airQualityStatus(weather.airQuality),aqElement=document.querySelector('#air-quality');aqElement.hidden=!aq;
-  if(aq){aqElement.style.setProperty('--aq-color',aq.color);aqElement.dataset.warning=String(aq.warning);aqElement.textContent=aq.warning?'US AQI '+aq.value+' · '+(english?aq.en:aq.zh):'';aqElement.setAttribute('aria-label','US AQI '+aq.value+', '+(english?aq.en:aq.zh));aqElement.title=aqElement.getAttribute('aria-label');}
+  if(aq){aqElement.style.setProperty('--aq-color',aq.color);aqElement.dataset.warning=String(aq.warning);aqElement.textContent=aq.warning?'US AQI '+aq.value:'';aqElement.setAttribute('aria-label','US AQI '+aq.value+', '+(english?aq.en:aq.zh));aqElement.title=aqElement.getAttribute('aria-label');}
   document.querySelector('.current-temperature').setAttribute('aria-label',(english?'Temperature ':'当前温度 ')+display.temperature+(temperatureUnit==='f'?(english?' degrees Fahrenheit':' 华氏度'):(english?' degrees Celsius':' 摄氏度')));
   document.querySelector('.weather-page').setAttribute('aria-label',english?'Weather preview with sample data':'天气首页，示例天气数据');
   document.querySelector('.primary-metrics').setAttribute('aria-label',english?'Feels-like temperature and wind':'体感与风速');

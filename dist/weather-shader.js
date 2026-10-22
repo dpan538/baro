@@ -1,6 +1,15 @@
 import { PixelWeatherRenderer, resolveWeatherScene, PIXEL_TONE } from './weather-art.js';
 
-export const FINE_MOTION = Object.freeze({ columns: 768, coarseColumns: 96, fps: 24, frames: 192 });
+export const FINE_MOTION = Object.freeze({ columns: 1536, coarseColumns: 96, fps: 24, frames: 192 });
+
+export function resolvePixelGrid(width, height, pixelStyle = 'fine', maxTextureSize = 4096) {
+  width = Math.max(1, Math.round(width)); height = Math.max(1, Math.round(height));
+  const limit = Math.max(1, Math.floor(maxTextureSize));
+  let columns = Math.min(pixelStyle === 'block' ? FINE_MOTION.coarseColumns : Math.min(FINE_MOTION.columns, width), limit);
+  let rows = Math.max(1, Math.round(columns * height / width));
+  if (rows > limit) { rows = limit; columns = Math.max(1, Math.round(rows * width / height)); }
+  return { columns, rows };
+}
 const VERTEX = `#version 300 es
 out vec2 texCoord;
 void main(){ vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2)); texCoord=p; gl_Position=vec4(p*2.-1.,0.,1.); }`;
@@ -22,8 +31,13 @@ float threshold;
 vec2 p;
 float aspect;
 float hash(vec2 v){ return fract(sin(dot(v,vec2(127.1,311.7)))*43758.5453); }
+float coverage(float distance){
+  if(coarse)return step(0.,distance);
+  float edge=.65/resolution.x;
+  return smoothstep(-edge,edge,distance);
+}
 vec3 ramp(vec3 a,vec3 b,vec3 c,vec3 d,float t){
-  float divisions=coarse?1.:5.;
+  float divisions=coarse?1.:10.;
   float level=floor(clamp(t,0.,1.)*3.*divisions+threshold)/divisions;
   return level<1.?mix(a,b,level):level<2.?mix(b,c,level-1.):mix(c,d,level-2.);
 }
@@ -35,23 +49,24 @@ float bank(vec2 q,float scale){
   d=max(d,ellipse(q-vec2(-.055,-.091),vec2(.15,.139)));
   d=max(d,ellipse(q-vec2(.115,-.068),vec2(.13,.115)));
   d=max(d,ellipse(q-vec2(.265,-.018),vec2(.12,.073)));
-  // Tiny stepped lobes prevent a smooth vector outline at this fine pixel scale.
-  return d*scale + (hash(floor(p*80.))-.5)*(coarse?.004:.0015);
+  // Fine contours use the analytic shape; only the block style adds roughness.
+  return d*scale + (coarse?(hash(floor(p*80.))-.5)*.004:0.);
 }
 vec3 cloud(vec3 background,vec2 center,float scale,float depth){
   vec2 q=p-vec2(center.x,center.y*aspect);
   if(scene==7)q*=vec2(.74,1.35);
-  float d=bank(q,scale); if(d<0.)return background;
+  float d=bank(q,scale),edgeCoverage=coverage(d); if(edgeCoverage<=0.)return background;
   float upper=bank(q+vec2(.009,.014),scale);
-  float shape=clamp(.52-q.y/(scale*.24)+d*2.5+(hash(floor(p*256.))-.5)*(coarse?.075:.025),0.,1.);
+  float shape=clamp(.52-q.y/(scale*.24)+d*2.5+(hash(floor(p*256.))-.5)*(coarse?.075:.008),0.,1.);
   vec3 lo=night?vec3(.20,.28,.40):mix(vec3(.50,.61,.72),vec3(.48,.55,.65),depth);
   lo*=night?.94:.86;
   vec3 mid=night?vec3(.29,.38,.51):mix(vec3(.71,.78,.82),vec3(.61,.68,.74),depth);
   vec3 high=night?vec3(.42,.50,.62):mix(vec3(.88,.91,.90),vec3(.78,.82,.83),depth);
   vec3 rim=night?vec3(.56,.62,.72):(scene==2||scene==3)?vec3(.85,.89,.91):scene==5?vec3(.97,.98,.97):vec3(.99,.97,.87);
   vec3 color=ramp(lo,mid,high,rim,shape);
-  if(d<(coarse?.01:.004) && upper>d+.004 && threshold<.7)color=rim;
-  return color;
+  if(coarse){if(d<.01 && upper>d+.004 && threshold<.7)color=rim;}
+  else color=mix(color,rim,(1.-smoothstep(0.,.006,d))*smoothstep(.003,.012,upper-d)*.35);
+  return mix(background,color,edgeCoverage);
 }
 float segment(vec2 q,vec2 a,vec2 b){vec2 v=b-a;return length(q-a-v*clamp(dot(q-a,v)/dot(v,v),0.,1.));}
 void main(){
@@ -81,7 +96,7 @@ void main(){
     float angle=atan(p.x-solar.x,p.y-solar.y);
     if(p.y>solar.y && r>.11 && r<.64 && sin(angle*29.+.1*wave)>.94 && threshold<.15)color=vec3(.89,.87,.75);
     float radius=warm?.12:.135;
-    if(r<radius)color=ramp(vec3(.94,.63,.32),vec3(.99,.75,.40),vec3(1.,.85,.56),vec3(1.,.93,.73),.5-(p.y-solar.y)/(radius*2.));
+    color=mix(color,ramp(vec3(.94,.63,.32),vec3(.99,.75,.40),vec3(1.,.85,.56),vec3(1.,.93,.73),.5-(p.y-solar.y)/(radius*2.)),coverage(radius-r));
   }
   if(scene==8){
     vec2 starCell=floor(uv*vec2(22.,27.));vec2 starLocal=fract(uv*vec2(22.,27.));
@@ -90,7 +105,7 @@ void main(){
     float starSize=(seed>.985?.075:.026);
     if(seed>.89 && length(starLocal-.5)<starSize && threshold<.4+twinkle*.6)color=vec3(.89,.86,.72);
     float moon=length(p-solar),cut=length(p-solar-vec2(.064,-.035));
-    if(moon<.135 && cut>.124)color=ramp(vec3(.69,.70,.68),vec3(.82,.80,.68),vec3(.91,.87,.73),vec3(.98,.92,.77),.8-(p.y-solar.y)*2.);
+    color=mix(color,ramp(vec3(.69,.70,.68),vec3(.82,.80,.68),vec3(.91,.87,.73),vec3(.98,.92,.77),.8-(p.y-solar.y)*2.),coverage(min(.135-moon,cut-.124)));
   }
   if(scene==1||scene==7){
     color=cloud(color,vec2(.11+drift*.7,.64),.92,0.);
@@ -191,6 +206,7 @@ export class FineWeatherRenderer {
     this.art=program(ART);this.copy=program(COPY);this.vao=gl.createVertexArray();gl.bindVertexArray(this.vao);
     this.locations=Object.fromEntries(['resolution','phase','scene','night','coarse'].map(key=>[key,gl.getUniformLocation(this.art,key)]));
     this.texture=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,this.texture);
+    this.maxTextureSize=gl.getParameter(gl.MAX_TEXTURE_SIZE);
     gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
     this.fbo=gl.createFramebuffer();gl.bindFramebuffer(gl.FRAMEBUFFER,this.fbo);gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,this.texture,0);
@@ -201,8 +217,12 @@ export class FineWeatherRenderer {
     if(this.gl.isContextLost())return;
     const box=this.canvas.getBoundingClientRect();if(!box.width||!box.height)return;
     const dpr=devicePixelRatio||1;this.canvas.width=Math.round(box.width*dpr);this.canvas.height=Math.round(box.height*dpr);
-    this.rows=Math.round(this.columns*box.height/box.width);
-    const gl=this.gl;gl.bindTexture(gl.TEXTURE_2D,this.texture);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA8,this.columns,this.rows,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
+    const grid=resolvePixelGrid(this.canvas.width,this.canvas.height,this.pixelStyle,this.maxTextureSize);
+    this.columns=grid.columns;this.rows=grid.rows;
+    const gl=this.gl;gl.bindTexture(gl.TEXTURE_2D,this.texture);
+    const filter=this.pixelStyle==='block'?gl.NEAREST:gl.LINEAR;
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,filter);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,filter);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA8,this.columns,this.rows,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
     gl.bindFramebuffer(gl.FRAMEBUFFER,this.fbo);
     if(gl.checkFramebufferStatus(gl.FRAMEBUFFER)!==gl.FRAMEBUFFER_COMPLETE)throw new Error('Incomplete pixel framebuffer');
     this.canvas.dataset.resolution=this.canvas.width+'×'+this.canvas.height;this.canvas.dataset.grid=this.columns+'×'+this.rows;this.canvas.dataset.renderer='webgl2-'+this.columns+(this.pixelStyle==='block'?'-flat':'-bayer4');this.canvas.dataset.pixelStyle=this.pixelStyle;
