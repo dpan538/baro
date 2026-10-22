@@ -118,8 +118,8 @@ h1 .label-secondary { font: 400 2.45cqw/1.2 var(--mono); letter-spacing: -.055em
 
 .location-group{display:flex;align-items:center;gap:1.1cqw;min-width:0;flex-wrap:wrap}
 .local-datetime{display:flex;align-items:baseline;gap:1.4cqw;flex-shrink:0}
-.heading-bottom time{font-size:2.05cqw}
-#scene-clock{font-size:2.05cqw;color:#172c24}
+.heading-bottom time{font-size:2.65cqw}
+#scene-clock{color:#172c24}
 .location{font-size:2.2cqw}
 :root[data-language='en'] .location{font-size:2.15cqw}
 .air-quality{display:inline-flex;align-items:center;gap:.7cqw;color:#506345;font:400 1.7cqw/1.4 var(--chinese);white-space:nowrap}
@@ -231,7 +231,7 @@ h1 .label-secondary { font: 400 2.45cqw/1.2 var(--mono); letter-spacing: -.055em
 .clock-value{grid-column:2;grid-row:3;justify-self:center;align-self:baseline;margin:0}
 .solar-caption{grid-column:2;grid-row:4;justify-self:center;margin:0;text-align:center}
 .settings-open{position:relative;width:max(44px,5.8cqw);height:max(44px,5.8cqw);padding:0;border-radius:0;background:transparent;justify-items:end}
-.settings-open svg{width:4.2cqw;height:4.2cqw}
+.settings-open svg{width:4.62cqw;height:4.62cqw}
 .settings-open:hover{background:transparent}.settings-open:focus-visible{outline:none;box-shadow:none}
 .settings-open:focus-visible::after{content:'';position:absolute;bottom:0;left:32%;right:32%;height:2px;background:#376989}
 .cover-track{display:flex;align-items:center}.cover-value{height:100%;width:100%;display:flex;align-items:center;padding:0 1.8cqw}
