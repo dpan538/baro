@@ -1,17 +1,19 @@
-// One pixel vocabulary, one eight-second timeline, and native-resolution rendering.
+// Shared weather vocabulary and the legacy Canvas fallback's eight-second timeline.
 // Weather fixtures are deliberately illustrative; no network observations are used.
 export const MOTION = Object.freeze({ fps: 12, frames: 96, columns: 24 });
 // Lift light skies while giving shadows a deeper black point. Shared by GPU and fallback.
-export const PIXEL_TONE = Object.freeze({ shadowGain: .78, highlightRemainder: .84, lowKnee: .18, highKnee: .78 });
+export const PIXEL_TONE = Object.freeze({ saturation: 1.01, peak: .97, shadowGain: .74, highlightRemainder: .74, lowKnee: .16, highKnee: .76 });
 const toneCache = new Map();
 function toneHex(value) {
   if(toneCache.has(value))return toneCache.get(value);
-  const rgb=[1,3,5].map(offset=>parseInt(value.slice(offset,offset+2),16)/255);
+  let rgb=[1,3,5].map(offset=>parseInt(value.slice(offset,offset+2),16)/255);
+  const neutral=rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;
+  rgb=rgb.map(channel=>Math.max(0,Math.min(1,neutral+(channel-neutral)*PIXEL_TONE.saturation)));
   const luminance=rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;
   const x=Math.max(0,Math.min(1,(luminance-PIXEL_TONE.lowKnee)/(PIXEL_TONE.highKnee-PIXEL_TONE.lowKnee)));
   const blend=x*x*(3-2*x);
   const lifted=luminance*PIXEL_TONE.shadowGain*(1-blend)+(1-(1-luminance)*PIXEL_TONE.highlightRemainder)*blend;
-  const color='#'+rgb.map(channel=>Math.round(Math.min(1,channel*lifted/Math.max(luminance,.001))*255).toString(16).padStart(2,'0')).join('');
+  const color='#'+rgb.map(channel=>Math.round(Math.min(1,channel*lifted/Math.max(luminance,.001))*PIXEL_TONE.peak*255).toString(16).padStart(2,'0')).join('');
   toneCache.set(value,color);return color;
 }
 
@@ -38,27 +40,27 @@ function weatherExample(input) {
 }
 export const WEATHER_PRESETS = Object.freeze({
   dawn: weatherExample({ at: '2026-10-22T05:25:00+10:00', timezone: 'Australia/Brisbane', cityZh: '布里斯班', cityEn: 'BRISBANE', rise: '05:06', set: '17:59', nextRise: '05:05',
-    temperatureMax: 27, temperatureMin: 17, usAqi: 24, temperature: 18, feelsLike: 18, windSpeed: 5, humidity: 78, uvIndex: 0, cloudCover: 12, precipitationProbability: 3, visibility: 24, code: 1, name: '晨光', condition: 'Clear skies', motion: '晨光渐亮 · 太阳在地平线升起' }),
+    temperatureMax: 27, temperatureMin: 17, usAqi: 24, temperature: 18, feelsLike: 18, windSpeed: 5, humidity: 78, uvIndex: 0, cloudCover: 12, precipitationProbability: 3, visibility: 24, code: 1, name: '晨光', condition: 'Clear skies', motion: '清晨初光 · 蓬云、远鸟与碎金海面' }),
   partly: weatherExample({ at: '2026-10-23T08:20:00+08:00', timezone: 'Asia/Shanghai', cityZh: '上海', cityEn: 'SHANGHAI', rise: '06:03', set: '17:16', nextRise: '06:04',
-    temperatureMax: 26, temperatureMin: 18, usAqi: 154, temperature: 22, feelsLike: 23, windSpeed: 11, humidity: 66, uvIndex: 2, cloudCover: 36, precipitationProbability: 12, visibility: 14, code: 2, name: '晴间多云', condition: 'Partly cloudy', motion: '早晨阳光 · 双层云缓慢错移' }),
+    temperatureMax: 26, temperatureMin: 18, usAqi: 154, temperature: 22, feelsLike: 23, windSpeed: 11, humidity: 66, uvIndex: 2, cloudCover: 36, precipitationProbability: 12, visibility: 14, code: 2, name: '晴间多云', condition: 'Partly cloudy', motion: '蔚蓝晴空 · 多层云缓慢漂移与柔和透光' }),
   clear: weatherExample({ at: '2026-10-26T12:35:00+10:00', timezone: 'Australia/Brisbane', cityZh: '布里斯班', cityEn: 'BRISBANE', rise: '05:01', set: '18:03', nextRise: '05:00',
-    temperatureMax: 32, temperatureMin: 21, usAqi: 31, temperature: 30, feelsLike: 33, windSpeed: 13, humidity: 48, uvIndex: 10, cloudCover: 3, precipitationProbability: 2, visibility: 42, code: 0, name: '晴天', condition: 'Clear skies', motion: '正午太阳 · 高亮光芒与轻薄流云' }),
+    temperatureMax: 32, temperatureMin: 21, usAqi: 31, temperature: 30, feelsLike: 33, windSpeed: 13, humidity: 48, uvIndex: 10, cloudCover: 3, precipitationProbability: 2, visibility: 42, code: 0, name: '晴天', condition: 'Clear skies', motion: '明亮正午 · 太阳光晕与穿云光芒' }),
   overcast: weatherExample({ at: '2026-10-30T14:10:00+00:00', timezone: 'Europe/London', cityZh: '伦敦', cityEn: 'LONDON', rise: '06:51', set: '16:36', nextRise: '06:53',
-    temperatureMax: 13, temperatureMin: 8, usAqi: 42, temperature: 11, feelsLike: 9, windSpeed: 18, humidity: 79, uvIndex: 1, cloudCover: 98, precipitationProbability: 47, visibility: 9, code: 3, name: '阴天', condition: 'Overcast', motion: '午后阴云 · 三层云团以不同速度错移' }),
+    temperatureMax: 13, temperatureMin: 8, usAqi: 42, temperature: 11, feelsLike: 9, windSpeed: 18, humidity: 79, uvIndex: 1, cloudCover: 98, precipitationProbability: 47, visibility: 9, code: 3, name: '阴天', condition: 'Overcast', motion: '阴天云幕 · 四层云团缓慢漂移与层间遮挡' }),
   rain: weatherExample({ at: '2026-10-27T16:40:00+09:00', timezone: 'Asia/Tokyo', cityZh: '东京', cityEn: 'TOKYO', rise: '05:59', set: '16:51', nextRise: '06:00',
-    temperatureMax: 20, temperatureMin: 15, usAqi: 38, temperature: 17, feelsLike: 16, windSpeed: 19, humidity: 93, uvIndex: 0, cloudCover: 100, precipitationProbability: 92, visibility: 4.8, code: 63, name: '雨天', condition: 'Rain', motion: '傍晚降雨 · 阶梯雨线错峰落下' }),
+    temperatureMax: 20, temperatureMin: 15, usAqi: 38, temperature: 17, feelsLike: 16, windSpeed: 19, humidity: 93, uvIndex: 0, cloudCover: 100, precipitationProbability: 92, visibility: 4.8, code: 63, name: '雨天', condition: 'Rain', motion: '傍晚降雨 · 三层雨幕与冷蓝云光' }),
   storm: weatherExample({ at: '2026-10-24T20:15:00+08:00', timezone: 'Asia/Singapore', cityZh: '新加坡', cityEn: 'SINGAPORE', rise: '06:47', set: '18:52', nextRise: '06:47',
-    temperatureMax: 31, temperatureMin: 25, usAqi: 58, temperature: 27, feelsLike: 32, windSpeed: 33, humidity: 91, uvIndex: 0, cloudCover: 100, precipitationProbability: 97, visibility: 3.2, code: 95, name: '雷暴', condition: 'Thunderstorm', motion: '夜间雷暴 · 深色雨云与局部闪电' }),
+    temperatureMax: 31, temperatureMin: 25, usAqi: 58, temperature: 27, feelsLike: 32, windSpeed: 33, humidity: 91, uvIndex: 0, cloudCover: 100, precipitationProbability: 97, visibility: 3.2, code: 95, name: '雷暴', condition: 'Thunderstorm', motion: '夜间雷暴 · 分叉闪电、云内照明与三层雨幕' }),
   snow: weatherExample({ at: '2026-10-29T08:50:00+01:00', timezone: 'Europe/Oslo', cityZh: '奥斯陆', cityEn: 'OSLO', rise: '07:34', set: '16:24', nextRise: '07:37',
-    temperatureMax: 1, temperatureMin: -5, usAqi: 18, temperature: -2, feelsLike: -7, windSpeed: 22, humidity: 85, uvIndex: 1, cloudCover: 95, precipitationProbability: 86, visibility: 2.3, code: 73, name: '降雪', condition: 'Snow', motion: '早晨降雪 · 雪晶缓慢下落并侧移' }),
+    temperatureMax: 1, temperatureMin: -5, usAqi: 18, temperature: -2, feelsLike: -7, windSpeed: 22, humidity: 85, uvIndex: 1, cloudCover: 95, precipitationProbability: 86, visibility: 2.3, code: 73, name: '降雪', condition: 'Snow', motion: '早晨降雪 · 三层雪晶下落与横向飘移' }),
   fog: weatherExample({ at: '2026-10-25T07:10:00+01:00', timezone: 'Europe/Amsterdam', cityZh: '阿姆斯特丹', cityEn: 'AMSTERDAM', rise: '07:24', set: '17:26', nextRise: '07:26',
-    temperatureMax: 14, temperatureMin: 7, usAqi: 112, previousSetAt: '2026-10-24T18:28:00+02:00', temperature: 9, feelsLike: 8, windSpeed: 3, humidity: 99, uvIndex: 0, cloudCover: 90, precipitationProbability: 18, visibility: 0.3, code: 45, name: '雾', condition: 'Fog', motion: '日出前晨雾 · 低对比雾层横向交错' }),
+    temperatureMax: 14, temperatureMin: 7, usAqi: 112, previousSetAt: '2026-10-24T18:28:00+02:00', temperature: 9, feelsLike: 8, windSpeed: 3, humidity: 99, uvIndex: 0, cloudCover: 90, precipitationProbability: 18, visibility: 0.3, code: 45, name: '雾', condition: 'Fog', motion: '日出前晨雾 · 海岛灯塔与流动雾层' }),
   wind: weatherExample({ at: '2026-10-28T15:05:00+13:00', timezone: 'Pacific/Auckland', cityZh: '惠灵顿', cityEn: 'WELLINGTON', rise: '06:11', set: '19:57', nextRise: '06:10',
-    temperatureMax: 19, temperatureMin: 12, usAqi: 15, temperature: 17, feelsLike: 12, windSpeed: 44, humidity: 58, uvIndex: 4, cloudCover: 45, precipitationProbability: 24, visibility: 28, code: 2, name: '大风', condition: 'Windy', motion: '午后大风 · 长云带与逐格推进的风线' }),
+    temperatureMax: 19, temperatureMin: 12, usAqi: 15, temperature: 17, feelsLike: 12, windSpeed: 44, humidity: 58, uvIndex: 4, cloudCover: 45, precipitationProbability: 24, visibility: 28, code: 2, name: '大风', condition: 'Windy', motion: '午后大风 · 浅金日光、扁云与三层风迹' }),
   night: weatherExample({ at: '2026-11-02T23:10:00+00:00', timezone: 'Atlantic/Reykjavik', cityZh: '雷克雅未克', cityEn: 'REYKJAVIK', rise: '09:12', set: '17:11', nextRise: '09:15',
-    temperatureMax: 6, temperatureMin: -1, usAqi: 12, temperature: 4, feelsLike: 0, windSpeed: 9, humidity: 69, uvIndex: 0, cloudCover: 7, precipitationProbability: 1, visibility: 36, code: 0, name: '晴夜', condition: 'Clear night', motion: '深夜月牙 · 星点分组闪烁' }),
+    temperatureMax: 6, temperatureMin: -1, usAqi: 12, temperature: 4, feelsLike: 0, windSpeed: 9, humidity: 69, uvIndex: 0, cloudCover: 7, precipitationProbability: 1, visibility: 36, code: 0, name: '晴夜', condition: 'Clear night', motion: '深夜月光 · 三层星野、月面纹理与偶发流星' }),
   sunset: weatherExample({ at: '2026-10-22T17:48:00+10:00', timezone: 'Australia/Brisbane', cityZh: '布里斯班', cityEn: 'BRISBANE', rise: '05:06', set: '17:59', nextRise: '05:05',
-    temperatureMax: 28, temperatureMin: 18, usAqi: 35, temperature: 24, feelsLike: 25, windSpeed: 7, humidity: 57, uvIndex: 0, cloudCover: 21, precipitationProbability: 6, visibility: 26, code: 1, name: '日落', condition: 'Golden hour', motion: '傍晚日落 · 太阳下沉与暖色地平线' })
+    temperatureMax: 28, temperatureMin: 18, usAqi: 35, temperature: 24, feelsLike: 25, windSpeed: 7, humidity: 57, uvIndex: 0, cloudCover: 21, precipitationProbability: 6, visibility: 26, code: 1, name: '日落', condition: 'Golden hour', motion: '橙金晚霞 · 暖云、归鸟与铜金倒影' })
 });
 
 export function resolveTimeContext(weather) {
@@ -91,17 +93,17 @@ export function resolveTimeContext(weather) {
 }
 
 const PALETTES = {
-  dawn: ['#a5bed4', '#bdcbd6', '#d7d8d4', '#f2d5ac', '#f9db96'],
-  clear: ['#abc8dc', '#bad1df', '#cbdce3', '#e1ded0', '#efd3aa'],
-  partly: ['#abc8dc', '#b9d0df', '#cedde4', '#e0ded5', '#edd4b9'],
-  overcast: ['#9eafbd', '#acbcc7', '#bdcbd2', '#cdd6d8', '#dde0db'],
-  rain: ['#7f96ac', '#91a6ba', '#a3b5c4', '#b6c5ce', '#cbd4d8'],
-  storm: ['#444f68', '#52617c', '#65758e', '#7e8fa3', '#9daebc'],
-  snow: ['#a4bdce', '#b5cbd9', '#c5d8e2', '#d7e4e9', '#e8efed'],
-  fog: ['#b7c4c8', '#c2cdd0', '#ced6d6', '#d9dfdc', '#e6e8e1'],
-  wind: ['#9fbfd3', '#afcbdc', '#bfd6e1', '#d4e1e4', '#e9e4d6'],
-  night: ['#202d47', '#293952', '#344761', '#465b76', '#65758e'],
-  sunset: ['#a4b7ce', '#b5acc9', '#cfabc0', '#e9af99', '#f2bd7b'],
+  dawn: ['#29457a','#617aa6','#c7abb3','#edb68c','#faca8c'],
+  clear: ['#3b69ab','#4f8abf','#78abcc','#99bfd9','#b8d1e0'],
+  partly: ['#3b69ab','#4f8abf','#78abcc','#99bfd9','#b8d1e0'],
+  overcast: ['#294a75','#4778a1','#7da8c4','#c7dee8','#e4eef1'],
+  rain: ['#122952','#244f85','#4578a8','#6b9abd','#8ab3d4'],
+  storm: ['#0a0f21','#142140','#294063','#3a5480','#4a668f'],
+  snow: ['#3363a8','#5e96c9','#96c2e0','#bbd8e8','#e0f0f5'],
+  fog: ['#576678','#8294a1','#b5bfbf','#cfd4cf','#dfe0d4'],
+  wind: ['#3b69ab','#4f8abf','#78abcc','#99bfd9','#b8d1e0'],
+  night: ['#060613','#12142e','#213359','#344c70','#4a6187'],
+  sunset: ['#2e195e','#6e2e70','#e05c4d','#f5b04d','#ecc482'],
   unknown: ['#b8c3c7', '#c3cdd0', '#ced6d7', '#dbe0de', '#e7e9e3']
 };
 
@@ -156,7 +158,7 @@ export function createWeatherFrame(weather, visibleRows, tick = 0) {
   };
   const drift = (offset = 0) => [0, 1, 2, 1][Math.floor((frame + offset) % 96 / 24)];
   const cloud = (left, top, mask = CLOUD, dark = false, offset = 0) => {
-    const shades = nocturnal ? ['#647b96', '#566e8a', '#465d79'] : dark ? ['#8494a9', '#73849d', '#62758e'] : ['#f7f7ef', '#e4ebec', '#cbd9df'];
+    const shades = scene==='sunset'?['#f8db7a','#edab66','#974b83']:scene==='dawn'?['#f8e8ba','#eeb987','#8a73bd']:nocturnal?['#9aafff','#5067c9','#1b307b']:dark?['#9eaaff','#4b59b8','#1b2866']:['#f8f8ed','#d9eaf2','#80b4db'];
     const x0 = Math.round(left + drift(offset));
     const y0 = Math.round(top);
     mask.forEach((line, y) => [...line].forEach((on, x) => {
@@ -165,10 +167,10 @@ export function createWeatherFrame(weather, visibleRows, tick = 0) {
   };
   const sun = (cx, cy, rays = true) => {
     for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) {
-      if (dx * dx + dy * dy <= 15) put(cx + dx, cy + dy, dy < -1 ? '#ffe6a1' : dy > 1 ? '#f8ba52' : '#ffd16c');
+      if (dx * dx + dy * dy <= 15) put(cx + dx, cy + dy, dy < -1 ? '#ffffb5' : dy > 1 ? '#ffb51e' : '#ffe637');
     }
     if (rays) {
-      const bright = Math.floor(frame / 12) % 2 === 0 ? '#f4ca73' : '#f8d88b';
+      const bright = Math.floor(frame / 12) % 2 === 0 ? '#ffcf22' : '#fff280';
       for (const [dx, dy] of [[0,-6],[0,-5],[0,5],[0,6],[-6,0],[-5,0],[5,0],[6,0],[-4,-4],[-5,-5],[4,-4],[5,-5],[-4,4],[-5,5],[4,4],[5,5]]) put(cx + dx, cy + dy, bright);
     }
   };
@@ -229,24 +231,30 @@ export function createWeatherFrame(weather, visibleRows, tick = 0) {
   } else if (scene === 'night') {
     const cx = 16, cy = Math.max(6, Math.round(visibleRows * .27));
     for (let dy=-4;dy<=4;dy++) for(let dx=-4;dx<=4;dx++) {
-      if(dx*dx+dy*dy<=15 && (dx-2)*(dx-2)+dy*dy>12) put(cx+dx,cy+dy,dy>1?'#e7c991':'#f5e5b6');
+      if(dx*dx+dy*dy<=15 && (dx-2)*(dx-2)+dy*dy>12) put(cx+dx,cy+dy,dy>1?'#ffdb5a':'#fffbd1');
     }
     [[3,.12],[8,.21],[21,.13],[4,.48],[12,.43],[20,.54],[7,.74],[17,.83]].forEach(([x,f],index)=>{
       const y=Math.round(visibleRows*f);
       const light=(Math.floor(frame/12)+index)%4;
-      put(x,y,light===0?'#f8eac9':light===1?'#bdcbd5':'#8195ad');
-      if(index%3===0 && light===0) for(const [dx,dy] of [[-1,0],[1,0],[0,-1],[0,1]]) put(x+dx,y+dy,'#aabbd0');
+      put(x,y,light===0?'#fff1a0':light===1?'#96e8ff':'#5480dd');
+      if(index%3===0 && light===0) for(const [dx,dy] of [[-1,0],[1,0],[0,-1],[0,1]]) put(x+dx,y+dy,'#75cfff');
     });
     cloud(-4,visibleRows*.64,SMALL_CLOUD,false,24);
   } else if (scene === 'sunset' || scene === 'dawn') {
     const morning = scene === 'dawn';
-    sun(morning ? 11 : 13,Math.round(visibleRows*(morning ? .65 : .58))+(morning?-drift():drift()),false);
-    const horizon=[0,0,1,1,1,2,2,2,1,1,0,0,0,1,1,2,1,1,0,0,1,1,1,0];
-    for(let y=Math.round(visibleRows*.69);y<rows;y++) for(let x=0;x<24;x++) {
-      const top=Math.round(visibleRows*.69)+horizon[x];
-      if(y>=top) put(x,y,morning ? (y<top+3?'#efd4a1':y<top+6?'#d4c7af':'#b4bdba') : (y<top+3?'#efa96d':y<top+6?'#e58d6c':'#c87572'));
+    sun(morning ? 8 : 16,Math.round(visibleRows*(morning ? .72 : .68)),false);
+    const horizon=Math.round(visibleRows*.735),center=morning?8:16;
+    const far=morning?'#708799':'#6e5763',near=morning?'#1f3b57':'#1a2640';
+    for(let y=horizon;y<rows;y++) for(let x=0;x<24;x++) {
+      const depth=(y-horizon)/Math.max(1,rows-horizon-1);
+      let water=mix(far,near,Math.sqrt(depth));
+      if(y%2===0&&(x+y*5)%9<2)water=mix(water,'#758fa6',.18);
+      const shimmer=.55+.2*Math.sin(frame/MOTION.frames*Math.PI*2+(x+y)*1.7);
+      if(y%2===0&&Math.abs(x-center)<1+depth*5&&(x*7+y*3)%5<3)water=mix(water,'#ffd07a',shimmer);
+      put(x,y,water);
     }
-    cloud(-5,visibleRows*.21,SMALL_CLOUD,false,48);
+    if(morning)cloud(13,visibleRows*.24,LONG_CLOUD,false,48);
+    else cloud(-5,visibleRows*.29,SMALL_CLOUD,false,48);
   }
   return { pixels: pixels.map(toneHex), rows, columns, scene, palette: palette.map(toneHex) };
 }

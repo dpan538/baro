@@ -39,5 +39,5 @@ for(const [width,height,limit] of [[320,480,4096],[1440,960,4096],[3456,2304,409
     if(style==='fine')assert(columns<=Math.min(width,FINE_MOTION.columns)&&rows<=height,'fine mode must not oversample the native canvas');
   }
 }
-console.log(`Verified ${names.length} weather states at three panel shapes: weather mapping, valid pixels, motion and eight-second loops.`);
+console.log(`Verified ${names.length} Canvas fallback states at three panel shapes: weather mapping, valid pixels, motion and eight-second fallback loops.`);
 console.log('Verified native-density fine grids, the 3.4K tablet split, block-mode sizing, aspect preservation and GPU texture limits.');

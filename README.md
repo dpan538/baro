@@ -10,17 +10,18 @@ Bilingual, built for the big screen. Data by Open-Meteo.
 [![Code license: MIT](https://img.shields.io/badge/code-MIT-4c6b5b)](LICENSE)
 ![Android 10+](https://img.shields.io/badge/Android-10%2B-4c6b5b)
 
-[**Run the web preview**](PREVIEW.md) · [Project status](docs/IMPLEMENTATION-STATUS.md) · [中文说明](#中文说明) · [Architecture](docs/ARCHITECTURE.md) · [UI system](docs/DESIGN-SYSTEM.md) · [English screenshot](docs/images/weather-english.png)
+[**Run the web preview**](PREVIEW.md) · [Project status](docs/IMPLEMENTATION-STATUS.md) · [中文说明](#中文说明) · [Architecture](docs/ARCHITECTURE.md) · [UI system](docs/DESIGN-SYSTEM.md) · [Daytime](docs/images/weather-english.jpg) · [Sunrise](docs/images/weather-dawn.jpg) · [Sunset](docs/images/weather-sunset.jpg)
 
 > **Current status:** this is a weather-screen design prototype with clearly labelled sample data. We are refining the browser layout first; APK packaging and publishing are paused. Open-Meteo adapters are tested against recorded responses, but live forecast fetching is not connected yet.
 
-![BARO weather screen with pixel storm clouds](docs/images/weather-storm.png)
+![BARO weather screen with pixel storm clouds](docs/images/weather-storm.jpg)
 
 ## What is included
 
 - A nearly fullscreen tablet layout: weather information on the left, animated pixel sky on the right.
 - Eleven sample scenarios with distinct cities, local times, temperatures and conditions. The three coloured dots open the scene library.
-- A shared weather system with native-density fine artwork up to 1536 columns and 96-column block artwork, ordered dithering, and an eight-second animation loop targeting 24 fps.
+- A shared weather system with native-density fine artwork up to 1536 columns and 96-column block artwork, ordered dithering, and continuous animation targeting 24 fps. Cloud layers cross the sky over minutes; lighting, precipitation and occasional events follow independent rhythms.
+- Clear orange, yellow and azure accents, controlled sky highlights, a neutral paper data panel and weather-linked cloud-meter gradients; natural cloud contours, coupled atmospheric light, cloud-based precipitation, layered wind, fine drifting fog around an island lighthouse, textured sun/moon surfaces and brighter layered stars. Dawn and sunset have different compositions, bird passages and perspective sea reflections.
 - Separate Chinese and English interfaces; °C/°F and km/h, m/s and mph controls.
 - Daily highs/lows, feels-like temperature, humidity, UV index, precipitation chance, visibility and cloud cover. Sunrise/sunset follows the scenario's local time.
 - A left-panel settings screen with seven primary appearance, unit, location and version controls; cache, sources and feedback live under the footer menu.
@@ -40,7 +41,7 @@ npm run gallery
 npm run dev
 ```
 
-Open `http://127.0.0.1:4175/`; `/gallery.html` compares complete pages. For example: `?weather=storm&lang=dual&pixels=fine&motion=on`.
+Open `http://127.0.0.1:4175/`; `/gallery.html` compares complete pages. For example: `?weather=storm&lang=en&pixels=fine&motion=on`.
 
 The Android wrapper and host are retained for later integration. Automatic CI runs source checks and generates the web gallery; it does not build or publish APKs.
 
