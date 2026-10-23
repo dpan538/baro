@@ -34,3 +34,7 @@ The source of truth remains the immutable `ui-baseline-2026-10-23` tag. `scripts
 Visual acceptance is separate from successful tests/builds: compare real native live-data captures against the frozen design grid/typography under the same orientation and language. Numerical readings and weather artwork must follow actual API data. The production app contains no demo selector or generator. No Xiaomi hardware, power or proprietary installer result is implied by emulator evidence.
 
 Hosted CI performs native UI/gesture checks with test-only recorded input and GLES surfaces suppressed because the CPU-only hosted renderer hit input-dispatch ANRs. It intentionally skips product captures and records this scope in its artifacts. Full-resolution Fine/live-data screenshots, both pixel modes, GPU lifecycle and cleanup remain local emulator checks. No hosted profile or fixture is bundled in the application APK.
+
+## Reviewed local preview
+
+Application source `9c780d3` passed 15 domain, 14 backend and 18 native/live/settings/high-scaling cases, both build/lint profiles and 56 full-resolution live-data screenshots. The reviewed APK identity, local copy/cold start, controlled same-signer system upgrade and remaining production boundaries are recorded in [acceptance.json](verification/acceptance.json). Both hosted workflows passed for that source, with the UI-only graphics limitation above. APKs, raw captures, provider responses and recordings remain local ignored artifacts; the tracked record contains hashes and scope, not those generated binaries.

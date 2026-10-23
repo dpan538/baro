@@ -12,19 +12,19 @@ Bilingual, built for the big screen. Data by Open-Meteo.
 
 [**Run the web preview**](PREVIEW.md) · [Project status](docs/IMPLEMENTATION-STATUS.md) · [中文说明](#中文说明) · [Architecture](docs/ARCHITECTURE.md) · [UI system](docs/DESIGN-SYSTEM.md) · [Daytime](docs/images/weather-english.jpg) · [Sunrise](docs/images/weather-dawn.jpg) · [Sunset](docs/images/weather-sunset.jpg)
 
-> **Native development:** Kotlin Android, an independent BARO relay and real Open-Meteo integration are implemented and undergoing native visual/installation acceptance. The frozen browser UI remains at [`ui-baseline-2026-10-23`](https://github.com/dpan538/baro/tree/ui-baseline-2026-10-23). See the [native build guide](android/README.md), [field inventory](docs/NATIVE-DATA-SOURCES.md) and [evidence ledger](docs/ANDROID-IMPLEMENTATION.md). Public deployment and a stable APK are not yet verified.
+> **Native preview:** Kotlin Android, the independent BARO relay and real Open-Meteo/CAMS integration have passed local native review: 56 live-data screenshots, 18 native cases, verified preview installation and controlled same-signer upgrade. The frozen browser UI remains at [`ui-baseline-2026-10-23`](https://github.com/dpan538/baro/tree/ui-baseline-2026-10-23). See the [native build guide](android/README.md), [field inventory](docs/NATIVE-DATA-SOURCES.md) and [evidence ledger](docs/ANDROID-IMPLEMENTATION.md). Public deployment, permanent production signing and Xiaomi hardware remain separate unverified branches.
 
 ![BARO weather screen with pixel storm clouds](docs/images/weather-storm.jpg)
 
 ## What is included
 
-- A purpose-driven second instrument page with twenty-eight coupled modules, a lower-right touch dial, its own typography and panoramic pixel scene. [Panel behavior and data limits](docs/INSTRUMENT-PANEL.md) · [User requirements and acceptance record](docs/USER-DESIGN-REQUIREMENTS.md). Each metric has one owner; dew-point values/trend stay together, and one window replaces duplicate clocks.
+- A purpose-driven second instrument page with twenty-nine modules, a lower-right touch dial and its own panoramic pixel scene. [Native field sources and limits](docs/NATIVE-DATA-SOURCES.md). Each metric has one owner; dew-point values/trend stay together, and one selected forecast window drives the instruments.
 - A nearly fullscreen tablet layout: weather information on the left, animated pixel sky on the right.
-- Eleven sample scenarios with distinct cities, local times, temperatures and conditions. The three coloured dots open the scene library.
-- A shared weather system with native-density fine artwork up to 1536 columns and 96-column block artwork, ordered dithering, and continuous animation targeting 24 fps. Cloud layers cross the sky over minutes; lighting, precipitation and occasional events follow independent rhythms.
+- Real weather and air-quality model data, city search, optional foreground location and explicit source times. Production contains no sample scenes, scene library or page-switch button; the three coloured dots are decorative.
+- Authored OpenGL ES weather artwork with fine samples up to 1536 columns, a 96-column weather block mode, a 192-column observation block mode and a 45-second weather loop. Rendering pauses in the background. Emulator evidence does not establish tablet frame rate or power use.
 - Clear orange, yellow and azure accents, controlled sky highlights, a neutral paper data panel and weather-linked cloud-meter gradients; natural cloud contours, coupled atmospheric light, cloud-based precipitation, layered wind, fine drifting fog around an island lighthouse, textured sun/moon surfaces and brighter layered stars. Dawn and sunset have different compositions, bird passages and perspective sea reflections.
 - Separate Chinese and English interfaces; °C/°F and km/h, m/s and mph controls.
-- Daily highs/lows, feels-like temperature, humidity, UV index, precipitation chance, visibility and cloud cover. Sunrise/sunset follows the scenario's local time.
+- Daily highs/lows, feels-like temperature, humidity, UV index, precipitation chance, visibility and cloud cover. Dates and solar events follow the provider's local timezone; missing fields remain `—` and derived values identify their method.
 - A left-panel settings screen with seven primary appearance, unit, location and version controls; cache, sources and feedback live under the footer menu.
 
 ![BARO settings](docs/images/settings-baro.png)
@@ -46,7 +46,9 @@ npm run dev
 
 Open `http://127.0.0.1:4175/`; `/gallery.html` compares complete pages; choose the observation page there, or open `/?weather=storm&page=sky&lang=zh`. Swipe right from weather to enter and left to return. For example: `?weather=storm&lang=en&pixels=fine&motion=on`.
 
-Android CI builds the Kotlin preview, runs backend/domain/lint checks and exercises a disposable emulator. Its debug artifact is not a stable release and may have a different development certificate from local builds.
+These browser URLs and sample scenes belong to the frozen design reference. The native product has exactly two main pages; a completed swipe in either direction switches to the other page.
+
+Android CI builds the Kotlin preview, runs backend/domain/lint checks and exercises native UI gestures on a disposable emulator. Hosted checks suppress GLES through androidTest-only callbacks and skip product captures; full live-data/GLES screenshot acceptance is local. Its debug artifact is not a stable release and may have a different development certificate from local builds.
 
 For native builds, configure `ANDROID_HOME` or an untracked `android/local.properties`. The checked-in Gradle wrapper pins version 8.13 and verifies its distribution checksum. Generated packages remain outside Git.
 
@@ -68,7 +70,7 @@ The current Xiaomi Pad 9 Pro Max target and Android inset contract are documente
 
 第二页是独立的环境观测仪器面板：二十九个模块、右下目的拨轮与专用横向像素视窗。拨轮选择用户目的和关注点，联动信息组合；底部环境解读把与当前目的有关的温湿、风雨、光线或器材结露条件汇成更大字的圆角段落，并补充闷热、结露、水汽或光线等相关解释。原生 App 在任一主页面完成左滑或右滑，都会切换到另一页。产品只使用真实 API 模型数据与明确说明的派生计算；无示例入口或示例数据，缺失字段保留 —。
 
-冻结网页 UI 作为原生移植的视觉合同。Kotlin、独立后端和真实 Open-Meteo/CAMS 接入已实现，正在持续进行模拟器截图与安装验收，见[实施记录](docs/ANDROID-IMPLEMENTATION.md)。界面一次只显示中文或英文，不提供中英并排模式。公开部署、正式签名和小米真机验收仍单列为未验证项。
+冻结网页 UI 作为原生移植的视觉合同。Kotlin、独立后端和真实 Open-Meteo/CAMS 接入已完成本机验收：56 张真实数据实图、18 项原生测试、预览包安装及受控同签名升级，见[实施记录](docs/ANDROID-IMPLEMENTATION.md)。界面一次只显示中文或英文，不提供中英并排模式。公开部署、正式签名和小米真机验收仍单列为未验证项。
 
 源码、文档、构建与分发分开组织，参考同作者的 Annota 工程。BARO 原生端使用 Kotlin / Canvas / OpenGL ES，独立维护后端；没有挪用 Annota 的阅读器功能、生产服务、Token 或签名身份。
 
