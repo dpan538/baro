@@ -10,18 +10,18 @@ const insCountdown=v=>Number.isFinite(v)?[Math.floor(v/3600),Math.floor(v%3600/6
 const insSvg=(body,view='0 0 300 120')=>`<svg aria-hidden="true" viewBox="${view}">${body}</svg>`;
 const insLabel={
  precipitation:['降水概率','Precipitation'],wind:['风速','Wind'],pressure:['气压','Pressure'],dew:['露点差','Dew-point spread'],
- temperature:['气温','Air temperature'],apparent:['体感温度','Feels like'],humidity:['相对湿度','Humidity'],visibility:['能见度','Visibility'],
+ temperature:['气温','Temp.'],apparent:['体感温度','Feels like'],humidity:['相对湿度','Humidity'],visibility:['能见度','Visibility'],
  clouds:['云层分布','Cloud layers'],solar:['太阳高度角','Solar elevation'],bearing:['太阳方位','Solar azimuth'],
- cin:['对流抑制 CIN','CIN'],lcl:['凝结高度 ≈','LCL height ≈'],vpd:['水汽压差 VPD','Vapour deficit'],wetBulb:['湿球温度 ≈','Wet bulb ≈'],cooling:['时段温变','Temperature trend'],stage:['光影倒计时','Light countdown'],lunar:['月相 ≈','Moon phase ≈'],darkness:['暗夜 / 月升落','Dark sky / Moon'],drift:['高空风 / 风差','Upper wind / Δv'],column:['整层水汽 PWV','Column water'],freezing:['零度层高度','Freezing level'],cape:['对流位能 CAPE','CAPE'],soil:['表层土壤水分','Surface soil water'],radiation:['直射 / 漫射','Direct / diffuse'],seeing:['地表温差','Surface contrast'],rain:['短时降水','Rain trend'],rainTotal:['2h 累计降水','2h accumulation'],
- light:['参考色温 ≈','Palette CCT ≈'],airQuality:['PM2.5','PM2.5'],moon:['月面照明 ≈','Moon illumination ≈'],glow:['霞光条件指数','Glow condition score']
+ cin:['对流抑制','CIN'],lcl:['凝结高度 ≈','LCL height ≈'],vpd:['水汽压差 VPD','Vapour deficit'],wetBulb:['湿球温度 ≈','Wet bulb ≈'],cooling:['时段温变','Temp. trend'],stage:['光影倒计时','Light timer'],lunar:['月相 ≈','Moon phase ≈'],darkness:['暗夜 / 月升落','Dark sky / Moon'],drift:['高空风 / 风差','Upper wind / Δv'],column:['整层水汽 PWV','Column water'],freezing:['零度层','0°C level'],cape:['对流位能','CAPE'],soil:['表层土壤水分','Surface soil water'],radiation:['直射 / 漫射','Direct / diffuse'],seeing:['地表温差','Surface ΔT'],rain:['短时降水','Rain trend'],rainTotal:['2h 累计降水','2h rain total'],
+ light:['色温','CCT'],airQuality:['PM2.5','PM2.5'],moon:['月面照明 ≈','Moon illumination ≈'],glow:['霞光条件指数','Glow condition score']
 };
 const insScenes={partly:['岛屿气象台','Island weather station'],rain:['雨幕温室','Rain garden'],storm:['海岸监测堡','Coastal storm bunker'],snow:['雪山测候点','Alpine station'],night:['星野射电台','Night radio telescope'],sunset:['海岸落日台','Coastal sunset'],dawn:['晨雾研究舱','Dawn research shelter'],clear:['晴空太阳能场','Solar field'],overcast:['阴云风场','Overcast wind farm'],fog:['雾林瞭望塔','Forest lookout'],wind:['高地风机群','Highland turbines']};
 function insMoonGraphic(g){
- // Exact circular limb and elliptical terminator; all shading is native SVG.
+ // Flat 2D phase: exact circular limb and elliptical terminator, without volume shading.
  const r=46,k=-Math.cos(g.fraction*2*Math.PI),waxing=g.fraction<.5;
  const terminator=Math.abs(k)<.0001?'L50 4':`A${Math.abs(k)*r} ${r} 0 0 ${waxing?(k>=0?1:0):(k>=0?0:1)} 50 4`;
  const lit=`M50 4A${r} ${r} 0 0 ${waxing?1:0} 50 96${terminator}Z`;
- return insSvg(`<defs><radialGradient id="ins-moon-light" cx="34%" cy="28%" r="76%"><stop stop-color="#f6eed7"/><stop offset=".66" stop-color="#d7c9a7"/><stop offset="1" stop-color="#a99a7a"/></radialGradient><radialGradient id="ins-moon-shadow" cx="35%" cy="30%" r="80%"><stop stop-color="#504b40"/><stop offset="1" stop-color="#24231f"/></radialGradient><clipPath id="ins-moon-disc"><circle cx="50" cy="50" r="46"/></clipPath></defs><g clip-path="url(#ins-moon-disc)"><circle cx="50" cy="50" r="46" fill="url(#ins-moon-shadow)"/><path d="${lit}" fill="url(#ins-moon-light)"/></g><circle cx="50" cy="50" r="46" fill="none" stroke="#524d40" stroke-width=".8"/>`,'0 0 100 100');
+ return insSvg(`<circle cx="50" cy="50" r="46" fill="#28312e"/><path d="${lit}" fill="#e5d8ac"/><circle cx="50" cy="50" r="46" fill="none" stroke="#28312e" stroke-width=".7"/>`,'0 0 100 100');
 }
 function insMetric(kind,v,s,primary=false){
  const en=s.language==='en',c=(zh,english)=>en?english:zh,g=instrumentGraphicData(kind,v),n=insN;
@@ -30,13 +30,13 @@ function insMetric(kind,v,s,primary=false){
  let label=insLabel[kind][en?1:0],value=g.value,unit='',graphic='',detail='',note='';
  if(kind==='wind'){
   label=primary?c('阵风','Wind gust'):label;value=wind(primary?g.gust:g.mean);unit=wu.label;
-  detail=`<span>${primary?c('风速','Mean'):c('阵风','Gust')} ${wind(primary?g.mean:g.gust)} ${wu.label}</span><span>${c('来向','From')} ${n(g.from)}°</span>`;
+  detail=`<span class="ins-wind-meta"><small>${primary?c('风速','Mean'):c('阵风','Gust')}</small><b>${wind(primary?g.mean:g.gust)}<em>${wu.label}</em></b></span><span class="ins-wind-meta"><small>${c('来向','From')}</small><b>${n(g.from)}°</b></span>`;
   let windTicks='';for(let i=0;i<72;i++){const a=i/72*Math.PI*2,r=i%6?30:27;windTicks+=`<path d="M${40+Math.sin(a)*r} ${40-Math.cos(a)*r}L${40+Math.sin(a)*36} ${40-Math.cos(a)*36}"/>`;}
   const x=40+Math.sin(g.angle)*25,y=40-Math.cos(g.angle)*25;
   graphic=insSvg(`<g stroke="currentColor" stroke-width=".6" opacity=".7">${windTicks}</g><circle cx="40" cy="40" r="22" fill="none" stroke="currentColor" opacity=".15"/><path d="M40 5V12M40 68V75M5 40H12M68 40H75" stroke="currentColor"/><path d="M40 40L${x} ${y}" stroke="currentColor" stroke-width="3"/><path d="M0 -6L-4 6H4Z" transform="translate(${x} ${y}) rotate(${g.from})" fill="currentColor"/>`,'0 0 80 80');
  }else if(kind==='pressure'){
   let pressureTicks='';for(let i=0;i<=40;i++){const a=Math.PI-i/40*Math.PI,r=i%5?91:82;pressureTicks+=`<path d="M${150+Math.cos(a)*r} ${132-Math.sin(a)*r}L${150+Math.cos(a)*104} ${132-Math.sin(a)*104}"/>`;}const pa=Math.PI-g.ratio*Math.PI;
-  graphic=insSvg(`<path d="M30 132A120 120 0 0 1 270 132" fill="none" stroke="currentColor" stroke-width="18"/><g stroke="currentColor" stroke-width="1.2">${pressureTicks}</g><path d="M${150+Math.cos(pa)*109} ${132-Math.sin(pa)*109}L${150+Math.cos(pa)*137} ${132-Math.sin(pa)*137}" stroke="#d28a70" stroke-width="4"/><circle cx="${150+Math.cos(pa)*137}" cy="${132-Math.sin(pa)*137}" r="4" fill="#d28a70"/>`,'0 -12 300 160')+'<div class="ins-pressure-ends"><span>960</span><span>1040</span></div>';
+  graphic=insSvg(`<path d="M30 132A120 120 0 0 1 270 132" fill="none" stroke="currentColor" stroke-width="12"/><g stroke="currentColor" stroke-width="1.2">${pressureTicks}</g><path d="M${150+Math.cos(pa)*109} ${132-Math.sin(pa)*109}L${150+Math.cos(pa)*137} ${132-Math.sin(pa)*137}" stroke="#d28a70" stroke-width="4"/><circle cx="${150+Math.cos(pa)*137}" cy="${132-Math.sin(pa)*137}" r="4" fill="#d28a70"/>`,'0 -12 300 160')+'<div class="ins-pressure-ends"><span>960</span><span>1040</span></div>';
   value=n(g.end,1);unit='hPa';detail=`${g.delta>0?'+':''}${n(g.delta,1)} hPa / 3h`;
 
  }else if(kind==='dew'){
@@ -50,7 +50,7 @@ function insMetric(kind,v,s,primary=false){
  }else if(kind==='apparent'){value=temp(g.value);unit=tu;
  }else if(kind==='humidity'){
   value=n(g.value);unit='%';let filaments='',scale='';
-  for(let i=0;i<42;i++){const x=12+i*5.5,h=22+i*1.65;filaments+=`<path d="M${x} 99V${99-h}" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" opacity="${g.ratio>0&&i/41<=g.ratio?1:.16}"/>`;}
+  for(let i=0;i<42;i++){const x=12+i*5.5,h=22+i*1.65;filaments+=`<path d="M${x} 99V${99-h}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="${g.ratio>0&&i/41<=g.ratio?1:.16}"/>`;}
   for(let i=0;i<=5;i++){const x=12+i*45.1;scale+=`<path d="M${x} 104V108" stroke="currentColor"/>`;}
   const marker=12+225.5*g.ratio;
   graphic=insSvg(`<g>${filaments}</g><path d="M${marker-4} 4L${marker} 10L${marker+4} 4Z" fill="currentColor"/><path d="M${marker} 12V101" stroke="currentColor" stroke-width=".6" stroke-dasharray="1 3"/><path d="M8 103H242" stroke="currentColor" opacity=".6"/>${scale}`,'0 0 252 110').replace('<svg ','<svg preserveAspectRatio="none" ')+`<div class="ins-rh-scale">${[0,20,40,60,80,100].map(x=>`<span>${x}${x===100?'%':''}</span>`).join('')}</div>`;
@@ -66,7 +66,7 @@ function insMetric(kind,v,s,primary=false){
   for(let i=-90;i<=90;i+=10){const a=i*Math.PI/180,r=i%30?55:51;ticks+=`<path d="M${110+r*Math.cos(a)} ${70-r*Math.sin(a)}L${110+60*Math.cos(a)} ${70-60*Math.sin(a)}"/>`;}
   const elevations=v.samples.map(x=>x.sun?.elevation??0),lo=Math.min(...elevations)-2,hi=Math.max(...elevations)+2;
   const path=elevations.map((x,i)=>`${i?'L':'M'}${4+i*292/(elevations.length-1)} ${27-(x-lo)/(hi-lo)*22}`).join('');
-  graphic=insSvg(`<path d="M110 10A60 60 0 0 1 110 130M30 70H190" fill="none" stroke="currentColor" opacity=".3"/><g stroke="currentColor" stroke-width=".8">${ticks}</g><path d="M110 70L${sx} ${sy}" stroke="#924b35" stroke-width="2"/><circle cx="${sx}" cy="${sy}" r="5" fill="#924b35"/><circle cx="110" cy="70" r="2" fill="currentColor"/><g fill="currentColor" font-size="11"><text x="91" y="13">90°</text><text x="175" y="74">0°</text><text x="85" y="137">−90°</text></g>`,'25 0 180 142')+`<div class="ins-solar-track">${insSvg(`<path d="M4 29H296" stroke="currentColor" opacity=".15"/><path d="${path}" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="4" cy="${27-(elevations[0]-lo)/(hi-lo)*22}" r="2.5" fill="currentColor"/>`,'0 0 300 32')}<span>${n(elevations[0],1)}° → ${n(elevations.at(-1),1)}°</span></div>`;
+  graphic=insSvg(`<path d="M110 10A60 60 0 0 1 110 130M30 70H190" fill="none" stroke="currentColor" opacity=".3"/><g stroke="currentColor" stroke-width=".8">${ticks}</g><path d="M110 70L${sx} ${sy}" stroke="#924b35" stroke-width="2"/><circle cx="${sx}" cy="${sy}" r="5" fill="#924b35"/><circle cx="110" cy="70" r="2" fill="currentColor"/>`,'70 -5 120 150')+`<div class="ins-solar-axis"><span>90°</span><span>0°</span><span>−90°</span></div><div class="ins-solar-track">${insSvg(`<path d="M4 29H296" stroke="currentColor" opacity=".15"/><path d="${path}" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="4" cy="${27-(elevations[0]-lo)/(hi-lo)*22}" r="2.5" fill="currentColor"/>`,'0 0 300 32')}<span>${n(elevations[0],1)}° → ${n(elevations.at(-1),1)}°</span></div>`;
   if(!Number.isFinite(g.value))graphic='';
  }else if(kind==='bearing'){
   value=n(g.value);unit='°';detail=skyDirection(g.value,s.language);let ticks='';
@@ -74,7 +74,7 @@ function insMetric(kind,v,s,primary=false){
   const refAngle=g.referenceOffset*Math.PI/180,refName=(en?['N','E','S','W']:['北','东','南','西'])[Math.round(g.reference/90)%4];
   graphic=insSvg(`<circle cx="280" cy="72" r="125" fill="#ed7c55"/><g stroke="#171411" stroke-width="2">${ticks}</g><path d="M141 72H181" stroke="#171411" stroke-width="4"/><text x="${280-93*Math.cos(refAngle)}" y="${83+93*Math.sin(refAngle)}" text-anchor="middle" fill="#171411" font-size="29">${refName}</text>`,'0 0 300 145');
  }else if(kind==='moon'){value=n(g.value);unit='%';note=c('朔望月近似','Mean lunation');graphic=insMoonGraphic(g);
- }else if(kind==='light'){value=n(g.value);unit='K';graphic=`<div class="ins-light-swatches"><i></i><i></i><i></i><i></i><i></i><i></i><b style="left:${g.ratio*100}%"></b></div>`;
+ }else if(kind==='light'){value=n(g.value);unit='K ≈';graphic=`<div class="ins-light-swatches" style="--light-ratio:${g.ratio*100}%"><i></i><i></i><i></i><i></i><i></i><i></i><b style="left:${g.ratio*100}%"></b></div>`;
  }else if(kind==='airQuality'){value=n(g.value);unit='µg/m³';graphic=`<div class="ins-pm-bars">${Array.from({length:28},(_,i)=>`<i class="${i/28<g.ratio?'active':''}"></i>`).join('')}</div>`;
  }else if(kind==='glow'){
   value=n(g.value);unit='/100';note=c('规则指数 · 非概率','Heuristic · not probability');
@@ -82,22 +82,22 @@ function insMetric(kind,v,s,primary=false){
  }
  if(kind==='stage'){
   const stageNames={golden:c('黄金时刻','Golden hour'),sunset:c('晚霞窗口','Sunset light'),dawn:c('晨光窗口','Dawn light'),blue:c('蓝调时刻','Blue hour')};
-  return `<h2>${label}</h2><div class="ins-stage-name"><span>${stageNames[g.key]??c('无对应窗口','No crossing')}</span><b>${skyClock(g.at,v.window.day.weather.timezone)}</b></div><strong class="ins-countdown" data-countdown-seconds="${g.seconds??''}">${insCountdown(g.seconds)}</strong><small>${g.active?c('距结束 ≈','Until end ≈'):c('距开始 ≈','Until start ≈')}</small>`;
+  return `<h2>${label}</h2><span class="ins-stage-phase">${stageNames[g.key]??c('无对应窗口','No crossing')}</span><strong class="ins-countdown" data-countdown-seconds="${g.seconds??''}">${insCountdown(g.seconds)}</strong><div class="ins-stage-target"><b>${skyClock(g.at,v.window.day.weather.timezone)}</b><small>${g.active?c('距结束 ≈','Until end ≈'):c('距开始 ≈','Until start ≈')}</small></div>`;
  }
  if(kind==='lunar'||kind==='darkness'){
-  const phases=en?['New','Waxing crescent','First quarter','Waxing gibbous','Full','Waning gibbous','Last quarter','Waning crescent']:['新月','蛾眉月','上弦月','盈凸月','满月','亏凸月','下弦月','残月'];
+  const phases=en?['New','Wax. crescent','First quarter','Wax. gibbous','Full','Wan. gibbous','Last quarter','Wan. crescent']:['新月','蛾眉月','上弦月','盈凸月','满月','亏凸月','下弦月','残月'];
   const phase=phases[Math.round(g.fraction*8)%8],tz=v.window.day.weather.timezone;
   const times=`<div class="ins-moon-times"><span>↑ ${skyClock(g.rise,tz)} ≈</span><span>↓ ${skyClock(g.set,tz)} ≈</span></div>`;
   return `<h2>${label}${kind==='lunar'?'<small class="ins-lunar-bortle">Bortle —</small>':''}</h2>${kind==='lunar'?`<div class="ins-lunar-line"><strong>${n(g.value)}<small>%</small></strong>${insMoonGraphic(g)}<span>${phase}</span><small class="ins-moon-age">${c("月龄约","Age ≈")} ${n(g.fraction*29.53059)} ${c("日","d")}</small>${times}</div>`:`<div class="ins-bortle">Bortle <strong>—</strong><small>${c('测光未接入','Unmeasured')}</small></div>${times}`}`;
  }
  if(kind==='drift'){
-  value=wind(g.speed);unit=wu.label;detail=`300 hPa · ${n(g.from)}° · Δv ${wind(g.difference)} ${wu.label}`;
+  value=wind(g.speed);unit=wu.label;detail=`300hPa ${n(g.from)}° · Δv${wind(g.difference)}${wu.label}`;
   const vectorScale=Math.max(g.speed,g.surfaceSpeed,1),upperLength=Math.max(4,24*g.speed/vectorScale),surfaceLength=Math.max(4,24*g.surfaceSpeed/vectorScale);
   graphic=insSvg(`<path d="M8 25H110M8 75H110" stroke="currentColor" opacity=".2"/><g transform="translate(57 25) rotate(${g.from+180})"><path d="M0 ${upperLength}V-${upperLength}L-6 -12M0 -${upperLength}L6 -12" fill="none" stroke="#ed7c55" stroke-width="3"/></g><g transform="translate(57 75) rotate(${g.surfaceFrom+180})"><path d="M0 ${surfaceLength}V-${surfaceLength}L-5 ${-surfaceLength+8}M0 -${surfaceLength}L5 ${-surfaceLength+8}" fill="none" stroke="currentColor" stroke-width="2"/></g>`,'0 0 120 100');
  }
  if(kind==='column') {value=n(g.value,1);unit='mm';graphic=`<div class="ins-column-ruler"><i style="height:${g.ratio*100}%"></i>${Array.from({length:8},(_,i)=>`<b style="bottom:${i/7*100}%"></b>`).join('')}</div><div class="ins-column-ends"><span>70</span><span>0</span></div>`;detail=c('整层积分','Full column');}
  if(kind==='freezing'){value=n(g.value);unit='m';detail=c('海平面以上','Above sea level');}
- if(kind==='cape'){value=n(g.value);unit='J/kg';graphic=`<div class="ins-energy-scale"><i style="width:${g.ratio*100}%"></i></div><div class="ins-energy-ends"><span>0</span><span>4000 J/kg</span></div>`;detail=c('能量 · 非概率','Not a probability');}
+ if(kind==='cape'){value=n(g.value);unit='J/kg';graphic=`<div class="ins-energy-scale"><i style="width:${g.ratio*100}%"></i></div><div class="ins-energy-ends"><span>0</span><span>4000 J/kg</span></div>`;detail=c('CAPE · 非概率','Not probability');}
  if(kind==='soil'){value=n(g.value,2);unit='m³/m³';detail=c('0–1 cm · 体积含水率','0–1 cm · volume fraction');graphic=`<div class="ins-soil-cells">${Array.from({length:40},(_,i)=>`<i class="${i/40<g.ratio?'active':''}"></i>`).join('')}</div>`;}
  if(kind==='radiation'){
   const f=g.total>0?g.diffuse/g.total:0,daylight=g.total>0,horizon=daylight?77:38;
@@ -110,21 +110,21 @@ function insMetric(kind,v,s,primary=false){
   const diagram=insSvg(`<defs><pattern id="ins-flux-ground" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8L8 0" stroke="currentColor" opacity=".3"/></pattern></defs><path d="M14 ${horizon}H306V${horizon+10}H14Z" fill="url(#ins-flux-ground)"/><path d="M14 ${horizon}H306" stroke="currentColor" stroke-width="1.5"/>
    ${daylight?`<circle cx="55" cy="13" r="7" fill="#d99975"/><g fill="none" stroke="#d99975" stroke-width="${1+(1-f)*2.5}" opacity="${.25+(1-f)*.75}">${beams}</g><path d="M179 70A61 58 0 0 1 301 70" fill="none" stroke="currentColor" opacity=".22" stroke-dasharray="2 4"/><g fill="none" stroke="#d9d3bb" stroke-width="${.7+f*2.2}" opacity="${.25+f*.75}">${skyRays}</g>`:`<path d="M24 53H132M188 53H296" stroke="currentColor" opacity=".25" stroke-dasharray="2 5"/><circle cx="160" cy="65" r="12" fill="none" stroke="#d99975" stroke-width="2"/><path d="M160 42V47M138 65H143M177 65H182" stroke="#d99975"/><path d="M148 80H172" stroke="currentColor" stroke-width="2"/>`}
    ${daylight?`<rect x="14" y="94" width="${292*(1-f)}" height="5" fill="#d99975"/><rect x="${14+292*(1-f)}" y="94" width="${292*f}" height="5" fill="#d9d3bb"/>`:''}`,'0 0 320 105');
-  return `<h2>${label}<small class="ins-flux-state">${daylight?(g.ratio===null?'—':n(g.ratio,1)+':1'):c('夜间','Night')}</small></h2><div class="ins-flux-values"><strong>${n(g.direct)}<small> / </small>${n(g.diffuse)}</strong><span>W/m²<small>${c('水平面','Horizontal')}</small></span></div><div class="ins-radiation-arc">${diagram}<span>${daylight?c('漫射占比','Diffuse share')+' '+n(f*100)+'%':c('太阳低于地平线 · 无短波入射','Sun below horizon · no flux')}</span></div>`;
+  return `<h2>${label}<small class="ins-flux-state">${daylight?(g.ratio===null?'—':n(g.ratio,1)+':1'):c('夜间','Night')}</small></h2><div class="ins-flux-values"><strong>${n(g.direct)}<small> / </small>${n(g.diffuse)}</strong><span>W/m²<small>${c('水平面','Horizontal')}</small></span></div><div class="ins-radiation-arc">${diagram}<span>${daylight?c('漫射占比','Diffuse share')+' '+n(f*100)+'%':c('夜间 · 无太阳短波辐射','Night · no solar flux')}</span></div>`;
  }
  if(kind==='seeing'){
-  value=(g.value>0?'+':'')+delta(g.value);unit=tu;detail=`${c('地表','Skin')} ${temp(g.surface)}${tu} · ${c('热差代理','proxy')}`;
+  value=(g.value>0?'+':'')+delta(g.value);unit=tu;detail=`${c('地表','Skin')} ${temp(g.surface)}${tu} ≈`;
   const p=Math.min(50,Math.abs(g.value)/15*50);graphic=`<div class="ins-contrast-scale"><b></b><i style="left:${g.value<0?50-p:50}%;width:${p}%"></i></div>`;
  }
  if(kind==='rain'){
   return `<h2>${label}<small class="ins-rain-source">${c('15 分钟 · 示例','15-min · demo')}</small></h2><div class="ins-reading"><strong>${n(g.value,1)}</strong><span>mm/h</span></div><div class="ins-rain-bars">${g.series.map(x=>`<i style="height:${x>0?Math.max(2,x/g.maximum*100):0}%"></i>`).join('')}</div><div class="ins-rain-keys"><span>+0</span><span>+60</span><span>+120 min</span></div><small>${c('15 分钟步长 · 示意','15-min steps · demo')}</small>`;
  }
  if(kind==='rainTotal'){value=n(g.value,1);unit='mm';}
- if(kind==='cin'){value=n(g.value);unit='J/kg';detail=c('抑制能量 · 示例','Inhibition · demo');graphic=`<div class="ins-cin-scale"><i style="width:${Math.min(1,Math.abs(g.value)/200)*100}%"></i></div><div class="ins-energy-ends"><span>−200</span><span>0 J/kg</span></div>`;}
- if(kind==='lcl'){value=n(g.value);unit='m';detail=c('地面以上 · 近似','Above ground · approx.');}
- if(kind==='vpd'){value=n(g.value,2);unit='kPa';detail=c('近地水汽压差','Near-surface deficit');}
- if(kind==='wetBulb'){value=temp(g.value);unit=tu;detail=c('近地近似值','Surface approximation');}
- if(kind==='cooling'){value=(g.value>0?'+':'')+delta(g.value);unit=tu+'/h';detail=c('所选时段平均变化','Mean over selected window');}
+ if(kind==='cin'){value=n(g.value);unit='J/kg';detail=c('CIN · 示例','Demo energy');graphic=`<div class="ins-cin-scale"><i style="width:${Math.min(1,Math.abs(g.value)/200)*100}%"></i></div><div class="ins-energy-ends"><span>−200</span><span>0 J/kg</span></div>`;}
+ if(kind==='lcl'){value=n(g.value);unit='m';detail=c('地面以上 · 近似','AGL · approx.');}
+ if(kind==='vpd'){value=n(g.value,2);unit='kPa';detail=c('近地水汽压差','Near-surface');}
+ if(kind==='wetBulb'){value=temp(g.value);unit=tu;detail=c('近地近似值','Surface est.');}
+ if(kind==='cooling'){value=(g.value>0?'+':'')+delta(g.value);unit=tu+'/h';detail=c('所选时段平均变化','Window mean');}
  if(['precipitation','dew','glow'].includes(kind))graphic=graphic.replace('<svg ','<svg preserveAspectRatio="none" ');
  return `<h2>${label}</h2><div class="ins-reading"><strong data-field="${kind}">${value??'—'}</strong><span>${unit}</span></div>${detail?`<div class="ins-detail">${detail}</div>`:''}${graphic?`<div class="ins-graphic ins-graphic-${kind}">${graphic}</div>`:''}${note?`<div class="ins-note">${note}</div>`:''}`;
 }
@@ -158,22 +158,30 @@ export class ObservatoryController{
  select(i){this.index=((i%SKY_PURPOSES.length)+SKY_PURPOSES.length)%SKY_PURPOSES.length;this.position=this.index;if(this.active)this.render();}
  renderWheel(){
   const en=this.getState().language==='en',position=this.position??this.index,center=Math.round(position);
-  const width=this.wheel.clientWidth||720,height=this.wheel.clientHeight||574,ratio=width/height;
-  // Preserve the reference geometry at 720×574, while keeping the active label
-  // and blue selector inside a tall tablet panel without stretching letters.
-  const blue=width*Math.min(.306,Math.max(.14,ratio*.244)),labelX=blue+width*.125,radius=height*.627;
-  const font=Math.max(24,Math.min(40,width*.08));let labels='';
+  const width=this.wheel.clientWidth||720,height=this.wheel.clientHeight||574;
+  const radius=height*.70,labelX=width*(en?.29:.35),centerX=labelX-radius,cy=height/2;
+  const font=Math.max(en?18:24,Math.min(en?32:44,width*(en?.069:.09))),blue=width*.12;
+  const point=(r,angle)=>{const a=angle*Math.PI/180;return [centerX+r*Math.cos(a),cy+r*Math.sin(a)];};
+  const arc=r=>{const a=point(r,-75),b=point(r,75);return `M${a[0]} ${a[1]}A${r} ${r} 0 0 1 ${b[0]} ${b[1]}`;};
+  let labels='',ticks='';
+  for(let step=-40;step<=40;step++){
+   const angle=(step/4-(position-center))*8.5,major=step%4===0;
+   const outer=point(radius+width*.43,angle),inner=point(radius+width*.43-(major?8:3),angle);
+   ticks+=`<path d="M${inner[0]} ${inner[1]}L${outer[0]} ${outer[1]}" opacity="${major?.5:.18}"/>`;
+  }
   for(let offset=-6;offset<=6;offset++){
    const absolute=center+offset,index=((absolute%SKY_PURPOSES.length)+SKY_PURPOSES.length)%SKY_PURPOSES.length;
-   const angle=(absolute-position)*8.5,radian=angle*Math.PI/180,x=labelX-radius+radius*Math.cos(radian),y=height/2+radius*Math.sin(radian);
-   labels+=`<text data-purpose-index="${index}" x="${x}" y="${y+font*.35}" transform="rotate(${angle} ${x} ${y})">${insEscape(SKY_PURPOSES[index][en?2:1])}</text>`;
+   const angle=(absolute-position)*8.5,[x,y]=point(radius,angle),active=index===this.index;
+   labels+=`<text class="ins-dial-label" data-purpose-index="${index}" x="${x}" y="${y+font*.35}" transform="rotate(${angle} ${x} ${y})" font-size="${font*(active?1.05:1)}" opacity="${active?1:.72}">${insEscape(SKY_PURPOSES[index][en?2:1])}</text>`;
   }
-  const svg=this.el('wheel-svg');svg.setAttribute('viewBox',`0 0 ${width} ${height}`);svg.style.fontSize=font+'px';
-  svg.innerHTML=`<g>${labels}</g><circle cx="${blue}" cy="${height/2}" r="${Math.max(12,Math.min(18,width*.0222))}" fill="#144fff"/>`;
+  const svg=this.el('wheel-svg');svg.setAttribute('viewBox',`0 0 ${width} ${height}`);
+  svg.innerHTML=`<defs><clipPath id="ins-dial-window"><rect x="0" y="16" width="${width}" height="${Math.max(40,height-60)}"/></clipPath></defs>
+   <g clip-path="url(#ins-dial-window)"><g fill="none" stroke="#fcfcf8" stroke-width=".8"><path d="${arc(radius+width*.49)}" opacity=".2"/>${ticks}</g>
+   ${labels}<circle cx="${blue}" cy="${cy}" r="${Math.max(10,Math.min(16,width*.043))}" fill="#2459ff"/></g>`;
   this.el('wheel-options').innerHTML=SKY_PURPOSES.map((p,i)=>`<div role="option" id="ins-purpose-${i}" aria-selected="${i===this.index}">${p[en?2:1]}</div>`).join('');
   this.wheel.setAttribute('aria-activedescendant','ins-purpose-'+this.index);
   this.wheel.setAttribute('aria-label',en?'Purpose dial. Drag to choose what matters.':'目的拨轮，拖动选择关注内容');
-  this.el('wheel-hint').textContent=en?'DRAG · WHAT MATTERS':'拖动 · 选择关注';this.el('wheel-position').textContent=String(this.index+1).padStart(2,'0')+' / 12';
+  this.el('wheel-hint').textContent=en?'DRAG':'拖动选择';this.el('wheel-position').textContent=String(this.index+1).padStart(2,'0')+' / 12';
  }
 
  render(){

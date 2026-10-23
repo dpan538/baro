@@ -42,7 +42,68 @@ function planningInterpretationLead({preset,purpose,window,m,end},language='zh')
  if(details.length<3&&m.radiation?.total>0&&m.radiation.diffuse/m.radiation.total>.7)details.push('日光柔和');
  return `${time}${sky}，${details.slice(0,3).join('、')}。`;
 }
+// Each purpose chooses what the same measured/demo conditions mean for that activity.
+function planningPurposeInterpretation({purpose,preset,window,m,end},language){
+ const en=language==='en',c=(zh,english)=>en?english:zh,dew=m.dewSpread<3&&m.humidity>=80;
+ const rain=m.rainRate>.2,gust=m.windGust>=35,night=(m.sun?.elevation??0)<-6;
+ const lowCloud=m.low>80,cloud=Math.max(m.low??0,m.mid??0,m.high??0),details=[];
+ let lead;
+ if(purpose==='gear'){
+  lead=dew?c('空气接近饱和，冷镜片和金属表面容易结露。','Near-saturated air can leave dew on cool optics and metal.'):
+   m.humidity>=80?c('空气偏湿，器材表面冷却后更容易凝结水汽。','Humid air can condense on equipment as its surfaces cool.'):
+   m.dewSpread>=8?c('空气离饱和较远，器材需明显冷却才会结露。','Air is farther from saturation; equipment needs more cooling before dew forms.'):
+   c('空气尚未饱和，器材是否结露取决于表面温度。','Air is below saturation; condensation depends on equipment surface temperature.');
+  if(preset==='snow')details.push(c('积雪融化也会让镜片和接缝受潮。','Melting snow can wet lenses and seams.'));
+  else if(rain)details.push(c('雨滴会直接打湿暴露的镜片和接缝。','Rain can directly wet exposed optics and seams.'));
+  if(end.dewSpread<m.dewSpread-.5&&end.humidity>=80)details.push(c('后段空气更接近饱和，结露条件会增强。','Air nears saturation later, increasing the chance of dew.'));
+  if(dew)details.push(c('从低温环境带出的器材，表面可能比空气更冷。','Equipment moved from a cold space may be colder than the air.'));
+  else details.push(c('气象读数不代表器材表面已经潮湿。','Weather readings do not establish that equipment is already wet.'));
+ }else if(purpose==='drying'){
+  lead=rain?c('雨水会重新打湿露天织物，干燥容易中断。','Rain can rewet exposed fabric and interrupt drying.'):
+   m.humidity>=80||m.vpd<.5?c('空气偏湿，容纳水汽的余量小，织物不易干透。','Humid air has little drying capacity; fabric dries slowly.'):
+   c('空气仍有蒸发余量，流动的风有助带走水汽。','Air has room for evaporation; moving air carries moisture away.');
+  if(night)details.push(c('夜间没有日照加热，干燥主要依靠空气流动。','There is no solar heating at night; drying relies on airflow.'));
+  else if(m.radiation?.total>0)details.push(c('日照可提供热量，但干燥速度也受湿度影响。','Sunlight adds heat, but humidity still affects drying.'));
+  if(gust)details.push(c('阵风会让轻薄织物明显摆动。','Gusts can strongly move light fabric.'));
+ }else if(purpose==='stars'){
+  lead=window?.available===false?c('当前日期没有对应的暗夜窗口，不能套用常规观测时段。','This date has no matching dark-night window; a standard observing period does not apply.'):
+   cloud>80?c('云层遮挡较多，夜空可见的开口有限。','Cloud cover leaves limited openings in the night sky.'):
+   c('云层仍有开口，能否看清暗弱目标也取决于现场光害。','Clouds leave openings; faint targets also depend on local light pollution.');
+  if(dew)details.push(c('冷镜片可能结露，让星点变得模糊。','Dew on cool optics may blur star images.'));
+  if(m.moon?.illumination>.6)details.push(c('月面较亮，但月光影响还取决于月亮是否已升起。','The Moon is bright, but its effect depends on whether it is above the horizon.'));
+  details.push(c('现场光害未测，暂不能判断暗空等级。','Local light pollution has not been measured.'));
+ }else if(['sunset','dawn','blue'].includes(purpose)){
+  const time={sunset:c('傍晚','Evening'),dawn:c('清晨','Dawn'),blue:c('蓝调时段','Blue hour')}[purpose];
+  lead=window?.available===false?c('当前日期没有对应的光照交点，不能套用固定拍摄时段。','This date has no matching light crossing; a fixed photo window would be misleading.'):
+   time+(lowCloud?c('低云遮挡较多，地平线附近的光线可能被挡住。',' has thick low cloud that may obscure horizon light.'):
+   m.visibility<8?c('远景层次偏弱，轮廓比细节更容易保留下来。',' has muted distant detail; silhouettes may read more clearly.'):
+   c('光线处在转换中，云隙和地平线会影响画面层次。',' light is changing; cloud gaps and the horizon shape the scene.'));
+  if(gust)details.push(c('阵风会让枝叶和长焦画面更易晃动。','Gusts can move foliage and shake telephoto framing.'));
+  if(dew)details.push(c('冷镜片可能结露，画面会因此发雾。','Dew on cool optics can fog the image.'));
+  else if(m.radiation?.total>0&&m.radiation.diffuse/m.radiation.total>.7)details.push(c('光线以漫射为主，阴影边缘较柔和。','Diffuse light softens shadow edges.'));
+ }else if(purpose==='horizon'){
+  lead=m.visibility<8?c('远处细节和层次偏弱，近景轮廓更容易辨认。','Distant detail is muted; nearby outlines are easier to distinguish.'):
+   c('远景具备一定清晰度，细节仍受云雾和地表热差影响。','Distant views have some definition, with detail affected by haze and surface heating.');
+  if(Math.abs(m.surfaceDelta)>=6)details.push(c('地表与空气温差较大，长焦远景可能发虚。','Surface heating may soften distant telephoto detail.'));
+  if(rain)details.push(c('降水会进一步削弱远处景物的对比度。','Rain can further reduce distant contrast.'));
+  if(dew)details.push(c('近地空气潮湿，冷镜片也可能结露。','Humid surface air may leave dew on cool optics.'));
+ }else if(purpose==='camp'){
+  lead=rain?c('露天环境有雨，帐篷外表和暴露地面会被打湿。','Rain can wet tent exteriors and exposed ground.'):
+   dew?c('近地空气潮湿，冷帐篷面和器材表面可能结露。','Humid surface air may leave dew on cool tents and equipment.'):
+   c('近地环境尚未饱和，夜间变化仍需看降温和湿度。','Surface air is below saturation; later cooling and humidity still matter.');
+  if(end.temperature<m.temperature-1.5)details.push(c('后段气温走低，停留时会逐渐感觉更凉。','Temperatures fall later, making a long stay feel cooler.'));
+  if(gust)details.push(c('阵风会让帐布和轻物持续受扰动。','Gusts can move tent fabric and light objects.'));
+ }
+ return lead?[lead,...details]:null;
+}
+function planningInterpretationText(parts,language){
+ const en=language==='en',limit=en?180:84;let text=parts[0];
+ for(const detail of parts.slice(1)){const next=text+(en?' ':'')+detail;if([...next].length<=limit)text=next;}
+ return text;
+}
 export function planningAdvice(view,language='zh'){
+ const purposeText=planningPurposeInterpretation(view,language);
+ if(purposeText)return planningInterpretationText(purposeText,language);
  const {m,end}=view,en=language==='en',c=(zh,english)=>en?english:zh,details=[];
  if(m.dewSpread<3&&m.humidity>=80)details.push(c('近地空气接近饱和，冷表面可能结露。','Air is near saturation; cool surfaces may collect dew.'));
  if(m.wetBulb>=25||(m.temperature>=28&&m.humidity>=70))details.push(c('高湿度让汗液不易蒸发，体感比气温更闷。','High humidity slows evaporation, making the air feel muggy.'));
@@ -54,10 +115,7 @@ export function planningAdvice(view,language='zh'){
  if(m.windGust>=35)details.push(c('阵风会让枝叶、轻物和拍摄画面更易晃动。','Gusts can shake foliage, light objects and camera framing.'));
  if(details.length<3&&m.dewSpread>=8&&m.humidity<60)details.push(c('空气离饱和较远，冷表面需要降温更多才会结露。','Air is farther from saturation; surfaces need more cooling before dew forms.'));
  if(!details.length){const cloud=Math.max(m.low??0,m.mid??0,m.high??0);details.push(cloud>80?c('云层遮挡较多，天空开阔程度有限。','Clouds obscure much of the sky.'):cloud<30?c('云层遮挡较少，天空比较开阔。','Cloud cover leaves much of the sky open.'):c('天空有云，明暗会受到云层遮挡影响。','Partial cloud cover changes the light reaching the ground.'));}
- const limit=en?180:84;
- let text=planningInterpretationLead(view,language);
- for(const detail of details){const next=text+(en?' ':'')+detail;if([...next].length<=limit)text=next;}
- return text;
+ return planningInterpretationText([planningInterpretationLead(view,language),...details],language);
 }
 export function planningWindow(day,purpose){
   const now=day.initialMinute,tz=day.weather.timezone;

@@ -60,13 +60,15 @@ Update checking currently opens this repository's Releases page. Feedback opens 
 
 See [preview instructions](PREVIEW.md), [privacy](docs/PRIVACY.md), [implementation status](docs/IMPLEMENTATION-STATUS.md) and the [Open-Meteo field contract](docs/open-meteo-contract.md). UI and rendering have been checked in browsers and an Android emulator at 3456×2304; that is not a claim of complete Xiaomi device acceptance.
 
+The current Xiaomi Pad 9 Pro Max target and Android inset contract are documented in [the tablet display contract](docs/TABLET-DISPLAY-CONTRACT.md). Use [the local device preview](http://127.0.0.1:4175/tablet-preview.html) for exact 3:2 / 2:3 geometry.
+
 ## 中文说明
 
 **BARO，中文名「晴雨」。一半数据，一半天空。**
 
 左边是今日天气，右边是流动的像素天空。中文或英文界面，为大屏而生；气象数据路线采用 Open-Meteo。
 
-第二页是独立的环境观测仪器面板：二十九个模块、右下目的拨轮与专用横向像素视窗。拨轮选择用户目的和关注点，联动信息组合；底部环境解读把所选时段的温湿、风雨与远景条件汇成更大字的圆角段落，并补充闷热、结露、水汽或光线等相关解释。首页右滑进入，左滑返回；气象趋势仍为示例，非实时预测。
+第二页是独立的环境观测仪器面板：二十九个模块、右下目的拨轮与专用横向像素视窗。拨轮选择用户目的和关注点，联动信息组合；底部环境解读把与当前目的有关的温湿、风雨、光线或器材结露条件汇成更大字的圆角段落，并补充闷热、结露、水汽或光线等相关解释。首页右滑进入，左滑返回；气象趋势仍为示例，非实时预测。
 
 当前先完成最重要的天气首页：十一种示例天气、精细／方块动画、日出日落切换、大字信息网格与完整设置。界面一次只显示一种语言，不提供中英并排模式。项目统一使用 BARO 名称。当前先迭代网页原型，不构建或发布新的 APK；原有 Android 壳层保留供后续接入。
 

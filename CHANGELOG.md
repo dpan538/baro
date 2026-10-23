@@ -1,6 +1,9 @@
 # Changelog
 
 ## Browser prototype — 2026-10-23
+- Correct the Pad 9 Pro Max profile to 3408×2272, add an exact-ratio device preview, fill the usable viewport and share an overridable landscape Android status-bar allowance across both pages.
+- Enlarge peer titles and caption floors, restore fixed left origins and chart gutters, increase interpretation text, strengthen temperature-track contrast, rebalance wind content and redesign the purpose dial with larger type, a fine arc and sparse ticks.
+- Match observation type/paper roles to page one, unify peer title sizes, shorten the footer, make interpretations activity-specific and flatten the Moon into two-dimensional phase fills.
 - Add a dedicated 2:3 tablet layout across effective display densities; preserve the four-lane landscape layout and lower-right purpose dial.
 - Replace plain humidity rings, lunar crater blobs and the tall solar ladder with graduated humidity filaments, an etched phase/cycle disc, and a calibrated solar-angle/trajectory combination.
 - Align observation footer headings and insets, transfer excess dew height to pressure, enlarge the rounded interpretation, and replace etched lunar art with an exact circular SVG phase and radial shadows. Compact tablet pressure and solar readings have separate graphic space.

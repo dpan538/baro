@@ -14,6 +14,7 @@ for(const [preset,weather] of Object.entries(WEATHER_PRESETS)){
   const advice=planningAdvice(view,lang);
   assert([...advice].length<=(lang==='en'?180:84),`${preset}/${purpose}/${lang}: interpretation exceeds its reading budget`);
   assert(advice.length>0&&!advice.includes('\n'),'A connected interpretation, not an advice list');
+  if(['gear','drying','stars','sunset','dawn','blue','horizon'].includes(purpose))assert(!/体感|汗液|闷热|muggy|sweat|feel cooler/i.test(advice),`${purpose}: interpretation must match its activity rather than personal comfort`);
   assert(view.window.end<=1560);assert.equal(view.dayLabel,view.window.nextDay?(lang==='en'?'TOMORROW':'明日'):(lang==='en'?'TODAY':'今日'));
   count++;
  }
@@ -55,4 +56,10 @@ assert.match(planningAdvice({...adviceView,preset:'storm'}),/雷雨/);
 assert.match(planningAdvice({...adviceView,preset:'snow'}),/降雪/,'Snow must not be interpreted as rain');
 assert.match(planningAdvice({...adviceView,m:{...adviceView.m,temperature:20,humidity:50,sun:{elevation:4}}}),/晨昏低光/);
 assert.match(planningAdvice({...adviceView,m:{...adviceView.m,temperature:20,humidity:50,windGust:50,visibility:3}}),/阵风较强、远景模糊/);
+const gearView=makePlanningView(makeSkyDay(WEATHER_PRESETS.storm,'storm'),'gear');
+assert.match(planningAdvice(gearView),/镜片|器材/);
+assert.match(planningAdvice({...gearView,purpose:'stars',window:{...gearView.window,available:false}}),/没有对应的暗夜窗口/);
+assert.match(planningAdvice(gearView),/结露|水汽/);
+const dryGear={...gearView,m:{...gearView.m,humidity:40,dewSpread:12,rainRate:0},end:{...gearView.end,humidity:40,dewSpread:12}};
+assert.match(planningAdvice(dryGear),/明显冷却/,'Dry equipment conditions must not imply that condensation is easy');
 console.log(`Verified ${count} purpose/environment/language combinations, objective metric selection, midnight/polar windows and bounded plain-language environment interpretations.`);

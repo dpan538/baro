@@ -1,3 +1,4 @@
+import {XIAOMI_PAD_9_PRO_MAX,tabletReferenceViewport} from '../dist/tablet-profile.js';
 import assert from 'node:assert/strict';
 import { createWeatherFrame, resolveWeatherScene, WEATHER_PRESETS, WEATHER_CODE_GROUPS, MOTION } from '../dist/weather-art.js';
 import { resolvePixelGrid, FINE_MOTION } from '../dist/weather-shader.js';
@@ -28,12 +29,17 @@ for (const [group,codes] of Object.entries(WEATHER_CODE_GROUPS)) {
 }
 assert.equal(resolveWeatherScene({...WEATHER_PRESETS.storm,period:'sunset',isDay:false}),'storm');
 assert.equal(resolveWeatherScene({...WEATHER_PRESETS.overcast,windSpeed:40,period:'sunset'}),'overcast');
-assert.deepEqual(resolvePixelGrid(1728,2304),{columns:1536,rows:2048},'3.4K split panel uses the denser fine grid');
+assert.equal(XIAOMI_PAD_9_PRO_MAX.pixelWidth/XIAOMI_PAD_9_PRO_MAX.pixelHeight,3/2);
+assert.deepEqual(tabletReferenceViewport(),{width:1704,height:1136});
+assert.deepEqual(tabletReferenceViewport('portrait'),{width:1136,height:1704});
+assert.deepEqual(tabletReferenceViewport('landscape',1),{width:3408,height:2272});
+assert.throws(()=>tabletReferenceViewport('landscape',0),RangeError);
+assert.deepEqual(resolvePixelGrid(1704,2272),{columns:1536,rows:2048},'Pad 9 Pro Max split panel keeps its 3:4 fine pixel geometry');
 assert.deepEqual(resolvePixelGrid(800,1200),{columns:800,rows:1200},'smaller panels render one logical cell per native pixel');
-assert.deepEqual(resolvePixelGrid(1728,2304,'block'),{columns:96,rows:128},'block mode keeps its established grid');
+assert.deepEqual(resolvePixelGrid(1704,2272,'block'),{columns:96,rows:128},'block mode keeps its established grid');
 assert.deepEqual(resolvePixelGrid(800,400,'block',4096,192),{columns:192,rows:96},'observation can refine its basic grid without changing weather defaults');
 assert.deepEqual(resolvePixelGrid(800,400,'block',128,192),{columns:128,rows:64},'observation grid still respects GPU limits');
-for(const [width,height,limit] of [[320,480,4096],[1440,960,4096],[3456,2304,4096],[3840,2160,4096],[300,6000,1024],[6000,300,1024],[1,1,4096]]){
+for(const [width,height,limit] of [[320,480,4096],[1440,960,4096],[3408,2272,4096],[2272,3408,4096],[3840,2160,4096],[300,6000,1024],[6000,300,1024],[1,1,4096]]){
   for(const style of ['fine','block']){
     const {columns,rows}=resolvePixelGrid(width,height,style,limit);
     assert(Number.isInteger(columns)&&Number.isInteger(rows)&&columns>0&&rows>0);

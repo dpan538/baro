@@ -272,3 +272,5 @@ h1 .label-primary,.metric-label .label-primary{line-height:1.2;letter-spacing:va
   .condition-heading{min-height:6cqh;padding-left:calc(6cqh + 1.2cqw)}
   #condition-icon{width:6cqh;height:6cqh}
 }
+/* The host may set --android-statusbar-height:0px when its WebView is already inset. */
+@media(min-width:701px) and (min-aspect-ratio:4/5){.weather-page{top:calc(var(--edge) + max(var(--android-statusbar-height,24px),env(safe-area-inset-top,0px)))}}

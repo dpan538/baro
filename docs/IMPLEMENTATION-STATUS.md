@@ -46,3 +46,10 @@ Latest grid follow-up (2026-10-23, 14:59–15:01): pressure gains space from dew
 
 
 本次最终验收：八种画幅/语言 × 十二目的的 96 组界面检查完成；修正紧凑气压和太阳轨迹后，另复查三种紧凑 2:3 配置 × 十二目的的 36 组。模块与文字无裁切，底部外框和标题起点一致，字段仍唯一所属，29 模块不变。十一环境中英文共 22 组检查通过，并单独目视核对 922×1383 中最长的 164 字英文解读，实际四行完整显示。月盘可见边界宽高一致，Bortle 与月面至少间隔 16px。预览已更新：`images/observation-grid-details.jpg`、`images/observation-tablet-portrait.jpg`、`images/observation-tablet-humidity.jpg`、`images/observation-tablet-daylight.jpg`。所有尺寸与画面均来自浏览器，不代表小米真机性能验收。
+
+
+Latest 19:27 follow-up: the device target is corrected to 3408×2272 landscape / 2272×3408 portrait, with a single profile and a maintained device preview. Both pages reserve a shared default 24px landscape status-bar inset, overridable by an already-inset host. Observation removes the fixed height cap, uses page-one type/paper roles, consistent peer titles and a shorter 124/140px footer. Moon rendering is flat 2D. Interpretation now follows equipment, drying, photography, night-sky, horizon or outdoor context rather than always describing personal comfort. See [display contract](TABLET-DISPLAY-CONTRACT.md); previous size, font and radial-shading records describe earlier revisions.
+
+Latest 20:39 follow-up supersedes the smaller title normalization: 26/24px peer headings, 16/14px metadata floors and a 22/20px interpretation. Short interpretation columns stretch and stay left aligned. The temperature range is now high contrast; numerical/graphic gutters and pressure plot insets are explicit. Wind has clearer reading/footer tracks, and the dial has a larger radius/type, sparse ticks, one arc and a blue selection point. The 140/156px default footer and the smaller-window scrolling fallback are recorded in the display contract. Browser checks covered 132 viewport/purpose configurations, with 48 affected portrait configurations rechecked after the final track correction. No APK or native Xiaomi acceptance was performed.
+
+最终简化拨盘后，额外复查了 11 环境 × 4 目的的 44 组英文配置和 11 环境 × 2 目的的 22 组中文配置，模块边界及解读完整；简化后的文字点选也有效。源码检查与自包含画廊构建通过。
