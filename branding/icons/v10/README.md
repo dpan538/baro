@@ -2,6 +2,8 @@
 
 Retain [G1](../v9/G1-graphite-diagonal/icon-4096.png), the preferred graphite direction, and compare three darker variants with a narrower tonal range in the [four-way board](preview.png). S1a remains the provisional cloud choice. Its native foreground is unchanged.
 
+Current decision: **G1b is the provisional primary icon; G1c is retained as an alternate.** Both keep all masters, exports and editable sources. The machine-readable [selection record](../selection.json) points to these existing assets without replacing them.
+
 All candidates preserve G1's upper-left to lower-right gradient direction, middle stop at 48%, rounded frame and cloud placement. Only the neutral-grey stop values vary. The brightest stop is lowered and the darkest stop is brought closer to it, reducing the background's overall tonal spread.
 
 | Candidate | Lightest stop | Middle stop | Darkest stop | Channel range |

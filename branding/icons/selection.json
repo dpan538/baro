@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "brand": {
+    "en": "BARO",
+    "zh": "晴雨"
+  },
+  "status": "provisional",
+  "updated": "2026-10-24",
+  "cloud": {
+    "id": "S1a",
+    "source": "v8/build.mjs",
+    "foreground": "v8/S1a-refined-soft/foreground-4096.png",
+    "sha256": "2f045d9b6d541f27e2b9bca19cae7ed015ebd1eb892b216de16f4d05b1d685d8"
+  },
+  "primary": {
+    "id": "G1b",
+    "directory": "v10/G1b-darker",
+    "master": "v10/G1b-darker/icon-4096.png",
+    "svg": "v10/G1b-darker/icon.svg",
+    "background": "v10/G1b-darker/background.svg",
+    "source": "v10/build.mjs",
+    "masterSha256": "fa58809a2b329c5d5107222e1c1e51cd038626486feed9de3ae4ba71d5cebc0f"
+  },
+  "retainedAlternates": [
+    {
+      "id": "G1c",
+      "directory": "v10/G1c-low-contrast",
+      "master": "v10/G1c-low-contrast/icon-4096.png",
+      "svg": "v10/G1c-low-contrast/icon.svg",
+      "background": "v10/G1c-low-contrast/background.svg",
+      "source": "v10/build.mjs",
+      "masterSha256": "32446429f7e5b9589d8b6e26f078091426362734cd5f78492113c40c6d74494e"
+    }
+  ]
+}
