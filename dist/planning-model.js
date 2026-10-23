@@ -24,8 +24,13 @@ export function planningWindow(day,purpose){
       const p=skyLocalParts(event.at,tz);start=+p.hour*60+ +p.minute;
       const endHeight={sunset:-6,dawn:6,blue:-6}[purpose];
       const endEvent=endHeight!==undefined?(date===day.date?day.thresholds[endHeight]:solarCrossings(date,tz,day.coordinates,endHeight)).find(e=>e.rising===rising&&e.at>event.at):null;
+      if(endHeight!==undefined&&!endEvent)return {day,start:now,end:Math.min(1560,now+120),nextDay:false,available:false};
       if(endEvent){const q=skyLocalParts(endEvent.at,tz);end=+q.hour*60+ +q.minute;if(end<start)end+=1440;}else end=start+120;
-      return {day:date===day.date?day:{...day,date,cache:new Map()},start,end:Math.min(1560,end),nextDay,available:true};
+      if(date!==day.date&&day.nextSkyDay?.date!==date){
+        const thresholds=Object.fromEntries(Object.keys(day.thresholds).map(height=>[height,solarCrossings(date,tz,day.coordinates,+height)]));
+        day.nextSkyDay={...day,date,thresholds,cache:new Map(),nextSkyDay:null};
+      }
+      return {day:date===day.date?day:day.nextSkyDay,start,end:Math.min(1560,end),nextDay,available:true};
     }
     return {day,start,end,nextDay:false,available:false};
   }
