@@ -2,6 +2,20 @@
 
 Started 2026-10-23 (Australia/Brisbane). This ledger supersedes the old paused Android host status. The immutable `ui-baseline-2026-10-23` tag remains the reference. No Annota application code, service credentials or signing identity is used.
 
+## Current reviewed refinement — 2026-10-24
+
+Application source `de57619672fa9471caeb64aa9b0340fc0631657d` supersedes the earlier 9c780d3 local preview after four installed visual/interaction iterations. The development-signed APK remains `0.10.0-native-preview` / code 12, package `studio.sundown.weather`: 22,281,025 bytes, SHA-256 `8a946779ebb908357c131f2cdd920cd6c32820bbc64064c61f2ad4be7b2a4929`, with the unchanged BARO development certificate. Actual local HTTP download, pulled installed bytes and cold start match this identity. The controlled same-signer code-12 → code-13 system upgrade preserves preferences, draft and private canary; the accepted code-12 package was restored and verified afterward.
+
+The exact-source run passes 20 domain tests, 14 backend tests and 33 native cases: 30 flow/cache/typography/interaction/location/GPU/live/presentation cases, one high-scaling portrait case and two controlled update cases. Debug/release assembly, both lint profiles and source checks pass. Both [source checks](https://github.com/dpan538/baro/actions/runs/40010846832) and [native/backend CI](https://github.com/dpan538/baro/actions/runs/40010846844) pass for this application source; hosted GLES remains outside acceptance.
+
+Fifty-two full-resolution live-data captures and four high-scaling captures are source/package-bound in the screenshot manifest. Four magnified twelve-purpose matrices were reviewed. Measured per-corner paths preserve asymmetric observation corners and the weather radius; all sixteen weather-page outside-corner samples pass. Deeper observation surfaces give paper readings a 14.74:1 source-colour contrast and regular dial labels 8.90:1. Native tests cover continuous/hysteretic dial travel, reversal/cancel/multi-touch, system tick requests, button release, settings indicator travel, affected-content redraws and both-direction page transitions. A composed-pixel gate verifies the actual settled page rather than relying on a model change or fixed delay; its roughly 2.4-second software-emulator result is not target-hardware latency evidence.
+
+Normal weather reads reuse thirty-minute data, with five-minute manual/failure gates, coalesced in-flight listeners, twelve-place process memory and one-hour idle eviction. Separately bounded offline JSON retains explicit source/stale timestamps. Real loopback HTTP tests cover boundary clocks, failed reads, sharing, cancellation/resume and protected cache clearing. Live place search and denied-location/manual recovery pass.
+
+Final-source recordings decode at 1704×1136: interaction 100.468 seconds, Fine 56.920 seconds and Block 59.885 seconds. The first fifty-second Fine attempt yielded only 44.445 seconds through its last presented frame and was rejected; the longer retry reused the already-fresh response. Fine is sparse on this CPU software renderer (about 0.49 fps), while Block is about 6.86 fps. These videos verify changing content, not Xiaomi frame rate, power or physical haptic strength. Original fonts/licenses and the frozen tag remain unchanged.
+
+The [current acceptance record](../android/verification/acceptance.json) contains hashes, per-round failures/corrections, real provider provenance, installer proof and remaining external scope. Ignored `output/native-development/review-de57619/` holds the exact package, 56 original images, eight frozen references, three videos and the gallery; Chrome decoded all 56 selections, eight references and all videos without page errors. See [the refinement log](NATIVE-POLISH-2026-10-24.md) for the additional visibility-caption and gust-footer failures found after earlier green suites. Physical tablet vibration/latency/GPS, public feedback receipt, production hosting/signing and public release remain unverified. Earlier checkpoints below describe their named source only.
+
 ## Architecture decision
 
 The starting Activity is Java/WebView, blocked from networking and locked to landscape. Replace it with a Kotlin Activity, native View/Canvas instrument composition and native settings/fields/dialogs, with OpenGL ES 3 shaders in a TextureView. TextureView supports clipping and translating artwork together with native page content during gestures. The shader sources are extracted reproducibly from the approved JavaScript programs; no webpage, JavaScript runtime or bitmap substitute is shipped as the application UI. Fonts and licenses retain their original bytes. Android owns insets, gesture arbitration, lifecycle, networking, permissions, disk cache, feedback and installation.
@@ -16,11 +30,11 @@ The independent Python HTTP backend uses SQLite transactions for a bounded share
 | --- | --- | --- |
 | A | Architecture, field inventory, immutable baseline | This record; `NATIVE-DATA-SOURCES.md`; baseline tag retained |
 | B | Independent backend, live provider responses, failure/cache tests | 14 backend tests pass, including real local HTTP and shared-cache concurrency; live weather and air response recorded |
-| C | Kotlin domain/network/storage/location and all native UI | Final local build `9c780d3`: 52 full-resolution live-data views and four high-scaling scroll views reviewed; historical example readings/artwork intentionally differ |
+| C | Kotlin domain/network/storage/location and all native UI | Current local build `de57619`: 52 live-data views, four high-scaling views and presentation-confirmed page reviewed; historical example values/artwork intentionally differ |
 | D | Feedback receipt/draft and verified installer | Local HTTP failure/draft and real APK rejection tests pass; actual system permission denial/retry and controlled same-signer installer upgrade pass; public feedback receipt is unverified |
-| E | Business/backend tests, Gradle/lint and disposable-emulator instrumentation | 15 domain, 14 backend and 18 native/live/settings/high-scaling cases pass; debug/release assembly and both lint profiles pass |
+| E | Business/backend tests, Gradle/lint and disposable-emulator instrumentation | 20 domain, 14 backend and 33 native cases pass; debug/release assembly and both lint profiles pass |
 | F | Installable preview identity, real copy, cold start and same-signer upgrade | Exact development-signed preview identity, actual loopback copy and installed-package cold-start hash verified; controlled code-12 → code-13 same-signer system upgrade preserves data; Xiaomi hardware is untested |
-| G | Source/CI push and deployment/run instructions | Source pushed; both workflows pass for `9c780d3`. Hosted native UI scope excludes GLES/product captures; full graphics acceptance is local |
+| G | Source/CI push and deployment/run instructions | Source pushed; both workflows pass for `de57619`. Hosted UI/cache/typography scope excludes GLES/product captures; full graphics acceptance is local |
 
 ## Required native acceptance matrix
 
@@ -60,7 +74,7 @@ Two deterministic render regressions failed on dd254c0 and passed after correcti
 
 Hosted GLES remained unresponsive even with the Block grid. Record that branch as unaccepted. The hosted lane now runs native UI/gesture checks with androidTest-only recorded input and suppressed GLES surfaces; it deliberately skips product screenshots. Full-GLES/live/fine/cleanup evidence stays in the local native lane. Preserve hosted ANR diagnostics; this is a scoped CI check, not proof of hosted GPU or Xiaomi performance.
 
-## Final reviewed local checkpoint — 2026-10-24
+## Previous reviewed local checkpoint — 9c780d3
 
 The accepted application source is `9c780d3fd70dc85f717ee230ddb655ead4cde2b1`. The development-signed installable preview is `0.10.0-native-preview` / code 12, package `studio.sundown.weather`, 22,248,157 bytes, SHA-256 `5c96aa0baa322c15deeea7cc60a62e9fb9a1d91f6063c7586420cffc51302c30`, certificate SHA-256 `aac2bf88afcc1ce08009a9cf5e9f91eb0092b30bb280e16a0f9d095dbf338593`. A real loopback HTTP copy and a pulled installed package match that hash; the exact package cold-started. This is a local development preview, with no stable release or public download claim.
 
