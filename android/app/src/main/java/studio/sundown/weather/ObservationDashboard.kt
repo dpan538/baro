@@ -110,6 +110,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         val kind=if(primary)heading("阵风","Wind gust") else heading("风速","Wind")
         val body=base(b,kind,true,if(primary)CORAL else null);val dark=!primary
         val gauge=graphRect(RectF(body.right-body.height()*.75f,body.top,body.right,body.bottom-42))
+        if(primary)gauge.bottom=min(gauge.bottom,body.bottom-43)
         val cx=gauge.centerX();val cy=gauge.centerY();val r=min(gauge.width(),gauge.height())*.43f
         repeat(72){i->val a=i*PI/36;val outer=if(i%6==0)r*.8f else r*.89f;line(cx+cos(a).toFloat()*outer,cy+sin(a).toFloat()*outer,cx+cos(a).toFloat()*r,cy+sin(a).toFloat()*r,if(dark)0xffa5a59a.toInt() else INK,.8f)}
         arrow(cx,cy,r*.7f,v("wind_direction_10m"),if(dark)PAPER else INK)

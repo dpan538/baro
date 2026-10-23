@@ -82,7 +82,7 @@ class NativeInteractionTest {
                 f.send(if(cancel)MotionEvent.ACTION_CANCEL else MotionEvent.ACTION_UP,x-width*.35f);pause(400)
                 s.onActivity{a->assertEquals(if(cancel)0 else 1,a.model.page);for(p in listOf(a.pager.weatherPage,a.pager.observationPage)){assertEquals(View.LAYER_TYPE_NONE,p.dashboard.layerType);assertEquals(1f,p.dashboard.scaleX,0f)}}
             }
-            capture("page-settled")
+            capture("page-after-state-commit")
         }
     }
     private fun find(v:View,label:String):View?{if(v is TextView&&v.text.toString()==label)return v;if(v is ViewGroup)for(n in 0 until v.childCount)find(v.getChildAt(n),label)?.let{return it};return null}
