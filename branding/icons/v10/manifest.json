@@ -1,0 +1,286 @@
+{
+  "brand": {
+    "en": "BARO",
+    "zh": "晴雨"
+  },
+  "version": 10,
+  "status": "S1a provisionally selected; G1 retained; darker and narrower-range G1 background studies",
+  "source": "Exact v8/S1a native foreground plus project-authored vector background gradients",
+  "imageGenerationUsed": false,
+  "cloudModified": false,
+  "canvas": 4096,
+  "cloudWidthPercent": 74,
+  "cornerRadius": 896,
+  "foregroundSource": {
+    "file": "../v8/S1a-refined-soft/foreground-4096.png",
+    "sha256": "2f045d9b6d541f27e2b9bca19cae7ed015ebd1eb892b216de16f4d05b1d685d8"
+  },
+  "baseline": {
+    "source": "../v9/G1-graphite-diagonal",
+    "stops": [
+      [
+        0,
+        "#393939"
+      ],
+      [
+        0.48,
+        "#202020"
+      ],
+      [
+        1,
+        "#090909"
+      ]
+    ],
+    "files": [
+      {
+        "file": "background.svg",
+        "sha256": "4cad3fc6904726cddaadcd04114b1b12b4cfebcd36ceb36c2dedc9945d6fd504"
+      },
+      {
+        "file": "icon.svg",
+        "sha256": "4b17ba7641cf411a89ea5cb346e180819a51846d44ab668cdcee4b723aad8903"
+      },
+      {
+        "file": "icon-4096.png",
+        "sha256": "76b2ba0d994cd9829df7bf03ffc85b9034778001e6b1e4985516b2250511920b"
+      },
+      {
+        "file": "icon-1024.png",
+        "sha256": "4b0820324b612e5b0d03f01063d70bd65c402b6833021e85bd06e13f3c84bbf6"
+      },
+      {
+        "file": "icon-512.png",
+        "sha256": "1dc09d28e26ebff3cb78df331c66c83a39691e1d6bfd826d5e07da48252858d0"
+      }
+    ]
+  },
+  "variants": [
+    {
+      "id": "G1a",
+      "name": "dimmed",
+      "label": "压低亮部",
+      "note": "保留斜光，亮部更收敛",
+      "type": "linear",
+      "x1": "0%",
+      "y1": "0%",
+      "x2": "100%",
+      "y2": "100%",
+      "stops": [
+        [
+          0,
+          "#2b2b2b"
+        ],
+        [
+          0.48,
+          "#1d1d1d"
+        ],
+        [
+          1,
+          "#111111"
+        ]
+      ]
+    },
+    {
+      "id": "G1b",
+      "name": "darker",
+      "label": "更暗一些",
+      "note": "进一步缩小黑灰跨度",
+      "type": "linear",
+      "x1": "0%",
+      "y1": "0%",
+      "x2": "100%",
+      "y2": "100%",
+      "stops": [
+        [
+          0,
+          "#252525"
+        ],
+        [
+          0.48,
+          "#1a1a1a"
+        ],
+        [
+          1,
+          "#121212"
+        ]
+      ]
+    },
+    {
+      "id": "G1c",
+      "name": "low-contrast",
+      "label": "低对比柔黑",
+      "note": "最轻的渐变，保留一点层次",
+      "type": "linear",
+      "x1": "0%",
+      "y1": "0%",
+      "x2": "100%",
+      "y2": "100%",
+      "stops": [
+        [
+          0,
+          "#212121"
+        ],
+        [
+          0.48,
+          "#191919"
+        ],
+        [
+          1,
+          "#141414"
+        ]
+      ]
+    }
+  ],
+  "files": [
+    {
+      "file": "foreground-4096.png",
+      "bytes": 516676,
+      "sha256": "2f045d9b6d541f27e2b9bca19cae7ed015ebd1eb892b216de16f4d05b1d685d8"
+    },
+    {
+      "file": "G1a-dimmed/background.svg",
+      "bytes": 457,
+      "sha256": "2b357ec90ecbade5e4f10d80ea0138ba48099f5e1512bfc27f521750552df0a9"
+    },
+    {
+      "file": "G1a-dimmed/icon-1024.png",
+      "bytes": 140441,
+      "sha256": "b7ddfb417e201bdd3a2286778dfa6b339671455185ac8fb69a389766bfe45a61"
+    },
+    {
+      "file": "G1a-dimmed/icon-192.png",
+      "bytes": 16168,
+      "sha256": "945522564ecfe1fde216889783a08d0f38c3b9bb2a253b61920d2786915fb99f"
+    },
+    {
+      "file": "G1a-dimmed/icon-2048.png",
+      "bytes": 345735,
+      "sha256": "0c08f23197a8ecd9c192460229bcde6515cbaa6e0995e0eba9c48d3784ec37ba"
+    },
+    {
+      "file": "G1a-dimmed/icon-32.png",
+      "bytes": 1776,
+      "sha256": "17917ca25c53d4a2c92ab5d710e1a7e9a592e3f7a9e9a746bc057faf2adc53d4"
+    },
+    {
+      "file": "G1a-dimmed/icon-4096.png",
+      "bytes": 841113,
+      "sha256": "86cf37ef4fe99ce51c592fdb30254f0d79b4058f3122f80fc3df295a4491e7f7"
+    },
+    {
+      "file": "G1a-dimmed/icon-48.png",
+      "bytes": 2950,
+      "sha256": "290821b26016c7564c67a9e80f6a90e7362978a74348a1db58b887bcda8c74d3"
+    },
+    {
+      "file": "G1a-dimmed/icon-512.png",
+      "bytes": 56470,
+      "sha256": "27d3c5f5dc030a0ffd62b03a6afa14ab213d0b8264b02d88e9c82d13919880de"
+    },
+    {
+      "file": "G1a-dimmed/icon.svg",
+      "bytes": 689427,
+      "sha256": "6c932b18276a1f2ab38f73d56bf4cc3d3d749520a1fcb4cd048ad5d0208fd209"
+    },
+    {
+      "file": "G1b-darker/background.svg",
+      "bytes": 457,
+      "sha256": "89aba879a72d0ae7c5167375ccf2015b8859d27e4372d80664665d41ffcf8c19"
+    },
+    {
+      "file": "G1b-darker/icon-1024.png",
+      "bytes": 136403,
+      "sha256": "0983e64c05087107641a60a2fcf8cf9355ef414ff49a8ea973db1a4524112f63"
+    },
+    {
+      "file": "G1b-darker/icon-192.png",
+      "bytes": 16071,
+      "sha256": "8a98879525cd97cabbf22d747bab91d566ff50c96cfe185388fab9c4461d7c29"
+    },
+    {
+      "file": "G1b-darker/icon-2048.png",
+      "bytes": 336859,
+      "sha256": "4946f9387612ed394593ad5b331ad713d5900f671754dae386c8bdc3bbeb3a9f"
+    },
+    {
+      "file": "G1b-darker/icon-32.png",
+      "bytes": 1732,
+      "sha256": "9182ec726d8b26fd36e54d992aa6c9fcf329a17827e71b173e511fc49d4f3f52"
+    },
+    {
+      "file": "G1b-darker/icon-4096.png",
+      "bytes": 817705,
+      "sha256": "fa58809a2b329c5d5107222e1c1e51cd038626486feed9de3ae4ba71d5cebc0f"
+    },
+    {
+      "file": "G1b-darker/icon-48.png",
+      "bytes": 2902,
+      "sha256": "2eb330678bd231187836e57ef6ec0d8a0cfa021d5e390efc73eb910d45ef1df5"
+    },
+    {
+      "file": "G1b-darker/icon-512.png",
+      "bytes": 56757,
+      "sha256": "6c26f94d35e0f2c7682c78096b04d64d4644a6de936f5dc617272d60b434f946"
+    },
+    {
+      "file": "G1b-darker/icon.svg",
+      "bytes": 689427,
+      "sha256": "610e4b3a32da235d3a789d3a47d73414a075daf14fc8e8f269c260e2617bba5f"
+    },
+    {
+      "file": "G1c-low-contrast/background.svg",
+      "bytes": 457,
+      "sha256": "fdb578d5a130ab16f36f215712aee74916a23fca1435ee13638bd6dd24de3056"
+    },
+    {
+      "file": "G1c-low-contrast/icon-1024.png",
+      "bytes": 132706,
+      "sha256": "31fe030ef8aaee6a6bf4ce11f2000f0f3fd49469e1a75c2ee9b7f36399154ee2"
+    },
+    {
+      "file": "G1c-low-contrast/icon-192.png",
+      "bytes": 15791,
+      "sha256": "c8b61d699a887210b0e2f0f35a3b388655329ec65c72f205a8c6bd604c18d640"
+    },
+    {
+      "file": "G1c-low-contrast/icon-2048.png",
+      "bytes": 328145,
+      "sha256": "cd8c65f05ac9486b7ee4fc28ae1ab1b4f54976756422527d9bca5ac2fbe9ed09"
+    },
+    {
+      "file": "G1c-low-contrast/icon-32.png",
+      "bytes": 1670,
+      "sha256": "5813350026967f899938d38967caee3757346906bbe012d8221629aab3ffb117"
+    },
+    {
+      "file": "G1c-low-contrast/icon-4096.png",
+      "bytes": 796235,
+      "sha256": "32446429f7e5b9589d8b6e26f078091426362734cd5f78492113c40c6d74494e"
+    },
+    {
+      "file": "G1c-low-contrast/icon-48.png",
+      "bytes": 2846,
+      "sha256": "6ac1b978e558f15602cc15ddab91b7ccdec31e66fd0ffbeab3c6eb146b7ae61b"
+    },
+    {
+      "file": "G1c-low-contrast/icon-512.png",
+      "bytes": 55680,
+      "sha256": "2af0d61856aca953322fcc5c985bad86fcc75e8880fe413f68891d0a8d949766"
+    },
+    {
+      "file": "G1c-low-contrast/icon.svg",
+      "bytes": 689427,
+      "sha256": "e54b2c13dff19f3975b39407b4290880a8fc25e5feafaa387827fb3b98989ae4"
+    },
+    {
+      "file": "preview.png",
+      "bytes": 261175,
+      "sha256": "cb355381520bd8ebeaae66580800bbf131e20374a50064a7862a055e31596692"
+    },
+    {
+      "file": "preview.svg",
+      "bytes": 302566,
+      "sha256": "d27bf7aaab2a2fa37eff884794cca2b024aa2846d9cd16cd1108caeadf6db05b"
+    }
+  ]
+}

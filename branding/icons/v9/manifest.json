@@ -1,0 +1,407 @@
+{
+  "brand": {
+    "en": "BARO",
+    "zh": "晴雨"
+  },
+  "version": 9,
+  "status": "S1a provisionally selected; background exploration only",
+  "source": "Exact v8/S1a native foreground plus project-authored vector background gradients",
+  "imageGenerationUsed": false,
+  "cloudModified": false,
+  "canvas": 4096,
+  "cloudWidthPercent": 74,
+  "cornerRadius": 896,
+  "baseline": {
+    "source": "../v8/S1a-refined-soft",
+    "background": "#151515",
+    "files": [
+      {
+        "file": "foreground-4096.png",
+        "sha256": "2f045d9b6d541f27e2b9bca19cae7ed015ebd1eb892b216de16f4d05b1d685d8"
+      },
+      {
+        "file": "icon.svg",
+        "sha256": "506f9016924a846bc4829b8019f239988cce6dab3f9acb7e52334d5f140641a0"
+      },
+      {
+        "file": "icon-4096.png",
+        "sha256": "26c5da06c5fe6344ff005c409058e7e72d5eb8eb783f9e7c3cfebba044150e3e"
+      },
+      {
+        "file": "icon-1024.png",
+        "sha256": "37d22aaef846d6b020f5f21674f57e5f46adcbdc0caae590b2586f77a6b6d368"
+      },
+      {
+        "file": "icon-512.png",
+        "sha256": "7275f3a1a7cf93591d0bec064ce8354f1af1c55410e46ead30034bb1afcd909e"
+      }
+    ]
+  },
+  "variants": [
+    {
+      "id": "G1",
+      "name": "graphite-diagonal",
+      "label": "墨灰斜光",
+      "note": "左上柔灰 → 右下近黑",
+      "type": "linear",
+      "x1": "0%",
+      "y1": "0%",
+      "x2": "100%",
+      "y2": "100%",
+      "stops": [
+        [
+          0,
+          "#393939"
+        ],
+        [
+          0.48,
+          "#202020"
+        ],
+        [
+          1,
+          "#090909"
+        ]
+      ]
+    },
+    {
+      "id": "G2",
+      "name": "soft-graphite",
+      "label": "柔灰聚光",
+      "note": "上方柔亮，四周渐深",
+      "type": "radial",
+      "cx": "36%",
+      "cy": "16%",
+      "r": "96%",
+      "stops": [
+        [
+          0,
+          "#414141"
+        ],
+        [
+          0.46,
+          "#242424"
+        ],
+        [
+          1,
+          "#090909"
+        ]
+      ]
+    },
+    {
+      "id": "G3",
+      "name": "midnight-blue",
+      "label": "午夜深蓝",
+      "note": "上方黑色 → 下方深蓝",
+      "type": "linear",
+      "x1": "50%",
+      "y1": "0%",
+      "x2": "50%",
+      "y2": "100%",
+      "stops": [
+        [
+          0,
+          "#070a11"
+        ],
+        [
+          0.45,
+          "#101d30"
+        ],
+        [
+          1,
+          "#1d3654"
+        ]
+      ]
+    },
+    {
+      "id": "G4",
+      "name": "blue-black-halo",
+      "label": "蓝黑微光",
+      "note": "上方克制的蓝光，边缘近黑",
+      "type": "radial",
+      "cx": "64%",
+      "cy": "18%",
+      "r": "94%",
+      "stops": [
+        [
+          0,
+          "#2a405e"
+        ],
+        [
+          0.43,
+          "#14243b"
+        ],
+        [
+          1,
+          "#070a11"
+        ]
+      ]
+    },
+    {
+      "id": "G5",
+      "name": "deep-blue-diagonal",
+      "label": "深蓝斜光",
+      "note": "左上深蓝 → 右下墨黑",
+      "type": "linear",
+      "x1": "0%",
+      "y1": "0%",
+      "x2": "100%",
+      "y2": "100%",
+      "stops": [
+        [
+          0,
+          "#2a405e"
+        ],
+        [
+          0.48,
+          "#132239"
+        ],
+        [
+          1,
+          "#06090f"
+        ]
+      ]
+    }
+  ],
+  "files": [
+    {
+      "file": "foreground-4096.png",
+      "bytes": 516676,
+      "sha256": "2f045d9b6d541f27e2b9bca19cae7ed015ebd1eb892b216de16f4d05b1d685d8"
+    },
+    {
+      "file": "G1-graphite-diagonal/background.svg",
+      "bytes": 456,
+      "sha256": "4cad3fc6904726cddaadcd04114b1b12b4cfebcd36ceb36c2dedc9945d6fd504"
+    },
+    {
+      "file": "G1-graphite-diagonal/icon-1024.png",
+      "bytes": 139271,
+      "sha256": "4b0820324b612e5b0d03f01063d70bd65c402b6833021e85bd06e13f3c84bbf6"
+    },
+    {
+      "file": "G1-graphite-diagonal/icon-192.png",
+      "bytes": 16567,
+      "sha256": "0fec6b9199326b89c0a4b8eeec4e51980d1daa2ea1746ea5830034365d37699c"
+    },
+    {
+      "file": "G1-graphite-diagonal/icon-2048.png",
+      "bytes": 371246,
+      "sha256": "86ea083dbbac630bc32d85720cd556e395dca17930dc45f95c44993535eb643d"
+    },
+    {
+      "file": "G1-graphite-diagonal/icon-32.png",
+      "bytes": 1913,
+      "sha256": "72e8de24d2f51be71103293b6d822fde6023d4a06c5006bd9c870f17565bdc44"
+    },
+    {
+      "file": "G1-graphite-diagonal/icon-4096.png",
+      "bytes": 911391,
+      "sha256": "76b2ba0d994cd9829df7bf03ffc85b9034778001e6b1e4985516b2250511920b"
+    },
+    {
+      "file": "G1-graphite-diagonal/icon-48.png",
+      "bytes": 3055,
+      "sha256": "b31840f83b26e78cea9e3b7b65a95d0608c2dbf96b5ca7f5162940aa714e6b82"
+    },
+    {
+      "file": "G1-graphite-diagonal/icon-512.png",
+      "bytes": 57009,
+      "sha256": "1dc09d28e26ebff3cb78df331c66c83a39691e1d6bfd826d5e07da48252858d0"
+    },
+    {
+      "file": "G1-graphite-diagonal/icon.svg",
+      "bytes": 689426,
+      "sha256": "4b17ba7641cf411a89ea5cb346e180819a51846d44ab668cdcee4b723aad8903"
+    },
+    {
+      "file": "G2-soft-graphite/background.svg",
+      "bytes": 446,
+      "sha256": "935e804cb7a14ad72c1f661c2cac0ce1116e9ab86c618baa195eae0ece234740"
+    },
+    {
+      "file": "G2-soft-graphite/icon-1024.png",
+      "bytes": 145437,
+      "sha256": "4a9fa2f418203f9881b0515ba5d62d639a1fef76c004209b52616f6fab3c532d"
+    },
+    {
+      "file": "G2-soft-graphite/icon-192.png",
+      "bytes": 18501,
+      "sha256": "8c8070a5edc09e500617d7fd0929acb0af7a47462b1c3a225d8695116cc9845c"
+    },
+    {
+      "file": "G2-soft-graphite/icon-2048.png",
+      "bytes": 384796,
+      "sha256": "cede72a12944a6d0c7c9c51b2a09c736d45e370c85e70a00a848b2257563f96d"
+    },
+    {
+      "file": "G2-soft-graphite/icon-32.png",
+      "bytes": 2162,
+      "sha256": "c6bf2ac00508d93f9562443ffc88297d4e76e8006cf750fde2ac2096aa28cd21"
+    },
+    {
+      "file": "G2-soft-graphite/icon-4096.png",
+      "bytes": 1007604,
+      "sha256": "a8e76b53b810d8a775648cc8ee20c977ba694923d502952b7d608b54a0e4cb65"
+    },
+    {
+      "file": "G2-soft-graphite/icon-48.png",
+      "bytes": 3492,
+      "sha256": "f32603930339b5376bdef9ff58e6250c7f23fb1508a245dbfbd930a8be578014"
+    },
+    {
+      "file": "G2-soft-graphite/icon-512.png",
+      "bytes": 60484,
+      "sha256": "ab6ad9929726715cc95a40c520195236c5e8e40baf70f82cb87b28db2966567e"
+    },
+    {
+      "file": "G2-soft-graphite/icon.svg",
+      "bytes": 689416,
+      "sha256": "ac0923d323bd22c22d5c54044a6491e4ea6d013605ad8e0a73eb4b4f178b38f7"
+    },
+    {
+      "file": "G3-midnight-blue/background.svg",
+      "bytes": 456,
+      "sha256": "6c46c7828baf0f35757d500145c3661c6b905c41cfeba666b5b9c148fb3e8f1d"
+    },
+    {
+      "file": "G3-midnight-blue/icon-1024.png",
+      "bytes": 128957,
+      "sha256": "aeecdf0a7ac632829e8d162bd3705dac3cbc047122c5d84c764e68274dc59150"
+    },
+    {
+      "file": "G3-midnight-blue/icon-192.png",
+      "bytes": 16426,
+      "sha256": "6bdcec48358abb1ba2f020f93fec83fa317ab3c2968ad023cb628acdd4995314"
+    },
+    {
+      "file": "G3-midnight-blue/icon-2048.png",
+      "bytes": 311992,
+      "sha256": "7585b12354ef88902b8fa67a4c46ac0a638f9e9c12f075bc021840bcb6e59493"
+    },
+    {
+      "file": "G3-midnight-blue/icon-32.png",
+      "bytes": 1858,
+      "sha256": "d23ccd88e217b721c42c308b6c4f4df66a186af6637824d2fa043ef63066452d"
+    },
+    {
+      "file": "G3-midnight-blue/icon-4096.png",
+      "bytes": 751801,
+      "sha256": "d04865113d40bad1b6f1c7706984c0f5e1aa5cad2d13e51b651c5d25ce2ad53e"
+    },
+    {
+      "file": "G3-midnight-blue/icon-48.png",
+      "bytes": 3143,
+      "sha256": "1d9c7aeef3a500a52ed9c67161853595159d0d72dd91c51495e8343476372d80"
+    },
+    {
+      "file": "G3-midnight-blue/icon-512.png",
+      "bytes": 55488,
+      "sha256": "1ab92fa3f6bcd64046c1d0c51efacbdb83c98dd35f4c40898408e9eb1fbc91ea"
+    },
+    {
+      "file": "G3-midnight-blue/icon.svg",
+      "bytes": 689426,
+      "sha256": "49d722572663fea8e50ed081aa686a59d655eede9fcf6541952188a97ad23cd0"
+    },
+    {
+      "file": "G4-blue-black-halo/background.svg",
+      "bytes": 446,
+      "sha256": "49a935cf52d286e9fc9874a89267de7843af46878f702822bfff7b8ce5b4a612"
+    },
+    {
+      "file": "G4-blue-black-halo/icon-1024.png",
+      "bytes": 161413,
+      "sha256": "07bc675caac56d7fb3e342f39efec9a5249eb1d93fabe3cd0249d67eb8aecb40"
+    },
+    {
+      "file": "G4-blue-black-halo/icon-192.png",
+      "bytes": 22415,
+      "sha256": "f757189755be7c631047de51c9fe2a2bc94fe3a85d6f59ce8c4416202858be9d"
+    },
+    {
+      "file": "G4-blue-black-halo/icon-2048.png",
+      "bytes": 432516,
+      "sha256": "7f7152fc7f818efe194f0c62fd7ce7f8cbd0cdff2a37bb972bf03bc1f604075f"
+    },
+    {
+      "file": "G4-blue-black-halo/icon-32.png",
+      "bytes": 2653,
+      "sha256": "2ddb8166698e42ecf67e23c3d6ff98530ce3489d5cb6320055e28c289c2b165c"
+    },
+    {
+      "file": "G4-blue-black-halo/icon-4096.png",
+      "bytes": 1223877,
+      "sha256": "977757f4905b1d2af1a8609dbe0f9f9b5222d983c0adf752087243ffb0bc240c"
+    },
+    {
+      "file": "G4-blue-black-halo/icon-48.png",
+      "bytes": 4230,
+      "sha256": "f5064b35e932e57ed68d40d45e427cd2f795e8fa03e086e08f8dc70fea478e7b"
+    },
+    {
+      "file": "G4-blue-black-halo/icon-512.png",
+      "bytes": 69378,
+      "sha256": "0d24459010593dcad8839d6a9afd9799ec1c833bb39f047af40e9469f34abc24"
+    },
+    {
+      "file": "G4-blue-black-halo/icon.svg",
+      "bytes": 689416,
+      "sha256": "24feb65eaf32f413c898d5eeed3e13d736ff6d2e33e3f14dd3ef4a4173065f27"
+    },
+    {
+      "file": "G5-deep-blue-diagonal/background.svg",
+      "bytes": 456,
+      "sha256": "4324efaf30b44205860a951b5a12301cf42192d832dc8d4367e19a81cf04fed3"
+    },
+    {
+      "file": "G5-deep-blue-diagonal/icon-1024.png",
+      "bytes": 147155,
+      "sha256": "d8632258425688c2c0be7c5682fb1c5b6b24e412687da4327db236c557a277f8"
+    },
+    {
+      "file": "G5-deep-blue-diagonal/icon-192.png",
+      "bytes": 18606,
+      "sha256": "f9a4f17e0e1ee227a85c75a9205eb39be7797a4928d5721d82b870d0635372b8"
+    },
+    {
+      "file": "G5-deep-blue-diagonal/icon-2048.png",
+      "bytes": 384091,
+      "sha256": "1067114465591969bc09fa5225e9d4431c24fbb3c1ce353f23b287261304a313"
+    },
+    {
+      "file": "G5-deep-blue-diagonal/icon-32.png",
+      "bytes": 2210,
+      "sha256": "c83cd1eeda3be71f8b40eeb4c1e8a70caffd5d09e8fc25041bfad4cc60576658"
+    },
+    {
+      "file": "G5-deep-blue-diagonal/icon-4096.png",
+      "bytes": 1063904,
+      "sha256": "44b0e2f4cc8462987a6edbfb8d817b06e181e9fa30628c0a14c8d66da2b42aa5"
+    },
+    {
+      "file": "G5-deep-blue-diagonal/icon-48.png",
+      "bytes": 3412,
+      "sha256": "749b9cf71b4a70408f6a2eac5c968f7d450187d0a409e318ac32b983262b38f0"
+    },
+    {
+      "file": "G5-deep-blue-diagonal/icon-512.png",
+      "bytes": 61217,
+      "sha256": "5349d0799f50b72a79c017edef1a8361c7d2aa85992756ea2538fdf1d915825d"
+    },
+    {
+      "file": "G5-deep-blue-diagonal/icon.svg",
+      "bytes": 689426,
+      "sha256": "9e53c96ee14f98f2e0c25a7319e01c5cde0ffc9d18be0d913fce3094342f203c"
+    },
+    {
+      "file": "preview.png",
+      "bytes": 322055,
+      "sha256": "241c2229b3a05c5e66ee495342dd677fa91adf8e7e169a4f1397700185e89bd0"
+    },
+    {
+      "file": "preview.svg",
+      "bytes": 476608,
+      "sha256": "c8960ab9f6d6171be32cf3801d2c7640d991db6d537a21167dce605992e811de"
+    }
+  ]
+}
