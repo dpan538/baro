@@ -2,6 +2,8 @@
 
 ## Browser prototype — 2026-10-23
 
+- Redraw the sunset event diagram as three continuous semicircles without a horizon line; match its outer bounds and shared sizing to the sunrise fan.
+
 - Add an independent fourteen-module observation instrument panel with a lower-right purpose dial and dedicated panoramic pixel program.
 - Let the sole dial select user activities and concerns, replacing relevant windows, metrics and cloud/lunar/dew visualizations. Remove literal gears, chains, export, extra purpose controls and ornamental headlines.
 - Add separately licensed instrument fonts and monospace body text; retain original font bytes and licenses.

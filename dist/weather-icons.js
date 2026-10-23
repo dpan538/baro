@@ -22,18 +22,11 @@ export function solarIconMarkup(event) {
       body+=line('M'+point(29)+'L'+point(65)+'M'+point(73)+'L'+point(80));
     }
   }else if(event==='sunset'){
-    // The same fan sinks below a horizon: clip rays geometrically, without an arrow.
-    const centerY=106,horizon=91;
-    for(let i=1;i<12;i++){
-      const angle=Math.PI+i*Math.PI/12;
-      const point=r=>[86+Math.cos(angle)*r,centerY+Math.sin(angle)*r].join(' ');
-      const horizonRadius=(centerY-horizon+3)/-Math.sin(angle);
-      for(const [inner,outer] of [[39,71],[80,88]]){
-        const start=Math.max(inner,horizonRadius);
-        if(start<outer)body+=line('M'+point(start)+'L'+point(outer));
-      }
+    // Three continuous semicircles replace the rising fan. The outer arc uses
+    // the same centre/radius as sunrise, without a horizon extending its width.
+    for(const radius of [80,54,28]){
+      body+=line(`M${86-radius} 98A${radius} ${radius} 0 0 1 ${86+radius} 98`);
     }
-    body+=line('M58.87 91A31 31 0 0 1 113.13 91M68.56 91A23 23 0 0 1 103.44 91M6 91H166M64 99H108');
   }else body=line('M36 86H136M74 64H98');
   return `<g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="butt" stroke-linejoin="round">${body}</g>`;
 }
