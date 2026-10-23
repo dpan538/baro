@@ -1,0 +1,22 @@
+import assert from 'node:assert/strict';
+import {compareReleaseVersions,releaseInformation,checkLatestRelease} from '../dist/release-service.js';
+import {APP_META} from '../dist/app-meta.js';
+
+for(const [a,b,expected] of [['v0.9.3','0.9.2',1],['0.9.2','0.9.2',0],['0.9.1','0.9.2',-1],['1.0.0','1.0.0-rc.1',1],['1.0.0-beta.10','1.0.0-beta.2',1],['1.0.0-alpha','1.0.0-beta',-1],['1.0.0+build.2','1.0.0+build.1',0]])assert.equal(compareReleaseVersions(a,b),expected);
+for(const invalid of ['release-october','1.2','01.2.3','1.2.3-01',null])assert.equal(compareReleaseVersions(invalid,'0.9.2'),null);
+const release={tag_name:'v0.9.3',published_at:'2026-10-23T00:00:00Z',html_url:'https://untrusted.example/download'};
+assert.equal(releaseInformation(release,'0.9.2').state,'available');
+assert.equal(releaseInformation(release,'0.9.3').state,'current');
+assert.equal(releaseInformation({...release,tag_name:'october'},'0.9.2').state,'published');
+assert.equal(releaseInformation(release,'0.9.2').url,APP_META.updateUrl+'/tag/v0.9.3','External URLs must remain in the configured repository');
+for(const bad of [null,{}, {...release,draft:true},{...release,prerelease:true}])assert.throws(()=>releaseInformation(bad,'0.9.2'));
+let request;
+const latest=await checkLatestRelease('0.9.2',{fetcher:async(url,options)=>{request={url,options};return new Response(JSON.stringify(release));}});
+assert.equal(latest.state,'available');assert.equal(request.url,'https://api.github.com/repos/dpan538/baro/releases/latest');assert.equal(request.options.credentials,'omit');
+assert.equal((await checkLatestRelease('0.9.2',{fetcher:async()=>new Response('',{status:404})})).state,'empty','No release is not an up-to-date result');
+for(const status of [403,429,500])await assert.rejects(checkLatestRelease('0.9.2',{fetcher:async()=>new Response('',{status})}));
+await assert.rejects(checkLatestRelease('0.9.2',{fetcher:async()=>new Response('invalid JSON')}));
+const aborted=new AbortController();aborted.abort();await assert.rejects(checkLatestRelease('0.9.2',{signal:aborted.signal}),{name:'AbortError'});
+const waitForAbort=async(_url,{signal})=>new Promise((_resolve,reject)=>signal.addEventListener('abort',()=>reject(new DOMException('Cancelled','AbortError')),{once:true}));
+await assert.rejects(checkLatestRelease('0.9.2',{fetcher:waitForAbort,timeoutMs:5}),{name:'AbortError'});
+console.log('Verified release ordering, unversioned tags, repository-only links, no-release/error responses, cancellation and timeout.');

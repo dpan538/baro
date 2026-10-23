@@ -242,7 +242,7 @@ h1 .label-secondary { font: 400 2.45cqw/1.2 var(--mono); letter-spacing: -.055em
 #condition-icon{position:absolute;left:0;top:50%;transform:translateY(-50%)}
 .clock-value{grid-column:2;grid-row:3;justify-self:center;align-self:baseline;margin:0}
 .solar-caption{grid-column:2;grid-row:4;justify-self:center;margin:0;text-align:center}
-.settings-open{position:relative;width:max(44px,5.8cqw);height:max(44px,5.8cqw);padding:0;border-radius:0;background:transparent;justify-items:end}
+.settings-open{position:relative;width:max(56px,5.8cqw);height:max(56px,5.8cqw);padding:0;border-radius:0;background:transparent;justify-items:end}
 .settings-open svg{width:4.62cqw;height:4.62cqw}
 .settings-open:hover{background:transparent}.settings-open:focus-visible{outline:none;box-shadow:none}
 .settings-open:focus-visible::after{content:'';position:absolute;bottom:0;left:32%;right:32%;height:2px;background:#376989}
@@ -274,3 +274,119 @@ h1 .label-primary,.metric-label .label-primary{line-height:1.2;letter-spacing:va
 }
 /* The host may set --android-statusbar-height:0px when its WebView is already inset. */
 @media(min-width:701px) and (min-aspect-ratio:4/5){.weather-page{top:calc(var(--edge) + max(var(--android-statusbar-height,24px),env(safe-area-inset-top,0px)))}}
+
+/* Settings inherit the weather page's paper, typography and three accent anchors. */
+.information-panel{position:relative}
+.settings-panel{--ink:#201f1b;--line:#cecec6;--muted:#62635d;--settings-surface:#f2f2ed;background:var(--paper);color:var(--ink);z-index:2}
+.settings-header{padding:var(--header-top-inset) 4.4cqw 0}
+.settings-heading-row{min-height:max(56px,5.8cqw)}
+#settings-close,#scenes-close{width:max(56px,5.8cqw);height:max(56px,5.8cqw);padding:0;border-radius:0;justify-items:end;background:transparent}
+#settings-close svg,#scenes-close svg{width:4.62cqw;height:4.62cqw}
+#settings-close:focus-visible,#scenes-close:focus-visible{outline:0;box-shadow:inset 0 -2px currentColor}
+.settings-title-group{gap:1.4cqw}.settings-badge{margin-left:.4cqw}.settings-badge i{width:1.65cqw;height:1.65cqw}
+.settings-nav{position:relative;margin-top:2cqw;gap:3cqw}
+.settings-nav::after{content:'';position:absolute;left:0;bottom:0;width:var(--nav-width,0px);height:2px;background:var(--ink);transform:translateX(var(--nav-left,0px));transition:transform 220ms linear,width 220ms linear;pointer-events:none}
+.settings-nav button{min-height:56px;color:var(--muted);border-bottom-color:transparent;transition:color 180ms linear}
+.settings-nav button[aria-current='true']{color:var(--ink)}
+.settings-nav button:hover,.settings-nav button:focus-visible{border-bottom-color:transparent;color:var(--ink)}
+.settings-content{scrollbar-color:var(--line) transparent}
+.category-title{color:var(--muted);gap:1.1cqw}
+.category-title::before{content:'';width:8px;height:8px;flex:none;border-radius:50%;background:var(--section-accent)}
+#category-appearance{--section-accent:var(--accent-orange)}#category-units{--section-accent:var(--accent-yellow)}#category-about{--section-accent:var(--accent-blue)}
+.category-title .label-primary{font-size:clamp(16px,2.4cqw,22px);letter-spacing:var(--tracking-label)}
+.settings-index{font-size:max(14px,1.9cqw);color:var(--muted)}
+.settings-group .metric-label .label-primary{font-size:clamp(22px,3.4cqw,32px)}
+.setting-options{--segment-inset:4px;--segment-gap:6px;position:relative;isolation:isolate;gap:var(--segment-gap);padding:var(--segment-inset);border:1px solid var(--line);border-radius:12px;background:var(--settings-surface)}
+.setting-options::before{content:'';position:absolute;z-index:-1;top:var(--segment-inset);bottom:var(--segment-inset);left:var(--segment-inset);width:calc((100% - 2*var(--segment-inset) - (var(--option-count,2) - 1)*var(--segment-gap))/var(--option-count,2));background:var(--ink);border-radius:8px;transform:translateX(calc(var(--active-index,0)*(100% + var(--segment-gap))));transition:transform 200ms linear}
+.setting-options button{position:relative;min-height:max(56px,7cqw);border-radius:8px;font-size:clamp(18px,2.8cqw,26px);transition:color 200ms linear;background:transparent}
+.setting-options button[aria-pressed='true']{background:transparent;color:var(--paper)}
+.pixel-options svg{color:currentColor}.pixel-options button[aria-pressed='true'] svg{color:var(--accent-yellow)}
+.toggle-switch{--toggle-width:max(96px,9.8cqw);--toggle-height:max(56px,5.6cqw);width:var(--toggle-width);height:var(--toggle-height);padding:4px;border-color:var(--line);background:#ddded6;transition:background-color 180ms linear,border-color 180ms linear}
+.toggle-switch span{width:calc(var(--toggle-height) - 10px);height:calc(var(--toggle-height) - 10px);background:var(--paper);box-shadow:0 1px 3px #151d1c20;transition:transform 180ms linear}
+.toggle-switch[aria-checked='true']{background:var(--ink);border-color:var(--ink)}
+.toggle-switch[aria-checked='true'] span{transform:translateX(calc(var(--toggle-width) - var(--toggle-height)))}
+.settings-footer,.setting-note,.settings-detail .detail-kicker,.settings-detail .about-version{color:var(--muted)}
+.setting-note{font-size:clamp(16px,2.2cqw,20px)}
+.settings-panel .icon-button:hover,.settings-panel .text-button:hover,.settings-panel .source-button:hover,.settings-panel .more-button:hover{background:var(--settings-surface)}
+.settings-detail textarea{background:var(--settings-surface)}.settings-panel .detail-link:hover{color:var(--ink)}
+.settings-panel .scene-card{background:var(--paper);border-color:var(--line)}.settings-panel .scene-card[aria-pressed='true']{background:var(--settings-surface);border-color:var(--ink)}.settings-panel .scene-card:hover{background:var(--settings-surface)}.settings-panel .scene-card .scene-city,.settings-panel .scenes-note{color:var(--muted)}
+.update-trigger{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:56px;padding:12px 18px;border:1px solid var(--ink);border-radius:10px;background:var(--ink);color:var(--paper);font:450 clamp(16px,2.4cqw,22px)/1.25 var(--sans);cursor:pointer;white-space:nowrap;transition:opacity 180ms linear}
+.update-trigger svg,.update-actions svg{width:20px;height:20px;flex:none}
+.update-trigger:hover{opacity:.82}.update-trigger:disabled{cursor:progress;opacity:.65}
+
+/* A non-modal update card sits over the living sky; it never replaces the artwork. */
+.update-card{--ink:#201f1b;--line:#cecec6;--muted:#62635d;position:absolute;right:4.4cqw;top:4.4cqw;z-index:8;width:min(560px,calc(100% - 8.8cqw));max-height:calc(100% - 8.8cqw);overflow:auto;overscroll-behavior:contain;padding:28px;border:1px solid #d9d9cf;border-radius:22px;background:var(--paper);color:var(--ink);box-shadow:0 12px 36px #1717162b;font:400 20px/1.5 var(--sans)}
+.update-card-header,.update-brand,.update-actions{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.update-brand{justify-content:flex-start;gap:14px}.update-brand strong{font:400 24px/1.2 var(--mono);letter-spacing:var(--tracking-label)}
+.update-card .palette-dots{gap:8px}.update-card .palette-dots i{width:16px;height:16px}
+.update-card .icon-button{width:64px;height:64px;padding:14px;border-radius:8px}.update-card .icon-button svg{width:36px;height:36px}.update-card .icon-button:hover{background:#f2f2ed}
+.update-kicker{margin:18px 0 6px;font:400 16px/1.4 var(--mono);color:var(--muted)}
+.update-card h2{font:450 34px/1.2 var(--chinese);margin:0;letter-spacing:var(--tracking-label)}
+.update-card h2:focus{outline:none}
+.update-message{min-height:3em;margin:16px 0 12px;font:400 20px/1.5 var(--sans);letter-spacing:var(--tracking-text)}
+.update-progress{height:2px;overflow:hidden;visibility:hidden;background:var(--line)}
+.update-progress i{display:block;width:30%;height:100%;background:var(--accent-blue);animation:update-progress 1100ms linear infinite}
+.update-card[data-state='checking'] .update-progress{visibility:visible}
+@keyframes update-progress{from{transform:translateX(-100%)}to{transform:translateX(440%)}}
+.update-versions{margin:18px 0 0}.update-versions>div{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--line)}
+.update-versions dt{font:400 18px/1.4 var(--chinese);color:var(--muted)}.update-versions dd{font:400 20px/1.4 var(--mono);margin:0;overflow-wrap:anywhere;text-align:right}
+.update-published{margin:10px 0 0;font:400 16px/1.5 var(--mono);color:var(--muted)}
+.update-actions{margin-top:22px;justify-content:flex-end;flex-wrap:wrap}
+.update-primary,.update-secondary{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:15px 21px;border:1px solid var(--ink);border-radius:9px;background:var(--ink);color:var(--paper);font:450 20px/1.3 var(--sans);cursor:pointer;transition:background-color 160ms linear,color 160ms linear}
+.update-secondary{background:transparent;color:var(--ink);border-color:var(--line)}.update-primary:hover{background:#30302d}.update-secondary:hover{background:#f2f2ed}
+.update-source{margin:18px 0 0;font:400 16px/1.5 var(--mono);color:var(--muted);overflow-wrap:anywhere}
+@media(max-width:600px){.setting-value-row{align-items:flex-start;flex-direction:column}.update-card{padding:18px;border-radius:18px}.update-card h2{font-size:25px}.update-actions{justify-content:stretch}.update-primary{flex:1}}
+@media(prefers-reduced-motion:reduce){.setting-options::before,.setting-options button,.settings-nav::after,.settings-nav button,.toggle-switch,.toggle-switch span,.update-trigger,.update-primary,.update-secondary{transition:none}.update-progress i{animation:none;transform:translateX(100%)}}
+
+.settings-panel .text-button,.settings-panel .primary-button,.settings-panel .detail-link,.settings-panel .source-button,.settings-panel .more-button,.settings-panel #settings-back,.settings-panel #scenes-close{min-height:56px;min-width:56px}
+.settings-panel .source-button{font-size:max(16px,1.9cqw)}
+
+.scenes-header{padding:var(--header-top-inset) 4.4cqw 2cqw}
+.settings-content{touch-action:pan-y}
+
+.palette-button{min-width:56px;min-height:56px}
+
+/* Keep date/time inside the header when its controls grow for touch. */
+.information-panel{--home-header-min:calc(var(--header-top-inset) + max(56px,5.8cqw) + 5.445cqw + 1px);grid-template-rows:max(12cqh,var(--home-header-min)) 34.5% 16% minmax(0,1fr) 10.5%}
+@media(min-aspect-ratio:17/10){.information-panel{grid-template-rows:max(14cqh,var(--home-header-min)) 33% 15% minmax(0,1fr) 12%}}
+
+/* Portrait has its own density: half the screen for information, half for the living sky. */
+@media(orientation:portrait){
+ .weather-page{grid-template-rows:minmax(0,1fr) minmax(0,1fr)}
+ .left-panel{--header-top-inset:2.2cqw;--portrait-control:max(56px,5.2cqw)}
+ .information-panel{grid-template-rows:auto minmax(0,1fr) auto auto}
+ .panel-heading{padding:var(--header-top-inset) 4.4cqw 1.6cqw}
+ h1 .label-primary,:root[data-language='en'] h1 .label-primary{font-size:max(20px,2.8cqw)}
+ .heading-bottom{font-size:max(16px,2.15cqw);line-height:1.25}
+ .settings-open,#settings-close,#scenes-close{width:var(--portrait-control);height:var(--portrait-control)}
+ .settings-open svg,#settings-close svg,#scenes-close svg{width:3.8cqw;height:3.8cqw}
+ .settings-heading-row{min-height:var(--portrait-control)}
+ .weather-hero,.weather-hero:has(.solar-caption[hidden]){grid-template-rows:auto auto;row-gap:.9cqw;padding-block:2cqw}
+ .current-temperature,.current-temperature[data-long='true']{font-size:16.5cqw}
+ .current-temperature[data-long='true']{font-size:14cqw}
+ #solar-icon,.cloud-cover{display:none}
+ .time-summary{display:grid;grid-column:2;grid-row:1 / 3;align-self:center;justify-items:center;align-content:center;gap:.8cqw}
+ .time-summary .metric-label,.clock-value,.solar-caption{grid-column:1;grid-row:auto;align-self:center}
+ .temperature-range{font-size:max(16px,2.15cqw)}
+ .time-summary .metric-label .label-primary,:root[data-language='en'] .time-summary .metric-label .label-primary{font-size:max(16px,2.1cqw)}
+ .condition-heading{grid-column:1;grid-row:auto;justify-self:center;align-self:center;min-height:4.5cqw;margin:0 0 1.6cqw;padding-left:5.6cqw}
+ #condition-icon{width:4.5cqw;height:4.5cqw}
+ .weather-description,:root[data-language='en'] .weather-description{font-size:max(18px,2.7cqw)}
+ .clock-value{font-size:4cqw}
+ .solar-caption{font-size:max(16px,1.8cqw)}
+ .primary-metric{padding-block:1.6cqw}
+ .primary-metric .metric-label .label-primary,:root[data-language='en'] .primary-metric .metric-label .label-primary{font-size:max(16px,2.35cqw)}
+ .primary-metric p{font-size:4.8cqw;margin-top:.6cqw}
+ .conditions-grid{grid-template-rows:repeat(2,auto);padding-block:1.1cqw 2cqw;background:var(--paper)}
+ .condition{min-height:10.4cqw;padding-block:1.5cqw;column-gap:1.5cqw}
+ .condition:nth-last-child(-n+2){border-bottom:0}
+ .condition .metric-label .label-primary,:root[data-language='en'] .condition .metric-label .label-primary{font-size:max(16px,2.25cqw);line-height:1.15}
+ .condition p{font-size:3.8cqw;line-height:1.1;margin-top:.45cqw}
+ .condition-detail,:root[data-language='en'] .condition-detail{font-size:max(16px,2cqw)}
+ .gauge{width:1.6cqw;height:7cqw}
+ .gauge i{width:3.2cqw}
+}
+@media(orientation:portrait) and (max-width:700px){
+ .left-panel:has(.information-panel:not([hidden])){overflow:auto}
+ .information-panel{min-height:600px}
+}

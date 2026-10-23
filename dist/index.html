@@ -29,9 +29,9 @@
         <div class="current-weather">
           <div class="current-temperature" aria-label="当前温度 26 摄氏度"><span class="temperature-number" data-field="temperature">26</span><span class="temperature-degree" data-unit-for="temperature">°<small class="temperature-scale" data-temperature-scale>C</small></span></div>
           <p class="temperature-range" id="temperature-range"><span>↑ <span data-field="temperatureMax">26</span>°</span><span>↓ <span data-field="temperatureMin">18</span>°</span></p>
-          <div class="condition-heading"><svg id="condition-icon" viewBox="0 0 32 32" aria-hidden="true"></svg><p class="weather-description"><span id="condition-primary">晴间多云</span><span id="condition-secondary" lang="en">Partly cloudy</span></p></div>
         </div>
         <div class="time-summary">
+          <div class="condition-heading"><svg id="condition-icon" viewBox="0 0 32 32" aria-hidden="true"></svg><p class="weather-description"><span id="condition-primary">晴间多云</span><span id="condition-secondary" lang="en">Partly cloudy</span></p></div>
           <svg id="solar-icon" class="weather-icon" viewBox="0 0 172 100" role="img" aria-label="日落"></svg>
           <h2 id="solar-event-label" class="metric-label" data-label="sunset"><span class="label-primary">日落时间</span></h2>
           <p class="clock-value"><span id="solar-event-time">17:16</span><small id="solar-period"></small></p>
@@ -59,10 +59,10 @@
 
     <section id="settings-panel" class="settings-panel" aria-labelledby="settings-title" hidden>
       <header class="settings-header">
-        <div class="settings-heading-row"><div class="settings-title-group"><button id="settings-back" class="icon-button" type="button" aria-label="返回设置" hidden><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 7L11 16L20 25"/></svg></button><h1 id="settings-title" data-label="settings"><span class="label-primary">设置</span></h1></div><button id="settings-close" class="icon-button" type="button" aria-label="关闭设置"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M8 8L24 24M24 8L8 24"/></svg></button></div>
-        <nav class="settings-nav" aria-label="设置分类"><button type="button" data-settings-jump="appearance" data-copy="appearanceNav">界面</button><button type="button" data-settings-jump="units" data-copy="unitsNav">单位</button><button type="button" data-settings-jump="about" data-copy="aboutNav">关于</button></nav>
+        <div class="settings-heading-row"><div class="settings-title-group"><button id="settings-back" class="icon-button" type="button" aria-label="返回设置" hidden><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 7L11 16L20 25"/></svg></button><h1 id="settings-title" data-label="settings"><span class="label-primary">设置</span></h1><span class="palette-dots settings-badge" aria-hidden="true"><i></i><i></i><i></i></span></div><button id="settings-close" class="icon-button" type="button" aria-label="关闭设置"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M8 8L24 24M24 8L8 24"/></svg></button></div>
+        <nav class="settings-nav" aria-label="设置分类"><button type="button" id="settings-jump-appearance" aria-controls="category-appearance" data-settings-jump="appearance" data-copy="appearanceNav">界面</button><button type="button" id="settings-jump-units" aria-controls="category-units" data-settings-jump="units" data-copy="unitsNav">单位</button><button type="button" id="settings-jump-about" aria-controls="category-about" data-settings-jump="about" data-copy="aboutNav">关于</button></nav>
       </header>
-      <div id="settings-scroll" class="settings-content">
+      <div id="settings-scroll" class="settings-content" tabindex="0" role="region" aria-label="设置列表">
         <section id="category-appearance" class="settings-category" aria-labelledby="appearance-title"><h2 id="appearance-title" class="category-title" data-label="appearance"><span class="label-primary">界面与视觉</span></h2>
         <section class="settings-group" aria-labelledby="language-heading">
           <p class="settings-index">01</p><h2 id="language-heading" class="metric-label" data-label="language"><span class="label-primary">界面语言</span></h2>
@@ -89,7 +89,7 @@
         </section>
         <section id="category-about" class="settings-category" aria-labelledby="about-title"><h2 id="about-title" class="category-title" data-label="systemAbout"><span class="label-primary">系统与关于</span></h2>
           <section class="settings-group" aria-labelledby="location-heading"><div class="setting-row"><div><p class="settings-index">06</p><h3 id="location-heading" class="metric-label" data-label="location"><span class="label-primary">自动定位</span></h3></div><button id="location-toggle" class="toggle-switch" type="button" role="switch" aria-labelledby="location-heading" aria-checked="false"><span></span></button></div><p id="location-status" class="setting-note" role="status">定位未开启</p><p class="setting-note" data-copy="locationNote">仅在前台跟随定位；当前天气仍为示例。</p></section>
-          <section class="settings-group" aria-labelledby="version-heading"><p class="settings-index">07</p><h3 id="version-heading" class="metric-label" data-label="version"><span class="label-primary">软件版本</span></h3><div class="setting-row setting-value-row"><p id="version-value" class="setting-value">v0.9.2</p><button id="check-updates" class="text-button" type="button" data-copy="checkUpdates">检查更新</button></div><p id="update-status" class="setting-note" role="status"></p></section>
+          <section class="settings-group" aria-labelledby="version-heading"><p class="settings-index">07</p><h3 id="version-heading" class="metric-label" data-label="version"><span class="label-primary">软件版本</span></h3><div class="setting-row setting-value-row"><p id="version-value" class="setting-value">v0.9.2</p><button id="check-updates" class="update-trigger" type="button" aria-controls="update-card" aria-expanded="false"><span data-copy="checkUpdates">检查更新</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 18L18 6M7 6H18V17"/></svg></button></div></section>
 
 
         </section>
@@ -105,6 +105,16 @@
     </div>
 
     <section class="visual-panel" aria-label="像素天气动画">
+      <section id="update-card" class="update-card" role="dialog" aria-labelledby="update-title" aria-describedby="update-message" hidden>
+        <header class="update-card-header"><div class="update-brand"><strong>BARO</strong><span class="palette-dots" aria-hidden="true"><i></i><i></i><i></i></span></div><button id="update-close" class="icon-button" type="button" aria-label="关闭更新窗口"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" aria-hidden="true"><path d="M8 8L24 24M24 8L8 24"/></svg></button></header>
+        <p class="update-kicker">GitHub Releases</p><h2 id="update-title" data-copy="updateTitle" tabindex="-1">软件更新</h2>
+        <p id="update-message" class="update-message" role="status"></p>
+        <div class="update-progress" aria-hidden="true"><i></i></div>
+        <dl class="update-versions"><div><dt data-copy="installedVersion">当前版本</dt><dd id="update-installed"></dd></div><div><dt data-copy="latestRelease">最新发布</dt><dd id="update-latest">—</dd></div></dl>
+        <p id="update-published" class="update-published" hidden></p>
+        <div class="update-actions"><button id="update-retry" class="update-secondary" type="button" data-copy="tryAgain">重试</button><button id="update-releases" class="update-primary" type="button"><span data-copy="viewReleases">查看发布页</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 18L18 6M7 6H18V17"/></svg></button></div>
+        <p class="update-source">github.com/dpan538/baro</p>
+      </section>
       <button id="observatory-open" class="observatory-open" type="button" aria-controls="sky-page">天空观测 ↗</button>
       <div class="weather-artwork" role="img" aria-label="晴间多云像素动画"><canvas id="weather-pixels" class="weather-pixels" aria-hidden="true"></canvas></div>
 

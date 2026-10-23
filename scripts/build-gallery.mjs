@@ -18,7 +18,7 @@ for (const name of ['Inter.ttf', 'RobotoMono.ttf']) {
   const bytes = await fs.readFile(path.join(root, 'dist/assets/fonts', name));
   css = css.replace(`url('assets/fonts/${name}')`, `url('data:font/${name.endsWith('.woff2')?'woff2':'ttf'};base64,${bytes.toString('base64')}')`);
 }
-const modules = ['weather-art.js', 'weather-shader.js', 'open-meteo.js', 'i18n.js', 'weather-icons.js', 'app-meta.js', 'weather-units.js', 'device-services.js', 'settings.js', 'sky-model.js', 'instrument-physics.js', 'planning-model.js', 'instrument-content.js', 'instrument-art.js', 'observatory.js', 'app.js'];
+const modules = ['weather-art.js', 'weather-shader.js', 'open-meteo.js', 'i18n.js', 'weather-icons.js', 'app-meta.js', 'weather-units.js', 'device-services.js', 'release-service.js', 'settings.js', 'sky-model.js', 'instrument-physics.js', 'planning-model.js', 'instrument-content.js', 'instrument-art.js', 'observatory.js', 'app.js'];
 const instrumentLicense=await read('dist/licenses/SunCalc-BSD-2-Clause.txt');
 const js = '/* '+instrumentLicense+' */\n'+(await Promise.all(modules.map(file => read('dist/' + file))))
   .map(code => code.replace(/^import .*;\n/gm, '').replace(/^export /gm, '')).join('\n');

@@ -1,0 +1,23 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BARO · Settings interaction QA</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#e8e8df;color:#201f1b;font:14px system-ui}header{height:84px;display:flex;align-items:center;gap:18px;padding:12px 20px}h1{font-size:18px;font-weight:500;margin:0}p{margin:5px 0 0}select{font:inherit;padding:8px}main{height:calc(100dvh - 84px);display:grid;place-items:center;padding:8px}.view{overflow:hidden;position:relative}iframe{display:block;border:0;transform-origin:top left}</style>
+<header><div><h1>Settings interaction QA</h1><p>Only the GitHub response is simulated; the app, controls and rendering are unchanged.</p></div><label>Response <select id="outcome"><option value="available">New release</option><option value="current">Up to date</option><option value="empty">No release</option><option value="retry">Failure, then retry</option><option value="slow">Slow request</option></select></label><label>Language <select id="language"><option value="en">English</option><option value="zh">中文</option></select></label><label>Orientation <select id="orientation"><option value="landscape">Landscape</option><option value="portrait">Portrait</option></select></label></header><main><div class="view"><iframe title="Settings test app"></iframe></div></main>
+<script type="module">
+import {tabletReferenceViewport} from './tablet-profile.js';
+const template=await (await fetch('./index.html')).text(),frame=document.querySelector('iframe'),view=document.querySelector('.view'),host=document.querySelector('main');
+let reference;
+function installReleaseFixture(outcome){
+ const original=window.fetch.bind(window);let calls=0;
+ window.fetch=(url,options={})=>{
+  if(!String(url).startsWith('https://api.github.com/repos/'))return original(url,options);
+  calls++;
+  return new Promise((resolve,reject)=>{
+   const fail=outcome==='retry'&&calls===1;
+   const timer=setTimeout(()=>resolve(new Response(outcome==='empty'||fail?'':JSON.stringify({tag_name:outcome==='current'?'v0.9.2':'v0.9.3',published_at:'2026-10-23T00:00:00Z'}),{status:outcome==='empty'?404:fail?503:200})),outcome==='slow'?6000:900);
+   options.signal?.addEventListener('abort',()=>{clearTimeout(timer);reject(new DOMException('Cancelled','AbortError'));},{once:true});
+  });
+ };
+}
+function resize(){if(!reference)return;const scale=Math.min((host.clientWidth-16)/reference.width,(host.clientHeight-16)/reference.height);view.style.width=reference.width*scale+'px';view.style.height=reference.height*scale+'px';frame.style.transform='scale('+scale+')';}
+function mount(){reference=tabletReferenceViewport(document.querySelector('#orientation').value);frame.style.width=reference.width+'px';frame.style.height=reference.height+'px';const language=document.querySelector('#language').value,fixture='<script>('+installReleaseFixture.toString()+')('+JSON.stringify(document.querySelector('#outcome').value)+');<'+ '/script>';frame.srcdoc=template.replace('data-language="zh"','data-language="'+language+'" data-preset="clear" data-qa-case="'+document.querySelector('#outcome').value+'" data-qa-orientation="'+document.querySelector('#orientation').value+'"').replace('<script src="app.js"',fixture+'<script src="app.js"');resize();}
+for(const select of document.querySelectorAll('select'))select.addEventListener('change',mount);new ResizeObserver(resize).observe(host);mount();
+</script></html>

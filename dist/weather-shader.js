@@ -43,11 +43,11 @@ float coverage(float distance){
   float edge=.65/resolution.x;
   return smoothstep(-edge,edge,distance);
 }
-vec3 ramp(vec3 a,vec3 b,vec3 c,vec3 d,float t){
-  float divisions=coarse?1.:10.;
+vec3 toneRamp(vec3 a,vec3 b,vec3 c,vec3 d,float t,float divisions){
   float level=floor(clamp(t,0.,1.)*3.*divisions+threshold)/divisions;
   return level<1.?mix(a,b,level):level<2.?mix(b,c,level-1.):mix(c,d,level-2.);
 }
+vec3 ramp(vec3 a,vec3 b,vec3 c,vec3 d,float t){return toneRamp(a,b,c,d,t,coarse?1.:10.);}
 float ellipse(vec2 q,vec2 radius){return (1.-length(q/radius))*min(radius.x,radius.y);}
 float bank(vec2 q,float scale){
   q/=scale;
@@ -300,7 +300,8 @@ vec3 paint(float sceneTime){
   if(scene==9){a=vec3(.18,.10,.37);b=vec3(.43,.18,.44);c=vec3(.88,.36,.30);d=vec3(.98,.69,.30);}
   if(scene==10){a=vec3(.16,.27,.48);b=vec3(.38,.48,.65);c=vec3(.78,.67,.70);d=vec3(.98,.79,.55);}
   float atmosphere=uv.y*.91+.04*sin(uv.x*3.)+.012*sin(elapsed*.027+uv.x*4.);
-  vec3 color=ramp(a,b,c,d,atmosphere);
+  // Coarse geometry still needs atmospheric colour depth; cloud palettes stay unchanged.
+  vec3 color=toneRamp(a,b,c,d,atmosphere,coarse?18.:10.);
   if(!night&&!warm&&(scene==0||scene==1||scene==7)){
     float haze=exp(-pow((uv.x-.15)/.7,2.)-pow((uv.y-.82)/.38,2.));
     color=mix(color,vec3(.98,.79,.59),haze*.14);
@@ -329,11 +330,11 @@ vec3 paint(float sceneTime){
     if(r<radius+.65/resolution.x){
     vec2 sunLocal=(p-solar)/radius;
     float limb=sqrt(max(0.,1.-dot(sunLocal,sunLocal)));
-    float granules=(surfaceNoise(sunLocal*25.+vec2(elapsed*.004,0.))-.5)*.09+(surfaceNoise(sunLocal*67.)-.5)*.025;
+    float granules=((surfaceNoise(sunLocal*25.+vec2(elapsed*.004,0.))-.5)*.09+(surfaceNoise(sunLocal*67.)-.5)*.025)*(coarse?.25:1.);
     float sunTone=clamp(.52-sunLocal.y*.25+limb*.17+granules,0.,1.);
     if(!warm)sunTone=clamp(.46-sunLocal.y*.27+limb*.11+granules,0.,1.);
-    vec3 sunColor=warm?ramp(vec3(.97,.43,.09),vec3(.99,.72,.19),vec3(1.,.89,.47),vec3(1.,.98,.82),sunTone):ramp(vec3(.94,.22,.07),vec3(1.,.44,.08),vec3(1.,.73,.25),vec3(1.,.94,.65),sunTone);
-    if(scene==7)sunColor=ramp(vec3(.87,.55,.24),vec3(.97,.73,.40),vec3(.99,.87,.62),vec3(1.,.97,.83),clamp(.64-sunLocal.y*.15+limb*.10+granules*.5,0.,1.));
+    vec3 sunColor=warm?toneRamp(vec3(.97,.43,.09),vec3(.99,.72,.19),vec3(1.,.89,.47),vec3(1.,.98,.82),sunTone,10.):toneRamp(vec3(.94,.22,.07),vec3(1.,.44,.08),vec3(1.,.73,.25),vec3(1.,.94,.65),sunTone,10.);
+    if(scene==7)sunColor=toneRamp(vec3(.87,.55,.24),vec3(.97,.73,.40),vec3(.99,.87,.62),vec3(1.,.97,.83),clamp(.64-sunLocal.y*.15+limb*.10+granules*.5,0.,1.),10.);
     color=mix(color,sunColor,coverage(radius-r));
     }
   }

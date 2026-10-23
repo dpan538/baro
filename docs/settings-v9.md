@@ -1,4 +1,4 @@
-> Historical implementation note. Current scope is documented in [implementation status](IMPLEMENTATION-STATUS.md) and [architecture](ARCHITECTURE.md).
+> Historical implementation note. Current settings/list, touch, motion and release behavior is defined in [settings interaction](SETTINGS-INTERACTION.md). Older empty-repository and direct-update-link records below are historical.
 
 # v9 设置与天气场景
 
