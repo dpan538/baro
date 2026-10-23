@@ -131,7 +131,8 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         value(body,n("pressure_msl",1),"hPa",40f,true)
         val delta=wx?.difference("pressure_msl",at,3);val label=(if(delta!=null&&delta>0)"+"else "")+Units.number(delta,1)+" hPa / 3h"
         if(measuredText("detail",label)==null)text(label,body.left,body.bottom-20,16f,PAPER,mono)
-        text("960",gr.left,gr.bottom-4,16f,PAPER,mono);text("1040",gr.right,gr.bottom-4,16f,PAPER,mono,Paint.Align.RIGHT)
+        val labelsY=min(gr.bottom-4,b.bottom-22)
+        text("960",gr.left,labelsY,16f,PAPER,mono);text("1040",gr.right,labelsY,16f,PAPER,mono,Paint.Align.RIGHT)
     }
     private fun svgPlot(rect:RectF,vx:Float,vy:Float,vw:Float,vh:Float,stretch:Boolean=false,draw:()->Unit){
         val sx=rect.width()/vw;val sy=rect.height()/vh;val scale=min(sx,sy);c!!.save()
@@ -327,7 +328,23 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         for(offset in -6..6){val index=((model.purpose+offset)%12+12)%12;val distance=offset+dialPhase;val angle=distance*8.5f;val a=Math.toRadians(angle.toDouble());val x=centerX+cos(a).toFloat()*radius;val y=centerY+sin(a).toFloat()*radius
             val emphasis=(1-abs(distance)).coerceIn(0f,1f);val fade=(1-(abs(angle)-42).coerceAtLeast(0f)/20).coerceIn(0f,1f)
             val color=androidx.core.graphics.ColorUtils.blendARGB(0xffb8b8af.toInt(),PAPER,emphasis).let{androidx.core.graphics.ColorUtils.setAlphaComponent(it,(255*fade).roundToInt())}
-            c!!.save();c!!.rotate(angle,x,y);text(model.purposeName(index),x,y-font*.55f,font*(1+emphasis*.035f),color,Typeface.create(chinese,450,false));c!!.restore()}
+            val label=model.purposeName(index);val face=Typeface.create(chinese,450,false)
+            var labelSize=font*(1+emphasis*.035f)
+            val safe=RectF(b.left+12,b.top+18,b.right-12,b.bottom-46)
+            fun ink():RectF{
+                p.reset();p.typeface=face;p.textSize=labelSize
+                val bounds=Rect();p.getTextBounds(label,0,label.length,bounds)
+                return RectF(bounds).apply{offset(x,y-font*.55f-p.fontMetrics.ascent);Matrix().apply{setRotate(angle,x,y)}.mapRect(this)}
+            }
+            var bounds=ink()
+            if(bounds.width()>safe.width()){labelSize*=safe.width()/bounds.width();bounds=ink()}
+            val shift=if(bounds.left<safe.left)safe.left-bounds.left else if(bounds.right>safe.right)safe.right-bounds.right else 0f
+            bounds.offset(shift,0f)
+            if(bounds.top<safe.top||bounds.bottom>safe.bottom)continue
+            val edge=min(bounds.top-safe.top,safe.bottom-bounds.bottom).div(12).coerceIn(0f,1f)
+            val wholeLabelColor=androidx.core.graphics.ColorUtils.setAlphaComponent(color,(Color.alpha(color)*edge).roundToInt())
+            rect(RectF(bounds).apply{inset(-2f,-2f)},0xff181817.toInt())
+            c!!.save();c!!.translate(shift,0f);c!!.rotate(angle,x,y);text(label,x,y-font*.55f,labelSize,wholeLabelColor,face);c!!.restore()}
         circle(b.left+b.width()*.12f,centerY,max(10f,min(16f,b.width()*.043f)),0xff2459ff.toInt());c!!.restore()
         text(heading("拖动选择","DRAG"),b.left+16,b.bottom-28,16f,0xffb8b8af.toInt());text(String.format(java.util.Locale.US,"%02d / 12",model.purpose+1),b.right-16,b.bottom-28,16f,0xffb8b8af.toInt(),mono,Paint.Align.RIGHT)
     }

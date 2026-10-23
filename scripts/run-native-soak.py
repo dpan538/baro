@@ -62,7 +62,8 @@ for start in range(a.start,a.end+1,a.batch):
     rows.extend(batch);write('rounds.jsonl',''.join(json.dumps(row)+'\n'for row in rows))
     for name in {row['providerResponseFile'] for row in batch}: pull(name,out/name)
     write(f'samples/batterystats-after-{start+count-1}.txt',shell('dumpsys batterystats '+package))
-    for n in range(start,start+count):
+    for row in batch:
+        n=row['round']
         if n%25==0:
             for page in ['observation','weather']:pull(f'soak-{n}-{page}.png',out/f'soak-{n}-{page}.png')
     assert process.returncode==0 and f'OK (1 test)' in log.read_text() and len(batch)==count and all(row['status']=='pass'for row in batch),f'Batch failed; preserved evidence: {log}'
