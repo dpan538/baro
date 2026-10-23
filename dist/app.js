@@ -6,6 +6,7 @@ import { resolveWeatherIcon, weatherIconMarkup, solarIconMarkup } from './weathe
 import { formatUnitWeather, WIND_UNITS } from './weather-units.js';
 import { SettingsController } from './settings.js';
 import { APP_META } from './app-meta.js';
+import { ObservatoryController } from './observatory.js';
 
 const rootElement=document.documentElement;
 const appParams=new URL(location.href).searchParams;
@@ -24,6 +25,7 @@ let temperatureUnit=(appParams.get('temperature')??preferences.temperatureUnit)=
 let windUnit=appParams.get('wind')??preferences.windUnit??'kmh';
 if(!['kmh','ms','mph'].includes(windUnit))windUnit='kmh';
 let galleryPlaying=true;
+let skyController;
 const renderer=new FineWeatherRenderer(document.querySelector('#weather-pixels'),weather,{pixelStyle});
 renderer.setAnimated(motionEnabled);
 function rememberSelection(){
@@ -109,8 +111,14 @@ function renderScreen(){
   const scene=resolveWeatherScene(weather);document.querySelector('.weather-page').dataset.weather=scene;
   document.querySelector('.weather-artwork').setAttribute('aria-label',sceneName(scene,language)+(english?(pixelStyle==='fine'?' animated fine pixel weather':' animated block pixel weather'):(pixelStyle==='fine'?'精细像素天气动画':'大块像素天气动画')));
   document.querySelector('.visual-panel').setAttribute('aria-label',english?'Pixel weather artwork':'像素天气画面');
+  skyController?.syncState();
 
 }
 function setLanguage(next){if(!LANGUAGES.includes(next))return;language=next;renderScreen();savePreferences();}
-window.addEventListener('message',event=>{if(event.source!==parent||parent===window||!event.data)return;if(event.data.type==='sundown-language')setLanguage(event.data.language);if(event.data.type==='sundown-motion'&&typeof event.data.playing==='boolean'){galleryPlaying=event.data.playing;renderer.setAnimated(motionEnabled&&galleryPlaying);}});
-renderScreen();window.addEventListener('pagehide',()=>renderer.destroy(),{once:true});
+window.addEventListener('message',event=>{if(event.source!==parent||parent===window||!event.data)return;if(event.data.type==='sundown-language')setLanguage(event.data.language);if(event.data.type==='sundown-motion'&&typeof event.data.playing==='boolean'){galleryPlaying=event.data.playing;renderer.setAnimated(motionEnabled&&galleryPlaying);skyController?.syncState();}});
+skyController=new ObservatoryController({getState:()=>({weather,presetKey,language,pixelStyle,motionEnabled,galleryPlaying,temperatureUnit,windUnit}),renderer,
+  onPage:page=>{if(!embedded&&['http:','https:'].includes(location.protocol)){const next=new URL(location.href);if(page==='sky')next.searchParams.set('page','sky');else next.searchParams.delete('page');history.replaceState(null,'',next);}}
+});
+window.addEventListener('message',event=>{if(event.source===parent&&parent!==window&&event.data?.type==='baro-page'){if(event.data.page==='sky')skyController.open();else skyController.close();}});
+renderScreen();if(appParams.get('page')==='sky')skyController.open();
+window.addEventListener('pagehide',()=>{skyController?.destroy();renderer.destroy();},{once:true});

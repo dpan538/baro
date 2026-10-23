@@ -1,5 +1,13 @@
 # Changelog
 
+## Browser prototype — 2026-10-23
+
+- Add an independent fourteen-module observation instrument panel with a lower-right purpose dial and dedicated panoramic pixel program.
+- Let the sole dial select user activities and concerns, replacing relevant windows, metrics and cloud/lunar/dew visualizations. Remove literal gears, chains, export, extra purpose controls and ornamental headlines.
+- Add separately licensed instrument fonts and monospace body text; retain original font bytes and licenses.
+- Keep optional advice to three lines at most, each within twenty characters; verify 264 purpose/environment/language combinations. Label weather evolution as illustrative and document calculation limits.
+- Preserve the weather page and keep APK work paused.
+
 ## 0.9.2 — 2026-10-22
 
 - Rename the app and project to BARO / 晴雨, with the tagline “Half data, half sky.”

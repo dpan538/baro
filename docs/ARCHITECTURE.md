@@ -25,3 +25,7 @@ The application ID, private origin, existing preference/cache keys and JavaScrip
 Use a checked-in Gradle wrapper and separate code/source licensing from third-party assets. Document actual implementation state and signing identity. Publish binaries outside Git, keep keys and local paths untracked, and verify a real public download separately from a local build. Do not claim that a browser prototype or emulator result proves target-device behavior.
 
 No PDF, handwriting, database, dictionary, signing key or feedback backend was copied from Annota. BARO's current feedback flow is GitHub in the browser plus local copy; its current update action opens Releases. A protected download/install flow like Annota's is future work.
+
+## Observation page
+
+`sky-model.js` isolates approximate solar/lunar geometry, local clocks and deterministic atmospheric fixtures. `planning-model.js` selects a purpose-specific window and objective metric set; it enforces short optional advice. `observatory.js` owns the fourteen-module interface, sole purpose dial, gesture navigation and presentation handoff. `observatory.css` scopes the independent typography and layout. `instrument-art.js` draws a separate panorama with its own program, sharing one WebGL context with the paused weather renderer. No live forecast or additional data service is introduced. See [data and rendering limits](INSTRUMENT-PANEL.md).

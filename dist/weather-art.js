@@ -275,11 +275,13 @@ export class PixelWeatherRenderer {
     this.origin=performance.now(); this.resize(); this.sync();
   }
   setWeather(weather) {this.weather=weather;this.previous=[];this.lastFrame=-1;this.render(0);}
+  setPresentationActive(value){this.presentationActive=value;if(value){this.previous=[];this.resize();this.sync();}else cancelAnimationFrame(this.raf);}
   setAnimated(value) {
     if(value&&!this.animated)this.origin=performance.now()-Math.max(0,this.lastFrame)*1000/MOTION.fps;
     this.animated=value;this.sync();
   }
   resize() {
+    if(this.presentationActive===false)return;
     if(!this.ctx)return;
     const box=this.canvas.getBoundingClientRect(); if(!box.width||!box.height)return;
     const dpr=window.devicePixelRatio||1;
@@ -290,6 +292,7 @@ export class PixelWeatherRenderer {
     this.previous=[];this.lastFrame=frame;this.canvas.dataset.resolution=`${width}×${height}`;this.render(frame);
   }
   render(frame) {
+    if(this.presentationActive===false)return;
     if(!this.ctx||!this.canvas.width||!this.canvas.height)return;
     const tile=this.canvas.width/MOTION.columns;
     const data=createWeatherFrame(this.weather,this.canvas.height/tile,frame);
@@ -306,6 +309,7 @@ export class PixelWeatherRenderer {
   }
   sync() {
     cancelAnimationFrame(this.raf);
+    if(this.presentationActive===false)return;
     if(this.reducedMotion.matches){this.render(0);return;}
     if(!this.animated){this.render(Math.max(0,this.lastFrame));return;}
     if(document.hidden||!this.visible)return;

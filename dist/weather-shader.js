@@ -540,6 +540,7 @@ export class FineWeatherRenderer {
     this.canvas.dataset.renderer='webgl2-'+this.columns+(this.pixelStyle==='block'?'-flat':'-bayer4');
   }
   resize(){
+    if(this.presentationActive===false)return;
     if(this.fallback)return this.fallback.resize();
     if(this.gl.isContextLost())return;
     const box=this.canvas.getBoundingClientRect();if(!box.width||!box.height)return;
@@ -556,6 +557,7 @@ export class FineWeatherRenderer {
     this.draw(this.frame);
   }
   draw(frame){
+    if(this.presentationActive===false)return;
     const gl=this.gl;if(gl.isContextLost()||!this.rows)return;
     this.frame=frame;const scene=resolveWeatherScene(this.weather);
     gl.bindVertexArray(this.vao);gl.bindFramebuffer(gl.FRAMEBUFFER,this.fbo);gl.viewport(0,0,this.columns,this.rows);gl.useProgram(this.art);
@@ -567,11 +569,12 @@ export class FineWeatherRenderer {
     gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.viewport(0,0,this.canvas.width,this.canvas.height);gl.useProgram(this.copy);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,this.texture);gl.drawArrays(gl.TRIANGLES,0,3);
     this.canvas.dataset.scene=scene;this.canvas.dataset.frame=String(frame);this.canvas.dataset.elapsed=this.elapsed.toFixed(2);
   }
+  setPresentationActive(value){this.presentationActive=value;if(this.fallback)this.fallback.setPresentationActive(value);if(value){this.resize();this.sync();}else cancelAnimationFrame(this.raf);}
   setPixelStyle(style){if(!['fine','block'].includes(style))return;this.pixelStyle=style;this.columns=style==='block'?FINE_MOTION.coarseColumns:FINE_MOTION.columns;if(!this.fallback)this.resize();}
   setWeather(weather){this.weather=weather;if(this.fallback)return this.fallback.setWeather(weather);this.draw(this.reduced.matches?0:this.frame);}
   setAnimated(value){if(this.fallback)return this.fallback.setAnimated(value);if(value&&!this.animated)this.origin=performance.now()-this.elapsed*1000;this.animated=value;this.sync();}
   sync(){
-    cancelAnimationFrame(this.raf);if(!this.animated||document.hidden||!this.visible||this.gl.isContextLost())return;
+    cancelAnimationFrame(this.raf);if(this.presentationActive===false||!this.animated||document.hidden||!this.visible||this.gl.isContextLost())return;
     if(this.reduced.matches){this.draw(0);return;}
     const loop=now=>{const tick=Math.floor((now-this.origin)*FINE_MOTION.fps/1000);if(tick!==this.tick){this.tick=tick;this.elapsed=tick/FINE_MOTION.fps;this.draw(tick);}this.raf=requestAnimationFrame(loop);};this.raf=requestAnimationFrame(loop);
   }

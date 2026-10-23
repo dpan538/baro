@@ -1,6 +1,6 @@
 # UI system
 
-The browser uses Inter for numeric values and UI text, MiSans for Chinese glyphs, and Roboto Mono for English labels and metadata. These are semantic roles, not separate choices for individual weather scenarios.
+The first weather page uses Inter for numeric values and UI text, MiSans for Chinese glyphs, and Roboto Mono for English labels and metadata. These are semantic roles, not separate choices for individual weather scenarios.
 
 | Role | Tracking | Numerals |
 | --- | --- | --- |
@@ -31,3 +31,7 @@ Dawn uses a low sun to the left, cool rose/blue light, naturally rounded cloud b
 Night has three star fields with different density, size, brightness and independent twinkle rates, including gold points and sparse warm glints, plus a faint broad sky band. The Moon and its halo share a slow local-transmission envelope while surface marks stay stable. Fog uses fine continuous density ramps, a distant ridge, a low island and a striped lighthouse with a tapered cylindrical tower, a shaded side and lantern gallery. A two-step foundation, contact/cast shadows and a small gravel lip anchor the tower in a low island, whose diffuse surface shading blends into wet rocks and a soft shoreline. Perspective wavelets and broken coastal ripples tie that shore to the water. Advecting veils obscure/reveal these landmarks and a warm beacon sweeps back and forth over roughly 42 seconds, changing its direction, spread and visibility through the mist. Wind uses a smaller pale-gold sun filtered by thin haze, distinct from the clear scene’s orange sun. It retains the established flattened cloud form with small proportion variations, and uses three trail layers with different widths, opacity, speed and length. The clear-sky composition stays fixed while its sun uses a red-orange/gold surface ramp and the sky retains blue, peach and restrained violet variation. Dawn additionally has thin high cloud and a faint near-horizon sea mist.
 
 Cloud coverage modulates the common atmospheric-light envelope, while the light origin drives the restrained cloud-volume contribution. Rain origins follow the complete lower envelope of all moving cloud lobes and account for lateral drift. The displaced source must also lie within the current horizontal footprint, and cloud coverage clips precipitation from cloud faces. These are deliberate stylized approximations. The natural-behavior references and their implementation boundaries are documented in [natural phenomena](NATURAL-PHENOMENA.md).
+
+## Independent instrument page
+
+The second page intentionally uses a separate, scoped design system: warm ink, cream, coral, ochre and pale cyan nested surfaces, a thin lavender outer field, Space Grotesk/Rajdhani/IBM Plex Mono with a renamed Noto Sans SC Chinese subset, mixed module shapes and vertically divided large readouts. Its fourteen modules and lower-right purpose dial are described in [instrument panel](INSTRUMENT-PANEL.md). Weather-page typography, icons and neutral data surfaces retain their existing rules. Coupling is expressed through information selection, never physical gears or chains.

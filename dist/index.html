@@ -10,6 +10,7 @@
   <link rel="preload" href="assets/fonts/RobotoMono.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="assets/fonts/Inter.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="observatory.css">
   <script src="app.js" type="module"></script>
 </head>
 <body>
@@ -104,9 +105,11 @@
     </div>
 
     <section class="visual-panel" aria-label="像素天气动画">
+      <button id="observatory-open" class="observatory-open" type="button" aria-controls="sky-page">天空观测 ↗</button>
       <div class="weather-artwork" role="img" aria-label="晴间多云像素动画"><canvas id="weather-pixels" class="weather-pixels" aria-hidden="true"></canvas></div>
 
     </section>
   </main>
+  <section id="sky-page" class="sky-page" aria-label="天空观测台" hidden></section>
 </body>
 </html>
