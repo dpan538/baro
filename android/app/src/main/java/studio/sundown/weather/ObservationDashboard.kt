@@ -305,7 +305,10 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
                 value(RectF(body.left,body.top,body.right,body.bottom-30),Units.number(value,if(kind=="temperature"||kind=="visibility")1 else 0),unit,if(portrait)58f else 70f)
                 if(kind=="precipitation")series(RectF(body.centerX(),body.top+10,body.right,body.bottom-28),"precipitation_probability",0.0,100.0)
                 if(kind=="temperature"){val day=wx?.today(at);val lo=day?.low;val hi=day?.high;val r=RectF(body.left,body.bottom-12,body.right,body.bottom-5);rect(r,0xff56534d.toInt());v("temperature_2m")?.let{temp->if(lo!=null&&hi!=null){val pos=if(hi>lo)((temp-lo)/(hi-lo)).coerceIn(0.0,1.0) else .5;val xx=r.left+r.width()*pos.toFloat();line(xx,r.top-3,xx,r.bottom+3,PAPER,3f)}}}
-                fit(if(kind=="glow")heading("云层与能见度推算","From cloud + visibility")else heading("逐小时模型预报","Hourly model forecast"),body.left,body.bottom-(if(kind=="temperature")44 else 22),body.width(),16f)
+                if(kind=="visibility"){
+                    val m=metrics!!;val label=m.rect("ins-focus:heading");val reading=m.rect("ins-focus:reading")
+                    fit(heading("逐小时模型","Hourly model"),body.left,label.bottom+6*m.sx,max(0f,reading.left-body.left-12*m.sx),16*m.sx)
+                }else fit(if(kind=="glow")heading("云层与能见度推算","From cloud + visibility")else heading("逐小时模型预报","Hourly model forecast"),body.left,body.bottom-(if(kind=="temperature")44 else 22),body.width(),16f)
             }
         }
     }
