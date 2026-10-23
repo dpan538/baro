@@ -8,7 +8,7 @@ p = argparse.ArgumentParser()
 p.add_argument('--output', type=Path, required=True)
 p.add_argument('--start', type=int, default=1)
 p.add_argument('--end', type=int, default=300)
-p.add_argument('--batch', type=int, default=15)
+p.add_argument('--batch', type=int, default=300)
 a = p.parse_args()
 assert 1 <= a.start <= a.end <= 300 and a.batch > 0
 out = a.output.resolve(); out.mkdir(parents=True, exist_ok=True)

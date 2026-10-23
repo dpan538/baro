@@ -40,6 +40,7 @@ class NativeSoakTest {
         val start=args.getString("startRound")?.toInt()?:1;val count=args.getString("roundCount")?.toInt()?:15
         val output=File(i.targetContext.getExternalFilesDir(null),"soak-$start.jsonl");output.writeText("")
         for(n in start until start+count){
+            if(n==start||(n-1)%75==0){i.uiAutomation.executeShellCommand("wm user-rotation lock ${if((n-1)/75%2==0)0 else 1}").close();SystemClock.sleep(1400)}
             val began=SystemClock.elapsedRealtime();val row=JSONObject().put("round",n).put("epochMs",System.currentTimeMillis()).put("source",BuildConfig.SOURCE_COMMIT).put("pid",Process.myPid()).put("freshInstrumentationProcess",n==start)
             var scenario:ActivityScenario<MainActivity>?=null
             try{
