@@ -90,7 +90,7 @@ class WeatherRepository(private val context: Context) {
     fun bytes()=cache.listFiles()?.sumOf { it.length() }?:0L
     fun refresh(place: Place, force: Boolean=false, callback: (Weather?,String?)->Unit) {
         cancelWeather();val g=generation;val cached=cached(place)
-        if(cached!=null){callback(cached,null);if(!force&&!cached.stale(System.currentTimeMillis()/1000))return}
+        if(cached!=null&&!force&&!cached.stale(System.currentTimeMillis()/1000)){callback(cached,null);return}
         val job=NetworkJob();weatherJob=job
         job.future=pool.submit {
             var error: Exception?=null

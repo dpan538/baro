@@ -24,6 +24,11 @@ class NativeFlowTest {
         for(i in 1..12){SystemClock.sleep(12);val f=i/12f;event(MotionEvent.ACTION_MOVE,coords[0]+(coords[2]-coords[0])*f,coords[1]+(coords[3]-coords[1])*f,SystemClock.uptimeMillis())}
         event(if(cancel)MotionEvent.ACTION_CANCEL else MotionEvent.ACTION_UP,coords[2],coords[3],SystemClock.uptimeMillis());idle()
     }
+    @Test fun forcedRefreshWaitsForNetworkCompletionEvenWithCache(){
+        seed();val raw=JSONObject(instrument.context.assets.open("live-brisbane.json").bufferedReader().use{it.readText()}).put("fetchedAt",System.currentTimeMillis()/1000)
+        val cache=File(ctx.cacheDir,"weather").apply{mkdirs()};File(cache,"-27.47,153.03.json").writeText(raw.toString())
+        ActivityScenario.launch(MainActivity::class.java).use{s->s.onActivity{a->var delivered=false;assertNotNull(a.repository.cached(a.model.place));a.repository.refresh(a.model.place,true){_,_->delivered=true};assertFalse("Cached data must not acknowledge a forced network refresh",delivered);a.repository.cancelWeather()}}
+    }
     @Test fun legacyTestFlagsCannotActivateSampleWeather(){
         seed();val prefs=ctx.getSharedPreferences("baro-native",Context.MODE_PRIVATE)
         prefs.edit().putBoolean("demo",true).putString("demo_scene","snow").commit()
