@@ -17,12 +17,11 @@ const insLabel={
 };
 const insScenes={partly:['岛屿气象台','Island weather station'],rain:['雨幕温室','Rain garden'],storm:['海岸监测堡','Coastal storm bunker'],snow:['雪山测候点','Alpine station'],night:['星野射电台','Night radio telescope'],sunset:['海岸落日台','Coastal sunset'],dawn:['晨雾研究舱','Dawn research shelter'],clear:['晴空太阳能场','Solar field'],overcast:['阴云风场','Overcast wind farm'],fog:['雾林瞭望塔','Forest lookout'],wind:['高地风机群','Highland turbines']};
 function insMoonGraphic(g){
- const r=46,cx=150,cy=58,k=-Math.cos(g.fraction*2*Math.PI),waxing=g.fraction<.5;let d='';
- for(let i=0;i<=50;i++){const y=-r+i*2*r/50,x=Math.sqrt(Math.max(0,r*r-y*y));d+=(i?'L':'M')+(cx+(waxing?x:-x))+' '+(cy+y);}
- for(let i=50;i>=0;i--){const y=-r+i*2*r/50,x=Math.sqrt(Math.max(0,r*r-y*y));d+='L'+(cx+(waxing?-k:k)*x)+' '+(cy+y);}
- let ticks='';for(let i=0;i<32;i++){const a=i/32*Math.PI*2,ri=i%4?52:49;ticks+=`<path d="M${cx+Math.sin(a)*ri} ${cy-Math.cos(a)*ri}L${cx+Math.sin(a)*55} ${cy-Math.cos(a)*55}"/>`;}
- const a=g.fraction*Math.PI*2;
- return insSvg(`<defs><clipPath id="ins-lunar-lit"><path d="${d}Z"/></clipPath><pattern id="ins-moon-etch" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M0 5L5 0" stroke="#504b3f" stroke-width=".6" opacity=".35"/></pattern></defs><g stroke="currentColor" stroke-width=".7" opacity=".65">${ticks}</g><circle cx="150" cy="58" r="46" fill="#292722"/><path d="${d}Z" fill="#eee5ca"/><path d="${d}Z" fill="url(#ins-moon-etch)"/><g clip-path="url(#ins-lunar-lit)" fill="none" stroke="#766e59" stroke-width=".6" opacity=".5"><ellipse cx="150" cy="58" rx="24" ry="46"/><ellipse cx="150" cy="58" rx="39" ry="46"/><path d="M107 42Q150 54 193 42M105 58H195M107 74Q150 62 193 74"/></g><path d="${d}Z" fill="none" stroke="#292722" stroke-width=".6"/><circle cx="150" cy="58" r="46" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="${cx+Math.sin(a)*55}" cy="${cy-Math.cos(a)*55}" r="2.8" fill="#944b34"/>`,'92 0 116 116');
+ // Exact circular limb and elliptical terminator; all shading is native SVG.
+ const r=46,k=-Math.cos(g.fraction*2*Math.PI),waxing=g.fraction<.5;
+ const terminator=Math.abs(k)<.0001?'L50 4':`A${Math.abs(k)*r} ${r} 0 0 ${waxing?(k>=0?1:0):(k>=0?0:1)} 50 4`;
+ const lit=`M50 4A${r} ${r} 0 0 ${waxing?1:0} 50 96${terminator}Z`;
+ return insSvg(`<defs><radialGradient id="ins-moon-light" cx="34%" cy="28%" r="76%"><stop stop-color="#f6eed7"/><stop offset=".66" stop-color="#d7c9a7"/><stop offset="1" stop-color="#a99a7a"/></radialGradient><radialGradient id="ins-moon-shadow" cx="35%" cy="30%" r="80%"><stop stop-color="#504b40"/><stop offset="1" stop-color="#24231f"/></radialGradient><clipPath id="ins-moon-disc"><circle cx="50" cy="50" r="46"/></clipPath></defs><g clip-path="url(#ins-moon-disc)"><circle cx="50" cy="50" r="46" fill="url(#ins-moon-shadow)"/><path d="${lit}" fill="url(#ins-moon-light)"/></g><circle cx="50" cy="50" r="46" fill="none" stroke="#524d40" stroke-width=".8"/>`,'0 0 100 100');
 }
 function insMetric(kind,v,s,primary=false){
  const en=s.language==='en',c=(zh,english)=>en?english:zh,g=instrumentGraphicData(kind,v),n=insN;
@@ -88,7 +87,8 @@ function insMetric(kind,v,s,primary=false){
  if(kind==='lunar'||kind==='darkness'){
   const phases=en?['New','Waxing crescent','First quarter','Waxing gibbous','Full','Waning gibbous','Last quarter','Waning crescent']:['新月','蛾眉月','上弦月','盈凸月','满月','亏凸月','下弦月','残月'];
   const phase=phases[Math.round(g.fraction*8)%8],tz=v.window.day.weather.timezone;
-  return `<h2>${label}${kind==='lunar'?'<small class="ins-lunar-bortle">Bortle —</small>':''}</h2>${kind==='lunar'?`<div class="ins-lunar-line"><strong>${n(g.value)}<small>%</small></strong>${insMoonGraphic(g)}<span>${phase}</span><small class="ins-moon-age">${c("月龄约","Age ≈")} ${n(g.fraction*29.53059)} ${c("日","d")}</small></div>`:`<div class="ins-bortle">Bortle <strong>—</strong><small>${c('测光未接入','Unmeasured')}</small></div>`}<div class="ins-moon-times"><span>↑ ${skyClock(g.rise,tz)} ≈</span><span>↓ ${skyClock(g.set,tz)} ≈</span></div>`;
+  const times=`<div class="ins-moon-times"><span>↑ ${skyClock(g.rise,tz)} ≈</span><span>↓ ${skyClock(g.set,tz)} ≈</span></div>`;
+  return `<h2>${label}${kind==='lunar'?'<small class="ins-lunar-bortle">Bortle —</small>':''}</h2>${kind==='lunar'?`<div class="ins-lunar-line"><strong>${n(g.value)}<small>%</small></strong>${insMoonGraphic(g)}<span>${phase}</span><small class="ins-moon-age">${c("月龄约","Age ≈")} ${n(g.fraction*29.53059)} ${c("日","d")}</small>${times}</div>`:`<div class="ins-bortle">Bortle <strong>—</strong><small>${c('测光未接入','Unmeasured')}</small></div>${times}`}`;
  }
  if(kind==='drift'){
   value=wind(g.speed);unit=wu.label;detail=`300 hPa · ${n(g.from)}° · Δv ${wind(g.difference)} ${wu.label}`;

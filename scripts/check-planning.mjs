@@ -12,8 +12,8 @@ for(const [preset,weather] of Object.entries(WEATHER_PRESETS)){
   assert(view.end.epoch>=view.m.epoch);assert.equal(view.samples.length,25);
   assert(view.trend.every(Number.isFinite));assert(view.barValue>=0&&view.barValue<=100);
   const advice=planningAdvice(view,lang);
-  assert([...advice].length<=(lang==='en'?100:72),`${preset}/${purpose}/${lang}: interpretation exceeds its reading budget`);
-  assert(advice.length>0&&!advice.includes('\n'),'A short interpretation, not an advice list');
+  assert([...advice].length<=(lang==='en'?180:84),`${preset}/${purpose}/${lang}: interpretation exceeds its reading budget`);
+  assert(advice.length>0&&!advice.includes('\n'),'A connected interpretation, not an advice list');
   assert(view.window.end<=1560);assert.equal(view.dayLabel,view.window.nextDay?(lang==='en'?'TOMORROW':'明日'):(lang==='en'?'TODAY':'今日'));
   count++;
  }
@@ -44,6 +44,8 @@ const missingEnd={...day,thresholds:{...day.thresholds,'-6':[]},initialMinute:0,
 assert.equal(planningWindow(missingEnd,'sunset').available,false,'A missing end crossing must not become an arbitrary two-hour photographic window');
 const adviceView={preset:'clear',purpose:'commute',m:{temperature:30,humidity:85,dewSpread:5,precipitation:0,rainRate:0,windGust:10,sun:{elevation:30}},end:{temperature:30}};
 assert.match(planningAdvice(adviceView),/潮湿闷热/);
+assert.match(planningAdvice(adviceView),/汗液不易蒸发/,'Wet heat should be explained in everyday terms');
+assert.match(planningAdvice({...adviceView,m:{...adviceView.m,temperature:20,humidity:50,windGust:45}}),/晃动/,'Translate gust conditions without adding a new forecast');
 assert.match(planningAdvice({...adviceView,m:{...adviceView.m,sun:{elevation:-20}}}),/夜间/);
 assert.match(planningAdvice({...adviceView,m:{...adviceView.m,temperature:20,humidity:90,dewSpread:1,sun:{elevation:-20}}}),/冷表面可能结露/);
 assert.match(planningAdvice({...adviceView,m:{...adviceView.m,temperature:5}}),/气温偏低/);

@@ -10,7 +10,7 @@ export const SKY_PURPOSES=Object.freeze([
 ]);
 const planningClamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 // Plain-language interpretation of the selected window, not a second forecast.
-// Surface comfort, rain, wind and optical/moisture conditions share one sentence.
+// Translate selected surface comfort, moisture and optical conditions into plain language.
 function planningInterpretationLead({preset,purpose,window,m,end},language='zh'){
  const elevation=m.sun?.elevation??0,night=elevation<-6;
  const wetHeat=m.wetBulb>=25||(m.temperature>=28&&m.humidity>=70);
@@ -45,13 +45,16 @@ function planningInterpretationLead({preset,purpose,window,m,end},language='zh')
 export function planningAdvice(view,language='zh'){
  const {m,end}=view,en=language==='en',c=(zh,english)=>en?english:zh,details=[];
  if(m.dewSpread<3&&m.humidity>=80)details.push(c('近地空气接近饱和，冷表面可能结露。','Air is near saturation; cool surfaces may collect dew.'));
+ if(m.wetBulb>=25||(m.temperature>=28&&m.humidity>=70))details.push(c('高湿度让汗液不易蒸发，体感比气温更闷。','High humidity slows evaporation, making the air feel muggy.'));
  if(m.pwv>40&&m.visibility<10)details.push(c('整层水汽较多，远处景物层次偏弱。','Moist air reduces the definition of distant scenery.'));
  else if((m.sun?.elevation??0)<-6&&m.low>85)details.push(c('低云遮挡较多，夜空目标不易辨认。','Low cloud obscures much of the night sky.'));
  else if(m.radiation?.total>0&&m.radiation.diffuse/m.radiation.total>.7)details.push(c('日光以漫射为主，阴影边缘较柔和。','Diffuse light softens the edges of shadows.'));
  else if(Math.abs(m.surfaceDelta)>=6)details.push(c('地表与空气温差大，长焦远景可能发虚。','Surface heating may soften distant telephoto detail.'));
  if(details.length<2&&end.temperature<m.temperature-1.5&&end.temperature>=m.temperature-3)details.push(c('时段后段还会降温，体感比眼下更凉。','The later part of this window is cooler.'));
+ if(m.windGust>=35)details.push(c('阵风会让枝叶、轻物和拍摄画面更易晃动。','Gusts can shake foliage, light objects and camera framing.'));
+ if(details.length<3&&m.dewSpread>=8&&m.humidity<60)details.push(c('空气离饱和较远，冷表面需要降温更多才会结露。','Air is farther from saturation; surfaces need more cooling before dew forms.'));
  if(!details.length){const cloud=Math.max(m.low??0,m.mid??0,m.high??0);details.push(cloud>80?c('云层遮挡较多，天空开阔程度有限。','Clouds obscure much of the sky.'):cloud<30?c('云层遮挡较少，天空比较开阔。','Cloud cover leaves much of the sky open.'):c('天空有云，明暗会受到云层遮挡影响。','Partial cloud cover changes the light reaching the ground.'));}
- const limit=en?100:72;
+ const limit=en?180:84;
  let text=planningInterpretationLead(view,language);
  for(const detail of details){const next=text+(en?' ':'')+detail;if([...next].length<=limit)text=next;}
  return text;
