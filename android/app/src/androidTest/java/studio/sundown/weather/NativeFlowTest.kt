@@ -25,10 +25,12 @@ class NativeFlowTest {
         for(i in 1..12){SystemClock.sleep(12);val f=i/12f;event(MotionEvent.ACTION_MOVE,coords[0]+(coords[2]-coords[0])*f,coords[1]+(coords[3]-coords[1])*f,SystemClock.uptimeMillis())}
         event(if(cancel)MotionEvent.ACTION_CANCEL else MotionEvent.ACTION_UP,coords[2],coords[3],SystemClock.uptimeMillis());idle()
     }
-    @Test fun forcedRefreshWaitsForNetworkCompletionEvenWithCache(){
-        seed();val raw=JSONObject(instrument.context.assets.open("live-brisbane.json").bufferedReader().use{it.readText()}).put("fetchedAt",System.currentTimeMillis()/1000)
-        val cache=File(ctx.cacheDir,"weather").apply{mkdirs()};File(cache,"-27.47,153.03.json").writeText(raw.toString())
-        ActivityScenario.launch(MainActivity::class.java).use{s->s.onActivity{a->var delivered=false;assertNotNull(a.repository.cached(a.model.place));a.repository.refresh(a.model.place,true){_,_->delivered=true};assertFalse("Cached data must not acknowledge a forced network refresh",delivered);a.repository.cancelWeather()}}
+    @Test fun manualRefreshReusesVeryRecentReading(){
+        seed();val now=System.currentTimeMillis()/1000;val raw=JSONObject(instrument.context.assets.open("live-brisbane.json").bufferedReader().use{it.readText()}).put("fetchedAt",now).apply{getJSONObject("forecast").getJSONObject("current").put("time",now)}
+        ActivityScenario.launch(MainActivity::class.java).use{s->s.onActivity{a->
+            a.repository.clear();val cache=File(ctx.cacheDir,"weather").apply{mkdirs()};File(cache,"-27.47,153.03.json").writeText(raw.toString())
+            var delivered=false;assertNotNull(a.repository.cached(a.model.place));a.repository.refresh(a.model.place,true){weather,error->delivered=true;assertNotNull(weather);assertNull(error)};assertTrue("Manual refresh must reuse readings younger than five minutes",delivered);a.repository.cancelWeather()
+        }}
     }
     @Test fun legacyTestFlagsCannotActivateSampleWeather(){
         seed();val prefs=ctx.getSharedPreferences("baro-native",Context.MODE_PRIVATE)
@@ -110,11 +112,11 @@ class NativeFlowTest {
         org.junit.Assume.assumeFalse("Full GLES product captures are verified locally, not in the hosted UI-only profile",NativeTestEnvironment.uiOnly)
         ctx.getExternalFilesDir(null)?.listFiles()?.filter{it.name.startsWith("native-")&&it.extension=="png"}?.forEach{it.delete()}
         seed();ActivityScenario.launch(MainActivity::class.java).use{s->idle()
-            s.onActivity{it.refresh(true)}
+            s.onActivity{it.repository.clear();it.model.weather=null;it.refresh(true)}
             var ready=false
             for(attempt in 0..59){s.onActivity{ready=it.model.weather!=null&&it.model.status=="ready"};if(ready)break;SystemClock.sleep(500)}
             assertTrue("Live API weather must be loaded before product screenshots",ready)
-            s.onActivity{a->java.io.File(ctx.getExternalFilesDir(null),"live-visual-provenance.json").writeText(org.json.JSONObject().put("source","Open-Meteo live API").put("backend",a.repository.backend).put("pixels",if(a.model.block)"block"else "fine").put("validAt",a.model.weather!!.validAt).put("fetchedAt",a.model.weather!!.fetchedAt).toString());val raw=java.io.File(ctx.cacheDir,"weather/"+a.model.place.key+".json");assertTrue(raw.isFile);raw.copyTo(java.io.File(ctx.getExternalFilesDir(null),"live-visual-response.json"),overwrite=true)}
+            s.onActivity{a->java.io.File(ctx.getExternalFilesDir(null),"live-visual-provenance.json").writeText(org.json.JSONObject().put("source","Open-Meteo live API").put("backend",a.repository.backend).put("pixels",if(a.model.block)"block"else "fine").put("validAt",a.model.weather!!.validAt).put("fetchedAt",a.model.weather!!.fetchedAt).toString());val raw=a.repository.rawFor(a.model.place);assertNotNull(raw);java.io.File(ctx.getExternalFilesDir(null),"live-visual-response.json").writeText(raw!!)}
             for(orientation in listOf(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)){
                 instrument.uiAutomation.executeShellCommand("wm user-rotation lock ${if(orientation==0)0 else 1}").close();SystemClock.sleep(1500);idle();s.onActivity{assertEquals(orientation==0,it.pager.width>it.pager.height)}
                 dismissEducation();val selected=InstrumentationRegistry.getArguments().getString("purposes")?.split(",")?.map{it.toInt().also{value->require(value in 0..11)}}?: (0..11).toList()

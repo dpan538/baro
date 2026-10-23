@@ -22,7 +22,7 @@ class TwoPageHost(context:Context,val model:AppModel,val weatherPage:NativePage,
     fun syncPage(){if(animator==null&&dx==0f)reset()}
     private fun current()=if(model.page==0)weatherPage else observationPage
     private fun other()=if(model.page==0)observationPage else weatherPage
-    private fun reset(){current().translationX=0f;other().translationX=width.toFloat();onTransition?.invoke(false)}
+    private fun reset(){current().translationX=0f;other().translationX=width.toFloat();weatherPage.pageMotion(0f,false);observationPage.pageMotion(0f,false);onTransition?.invoke(false)}
     override fun onSizeChanged(w:Int,h:Int,oldw:Int,oldh:Int){super.onSizeChanged(w,h,oldw,oldh);animator?.cancel();animator=null;reset()}
     override fun onInterceptTouchEvent(event:MotionEvent):Boolean {
         if(overlayOpen)return false
@@ -39,7 +39,7 @@ class TwoPageHost(context:Context,val model:AppModel,val weatherPage:NativePage,
             MotionEvent.ACTION_CANCEL,MotionEvent.ACTION_UP->{tracker?.recycle();tracker=null}
         };return false
     }
-    private fun position(offset:Float){dx=offset.coerceIn(-width.toFloat(),width.toFloat());sign=if(dx>=0)1 else -1;current().translationX=dx;other().translationX=dx-sign*width}
+    private fun position(offset:Float){dx=offset.coerceIn(-width.toFloat(),width.toFloat());sign=if(dx>=0)1 else -1;current().translationX=dx;other().translationX=dx-sign*width;val progress=abs(dx)/max(1,width);current().pageMotion(progress,true);other().pageMotion(1-progress,true)}
     override fun onTouchEvent(event:MotionEvent):Boolean {
         tracker?.addMovement(event)
         when(event.actionMasked){
@@ -52,8 +52,8 @@ class TwoPageHost(context:Context,val model:AppModel,val weatherPage:NativePage,
         val from=dx;val to=if(commit)sign*width.toFloat() else 0f
         val old=current();val next=other();val direction=sign
         animator?.cancel()
-        fun finish(){if(commit){model.page=1-model.page;lastSettleDirection=direction};old.translationX=if(commit)width.toFloat() else 0f;next.translationX=if(commit)0f else width.toFloat();dx=0f;animator=null;onPageChanged?.invoke();onTransition?.invoke(false)}
+        fun finish(){if(commit){model.page=1-model.page;lastSettleDirection=direction};old.translationX=if(commit)width.toFloat() else 0f;next.translationX=if(commit)0f else width.toFloat();old.pageMotion(0f,false);next.pageMotion(0f,false);dx=0f;animator=null;onPageChanged?.invoke();onTransition?.invoke(false)}
         if(!ValueAnimator.areAnimatorsEnabled()){finish();return}
-        animator=ValueAnimator.ofFloat(from,to).apply{duration=180;interpolator=LinearInterpolator();addUpdateListener{val x=it.animatedValue as Float;old.translationX=x;next.translationX=x-direction*width};addListener(object:android.animation.AnimatorListenerAdapter(){var cancelled=false;override fun onAnimationCancel(a:android.animation.Animator){cancelled=true};override fun onAnimationEnd(a:android.animation.Animator){if(!cancelled)finish()}});start()}
+        animator=ValueAnimator.ofFloat(from,to).apply{duration=(90+130*abs(to-from)/max(1,width)).toLong();interpolator=LinearInterpolator();addUpdateListener{val x=it.animatedValue as Float;old.translationX=x;next.translationX=x-direction*width;val p=abs(x)/max(1,width);old.pageMotion(p,true);next.pageMotion(1-p,true)};addListener(object:android.animation.AnimatorListenerAdapter(){var cancelled=false;override fun onAnimationCancel(a:android.animation.Animator){cancelled=true};override fun onAnimationEnd(a:android.animation.Animator){if(!cancelled)finish()}});start()}
     }
 }

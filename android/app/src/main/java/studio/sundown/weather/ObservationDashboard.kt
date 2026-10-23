@@ -2,6 +2,8 @@ package studio.sundown.weather
 
 import android.content.Context
 import android.graphics.*
+import android.animation.ValueAnimator
+import android.view.animation.LinearInterpolator
 import java.time.Instant
 import kotlin.math.*
 
@@ -12,13 +14,27 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
     private val pad=12f
     private val pale=Color.rgb(237,237,230)
     private var lunarEvents:Pair<String,List<Pair<Long,Boolean>>>?=null
+    private var contentProgress=1f
+    private var contentAnimator:ValueAnimator?=null
+    val contentAnimating get()=contentAnimator?.isRunning==true
+    fun animatePurposeChange(){
+        contentAnimator?.cancel()
+        if(!ValueAnimator.areAnimatorsEnabled()){contentProgress=1f;invalidate();return}
+        contentAnimator=ValueAnimator.ofFloat(0f,1f).apply{duration=150;interpolator=LinearInterpolator();addUpdateListener{contentProgress=it.animatedValue as Float;invalidate()};start()}
+    }
+    override fun onDetachedFromWindow(){contentAnimator?.cancel();super.onDetachedFromWindow()}
     private fun v(k:String)=wx?.value(k,at)
     private fun n(k:String,d:Int=0)=Units.number(v(k),d)
     private fun t(k:String,d:Int=1)=model.temp(v(k),d)
     private fun heading(zh:String,en:String)=tr(zh,en)
     private fun titleText(content:String,x:Float,y:Float,size:Float=26f,fg:Int=INK){text(content,x,y,size,fg,Typeface.create(chinese,450,false))}
     private var activeId=""
-    private fun color(css:String,fallback:Int):Int {val values=Regex("[0-9.]+").findAll(css).map{it.value.toFloat()}.toList();return if(values.size>=3)Color.rgb(values[0].toInt(),values[1].toInt(),values[2].toInt())else fallback}
+    private fun color(css:String,fallback:Int):Int {
+        val values=Regex("[0-9.]+").findAll(css).map{it.value.toFloat()}.toList()
+        if(values.size<3)return fallback
+        val rgb=values.take(3).map{it.toInt()}
+        return when(rgb){listOf(48,48,45)->CHARCOAL;listOf(32,32,30)->0xff181817.toInt();listOf(30,30,28)->FRAME;else->Color.rgb(rgb[0],rgb[1],rgb[2])}
+    }
     private fun measuredText(part:String,content:String,overrideRect:RectF?=null):Float? {
         val m=metrics?:return null;val key="$activeId:$part";val node=m.node(key)?:return null
         val b=RectF(overrideRect?:m.rect(key));if(b.isEmpty)return null
@@ -47,8 +63,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
     private fun base(b:RectF,name:String,dark:Boolean=false,color:Int?=null):RectF {
         val fg=if(dark)PAPER else INK;val node=metrics?.node(activeId)
         val background=node?.optString("bg")?.let{this.color(it,color?:if(dark)CHARCOAL else PAPER)}?:color?:if(dark)CHARCOAL else PAPER
-        val radii=node?.optJSONArray("radii")
-        if(radii!=null){val rs=FloatArray(8){idx->radii.getDouble(idx/2).toFloat()*(metrics?.sx?:1f)};val path=Path().apply{addRoundRect(b,rs,Path.Direction.CW)};p.reset();p.isAntiAlias=true;p.color=background;c!!.drawPath(path,p)}else rect(b,background)
+        if(node!=null){p.reset();p.isAntiAlias=true;p.color=background;c!!.drawPath(metrics!!.outline(activeId,b),p)}else rect(b,background)
         if(measuredText("heading",name)==null)paragraph(name,RectF(b.left+pad,b.top+pad,b.right-pad,b.top+pad+title*2.3f),title,fg,if(model.lang=="en"&&name.length*title*.53>b.width()-24)2 else 1)
         val head=metrics?.rect("$activeId:heading")
         return RectF(b.left+pad,head?.takeUnless{it.isEmpty}?.bottom?.plus(10)?:b.top+pad+title+10,b.right-pad,b.bottom-pad)
@@ -195,7 +210,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         circle(cx,cy,r,CORAL);repeat(13){i->val a=PI+(i-6)*PI/24;line(cx+cos(a).toFloat()*r*.83f,cy+sin(a).toFloat()*r*.83f,cx+cos(a).toFloat()*r*.95f,cy+sin(a).toFloat()*r*.95f,INK,1f)}
     }
     private fun radiation(b:RectF){
-        rect(b,CHARCOAL,20f);titleText(heading("直射 / 漫射","Direct / diffuse"),b.left+12,b.top+10,26f,PAPER);val body=RectF(b.left+12,b.top+44,b.right-12,b.bottom-12)
+        rect(b,CHARCOAL);titleText(heading("直射 / 漫射","Direct / diffuse"),b.left+12,b.top+10,26f,PAPER);val body=RectF(b.left+12,b.top+44,b.right-12,b.bottom-12)
         val direct=v("direct_radiation_instant");val diffuse=v("diffuse_radiation_instant");val total=if(direct!=null&&diffuse!=null)direct+diffuse else null
         val reading=Units.number(direct)+" / "+Units.number(diffuse)
         val rsize=if(portrait)30f else 32f
@@ -253,7 +268,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         titleText(label,b.left+12,b.top+10)
         val w=wx
         val now=model.now
-        val target=w?.let{lightTarget(it,model.purpose,now,model.window(it))}
+        val target=w?.let{model.light(it)}
         val sec=target?.epoch?.minus(now)?.coerceAtLeast(0)
         val count=sec?.let{String.format(java.util.Locale.US,"%02d:%02d:%02d",it/3600,(it%3600)/60,it%60)}?:"—"
         val phase=when(target?.kind){"blue"->heading("蓝调时段","Blue hour");"dawn"->heading("晨光时段","Dawn window");"end"->heading("时段结束","Window ends");"golden"->heading("黄金时刻","Golden hour");else->heading("无对应事件","No event")}
@@ -275,7 +290,13 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         when(model.purpose){
             2->wind(b,true)
             7->{lunar(b);return}
-            10,11->{humidity(b);fit(heading("逐小时模型预报","Hourly model forecast"),b.left+12,b.top+55,b.width()*.66f,16f);return}
+            10,11->{
+                humidity(b)
+                val m=metrics!!;val label=m.rect("ins-focus:heading");val graph=m.rect("ins-focus:graphic");val size=14f*m.sx
+                val y=if(label.top-b.top>size+10)b.top+8 else label.bottom+4
+                if(y+size*1.3f<graph.top)fit(heading("模型预报","Model forecast"),b.left+12,y,b.width()*.55f,size)
+                return
+            }
             else->{val kind=when(model.purpose){4,5,6->"glow";8->"visibility";9,3->"temperature";10,11->"humidity";else->"precipitation"}
                 val label=when(kind){"glow"->heading("霞光条件指数","Glow condition score");"visibility"->heading("能见度","Visibility");"temperature"->heading("气温","Temp.");"humidity"->heading("相对湿度","Humidity");else->heading("降水概率","Precipitation")}
                 rect(b,CORAL,20f);val body=base(b,label,color=CORAL)
@@ -289,16 +310,19 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         }
     }
     private fun wheel(b:RectF){
-        dialRect=b;rect(b,0xff20201e.toInt(),24f)
-        p.reset();p.isAntiAlias=true;p.color=0xff676dba.toInt();p.style=Paint.Style.STROKE;p.strokeWidth=1f;c!!.drawRoundRect(b,24f,24f,p)
+        dialRect=b;val outline=metrics!!.outline("ins-wheel",b)
+        p.reset();p.isAntiAlias=true;p.color=0xff181817.toInt();c!!.drawPath(outline,p)
+        p.color=0xff515570.toInt();p.style=Paint.Style.STROKE;p.strokeWidth=.8f;c!!.drawPath(outline,p)
         c!!.save();c!!.clipRect(RectF(b.left,b.top+16,b.right,b.bottom-44))
         val en=model.lang=="en";val radius=b.height()*.70f;val labelX=b.width()*(if(en).29f else .35f);val centerX=b.left+labelX-radius;val centerY=b.centerY()
         val font=max(if(en)18f else 24f,min(if(en)32f else 44f,b.width()*(if(en).069f else .09f)))
         val outer=radius+b.width()*.49f
         arc(RectF(centerX-outer,centerY-outer,centerX+outer,centerY+outer),-75f,150f,0xff565650.toInt(),.8f)
-        for(step in -40..40){val angle=step/4.0*8.5;val a=Math.toRadians(angle);val r=radius+b.width()*.43f;val len=if(step%4==0)8f else 3f;line(centerX+cos(a).toFloat()*(r-len),centerY+sin(a).toFloat()*(r-len),centerX+cos(a).toFloat()*r,centerY+sin(a).toFloat()*r,if(step%4==0)0xff92928b.toInt()else 0xff45453f.toInt(),.8f)}
-        for(offset in -6..6){val index=((model.purpose+offset)%12+12)%12;val angle=offset*8.5f;val a=Math.toRadians(angle.toDouble());val x=centerX+cos(a).toFloat()*radius;val y=centerY+sin(a).toFloat()*radius
-            c!!.save();c!!.rotate(angle,x,y);text(model.purposeName(index),x,y-font*.55f,font*(if(offset==0)1.05f else 1f),if(offset==0)PAPER else 0xffb8b8af.toInt(),Typeface.create(chinese,450,false));c!!.restore()}
+        for(step in -40..40){val angle=(step/4.0+dialPhase)*8.5;val a=Math.toRadians(angle);val r=radius+b.width()*.43f;val len=if(step%4==0)8f else 3f;line(centerX+cos(a).toFloat()*(r-len),centerY+sin(a).toFloat()*(r-len),centerX+cos(a).toFloat()*r,centerY+sin(a).toFloat()*r,if(step%4==0)0xffa4a49b.toInt()else 0xff4b4b45.toInt(),.8f)}
+        for(offset in -6..6){val index=((model.purpose+offset)%12+12)%12;val distance=offset+dialPhase;val angle=distance*8.5f;val a=Math.toRadians(angle.toDouble());val x=centerX+cos(a).toFloat()*radius;val y=centerY+sin(a).toFloat()*radius
+            val emphasis=(1-abs(distance)).coerceIn(0f,1f);val fade=(1-(abs(angle)-42).coerceAtLeast(0f)/20).coerceIn(0f,1f)
+            val color=androidx.core.graphics.ColorUtils.blendARGB(0xffb8b8af.toInt(),PAPER,emphasis).let{androidx.core.graphics.ColorUtils.setAlphaComponent(it,(255*fade).roundToInt())}
+            c!!.save();c!!.rotate(angle,x,y);text(model.purposeName(index),x,y-font*.55f,font*(1+emphasis*.035f),color,Typeface.create(chinese,450,false));c!!.restore()}
         circle(b.left+b.width()*.12f,centerY,max(10f,min(16f,b.width()*.043f)),0xff2459ff.toInt());c!!.restore()
         text(heading("拖动选择","DRAG"),b.left+16,b.bottom-28,16f,0xffb8b8af.toInt());text(String.format(java.util.Locale.US,"%02d / 12",model.purpose+1),b.right-16,b.bottom-28,16f,0xffb8b8af.toInt(),mono,Paint.Align.RIGHT)
     }
@@ -311,10 +335,20 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         if(metricsKey!=key){metrics=DesignMetrics(context,key);metricsKey=key}
         val m=metrics!!;m.configure(w,h,(context as MainActivity).root.paddingTop/density)
         fun r(name:String)=m.rect(name)
-        fun draw(name:String,action:(RectF)->Unit){val b=r(name);val previous=activeId;activeId=name;c!!.save();c!!.clipRect(b);action(b);c!!.restore();activeId=previous}
+        fun draw(name:String,action:(RectF)->Unit){
+            val b=r(name);val previous=activeId;activeId=name;c!!.save();c!!.clipPath(m.outline(name,b))
+            val animated=contentProgress<1f&&name in setOf("ins-focus","ins-thermal","ins-optical","ins-micro","ins-moisture","ins-wind","ins-advice")
+            if(animated){
+                p.reset();p.color=color(m.node(name)?.optString("bg")?:"",PAPER);c!!.drawRect(b,p)
+                c!!.saveLayerAlpha(b,(contentProgress*255).roundToInt());c!!.translate(0f,(1-contentProgress)*4)
+            }
+            action(b);if(animated)c!!.restore();c!!.restore();activeId=previous
+        }
         rect(RectF(0f,0f,w,h),FRAME)
-        val panorama=r("ins-panorama");rect(panorama,PAPER,26f)
-        artRect=RectF(panorama).apply{inset(5f,5f)}
+        val panorama=r("ins-panorama");p.reset();p.isAntiAlias=true;p.color=PAPER;c!!.drawPath(m.outline("ins-panorama",panorama),p)
+        val rim=5f*m.sx
+        artRect=RectF(panorama).apply{inset(rim,rim)}
+        artCornerRadius=max(0f,(m.node("ins-panorama")?.optJSONArray("radii")?.optDouble(0,26.0)?.toFloat()?:26f)*m.sx-rim)
         draw("ins-focus",::primary)
         val ctx=r("ins-context");val wxx=wx
         val date=wxx?.let{Instant.ofEpochSecond(at).atZone(it.zone).toLocalDate()}
@@ -362,7 +396,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         draw("ins-signal"){if(wx?.scene()=="storm"){val body=base(it,heading("对流抑制","CIN"));value(body,n("convective_inhibition"),"J/kg",32f);note(heading("模型能量","Model energy"),body)}else{val body=base(it,heading("凝结高度 ≈","LCL height ≈"));value(body,Units.number(Physics.lcl(v("temperature_2m"),v("dew_point_2m")?:Physics.dew(v("temperature_2m"),v("relative_humidity_2m")))),"m",32f);note(heading("距地高度 · 近似","AGL · approx."),body)}}
         draw("ins-cape"){val body=base(it,heading("对流位能","CAPE"));value(body,n("cape"),"J/kg",32f);note(heading("模型能量","Model energy"),body)}
         activeId="ins-rain";rain(r("ins-rain"),r("ins-rain-total"));activeId=""
-        val assembly=r("ins-assembly");rect(assembly,PAPER,28f)
+        val assembly=r("ins-assembly");p.reset();p.isAntiAlias=true;p.color=PAPER;c!!.drawPath(m.outline("ins-assembly",assembly),p)
         draw("ins-wind"){if(model.purpose==2){val body=base(it,heading("降水概率","Precipitation"),true);value(body,Units.number(wx?.precip(at)?.second),"%",42f,true)}else wind(it)}
         draw("ins-pressure",::pressure);draw("ins-dew",::dew)
         draw("ins-moisture"){humidity(it,model.purpose in listOf(10,11))};draw("ins-clouds",::clouds);draw("ins-column",::pwv);draw("ins-soil",::soil)

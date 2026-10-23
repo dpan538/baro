@@ -5,6 +5,51 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.*
 
 const val CACHE_SECONDS = 1800L
+const val MEMORY_IDLE_SECONDS = 3600L
+const val MIN_READ_SECONDS = 300L
+
+/** Continuous travel with hysteresis at each tooth, including wraparound and reversal. */
+class DialDetents(initial:Int=0){
+    var position=initial.toFloat();private set
+    var selected=initial;private set
+    private var origin=initial
+    private var start=position
+    fun begin(index:Int){origin=index;selected=index;position=index.toFloat();start=position}
+    fun move(steps:Float):List<Int>{
+        if(!steps.isFinite())return emptyList()
+        position=(start+steps).coerceIn(origin-24f,origin+24f)
+        val crossed=mutableListOf<Int>()
+        while(position>selected+.58f){selected++;crossed.add(selected)}
+        while(position<selected-.58f){selected--;crossed.add(selected)}
+        return crossed
+    }
+    fun visual(value:Float){position=value}
+    fun cancel(){selected=origin;position=origin.toFloat()}
+    val index get()=((selected%12)+12)%12
+}
+
+/** Process memory only; persisted JSON remains the separately bounded offline layer. */
+class ForecastMemory(private val capacity:Int=12){
+    data class Entry(val weather:Weather,val raw:String,var usedAt:Long)
+    private val entries=LinkedHashMap<String,Entry>(16,.75f,true)
+    private val attempts=LinkedHashMap<String,Long>()
+    @Synchronized fun get(key:String,elapsed:Long):Entry?{
+        entries.entries.removeAll{elapsed-it.value.usedAt>=MEMORY_IDLE_SECONDS}
+        return entries[key]?.also{it.usedAt=elapsed}
+    }
+    @Synchronized fun put(key:String,weather:Weather,raw:String,elapsed:Long){
+        entries[key]=Entry(weather,raw,elapsed)
+        while(entries.size>capacity)entries.remove(entries.keys.first())
+    }
+    @Synchronized fun mayRead(key:String,elapsed:Long)=attempts[key]?.let{elapsed-it>=MIN_READ_SECONDS}?:true
+    @Synchronized fun attempted(key:String,elapsed:Long){
+        attempts.remove(key);attempts[key]=elapsed
+        while(attempts.size>64)attempts.remove(attempts.keys.first())
+    }
+    @Synchronized fun abandonInitial(key:String,attempt:Long){if(entries[key]==null&&attempts[key]==attempt)attempts.remove(key)}
+    @Synchronized fun clear(){entries.clear();attempts.clear()}
+    @Synchronized fun count()=entries.size
+}
 
 data class Place(val name: String, val latitude: Double, val longitude: Double, val zone: String = "UTC") {
     init { require(latitude.isFinite() && latitude in -90.0..90.0 && longitude.isFinite() && longitude in -180.0..180.0) }

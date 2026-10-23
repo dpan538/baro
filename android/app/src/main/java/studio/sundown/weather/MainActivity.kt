@@ -56,7 +56,7 @@ class MainActivity:Activity(){
         weatherArt=PixelArt(this,false);observationArt=PixelArt(this,true)
         weatherArt.elapsed=savedInstanceState?.getDouble("weather_elapsed")?:0.0;observationArt.elapsed=savedInstanceState?.getDouble("observation_elapsed")?:0.0
         val weatherBoard=WeatherDashboard(this,model);val obsBoard=ObservationDashboard(this,model)
-        weatherBoard.onSettings={settings.open()};weatherBoard.onPlace={showPlaces()};obsBoard.onPurpose={redraw()}
+        weatherBoard.onSettings={settings.open()};weatherBoard.onPlace={showPlaces()};obsBoard.onPurpose={obsBoard.animatePurposeChange();redraw()}
         pager=TwoPageHost(this,model,NativePage(this,weatherBoard,weatherArt),NativePage(this,obsBoard,observationArt))
         pager.onPageChanged={redraw()};pager.onTransition={transition->artLifecycle(transition)}
         root.addView(pager,FrameLayout.LayoutParams(-1,-1))
@@ -79,7 +79,7 @@ class MainActivity:Activity(){
         val wx=model.weather;val before=wx?.let{model.window(it)}
         model.now=System.currentTimeMillis()/1000
         if(wx!=null&&model.window(wx)!=before)redraw()else if(model.page==1)pager.observationPage.dashboard.invalidate()
-        if(wx!=null&&model.now-wx.fetchedAt>=CACHE_SECONDS&&model.status!="loading"&&model.now-lastWeatherAttempt>=60)refresh()
+        if((wx==null||wx.stale(model.now))&&model.status!="loading"&&model.now-lastWeatherAttempt>=MIN_READ_SECONDS)refresh()
         main.postDelayed(this,1000)
     }}
     fun refresh(force:Boolean=false){
@@ -96,9 +96,9 @@ class MainActivity:Activity(){
         model.now=System.currentTimeMillis()/1000
         pager.syncPage();root.setBackgroundColor(if(model.page==0)0xff191e1d.toInt()else FRAME);pager.weatherPage.updateState();pager.observationPage.updateState()
         val enabled=model.motion&&android.animation.ValueAnimator.areAnimatorsEnabled()
-        weatherArt.weather=model.weather;observationArt.weather=model.weather;observationArt.sampleTime=model.weather?.let{model.window(it).start}
-        weatherArt.block=model.block;observationArt.block=model.block;weatherArt.motion=enabled;observationArt.motion=enabled
-        pager.weatherPage.requestLayout();pager.observationPage.requestLayout();pager.weatherPage.dashboard.invalidate();pager.observationPage.dashboard.invalidate();weatherArt.refresh();observationArt.refresh();artLifecycle()
+        weatherArt.updateScene(model.weather,null,model.block,enabled)
+        observationArt.updateScene(model.weather,model.weather?.let{model.window(it).start},model.block,enabled)
+        pager.weatherPage.requestLayout();pager.observationPage.requestLayout();pager.weatherPage.dashboard.invalidate();pager.observationPage.dashboard.invalidate();artLifecycle()
     }
     private fun artLifecycle(transition:Boolean=false){weatherArt.active=visible&&model.weather!=null&&(model.page==0||transition);observationArt.active=visible&&model.weather?.let{it.scene(model.window(it).start)!="unknown"}==true&&(model.page==1||transition)}
     fun selectPlace(place:Place,manual:Boolean=true){

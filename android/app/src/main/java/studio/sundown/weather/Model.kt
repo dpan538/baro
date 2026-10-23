@@ -41,6 +41,13 @@ class AppModel(context:Context){
     var now=System.currentTimeMillis()/1000
     private var windowKey=""
     private var cachedWindow:ObservationWindow?=null
+    private var lightKey=""
+    private var cachedLight:LightTarget?=null
+    fun light(w:Weather):LightTarget?{
+        val key="${w.place.key}:${w.place.zone}:$purpose:${now/60}"
+        if(key!=lightKey||cachedLight?.let{it.epoch<=now}==true){cachedLight=lightTarget(w,purpose,now,window(w));lightKey=key}
+        return cachedLight
+    }
     fun window(w:Weather):ObservationWindow {
         if(purpose !in 4..6)return observationWindow(w,purpose,now)
         val key="${w.place.latitude},${w.place.longitude},${w.place.zone}:$purpose:${now/60}"

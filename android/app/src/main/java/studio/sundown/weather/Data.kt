@@ -3,6 +3,7 @@ package studio.sundown.weather
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import org.json.JSONObject
 import java.io.File
 import java.net.HttpURLConnection
@@ -77,34 +78,64 @@ class NetworkJob {
     }
 }
 
-class WeatherRepository(private val context: Context) {
+class WeatherRepository(context:Context,backendOrigin:String=BuildConfig.BACKEND_URL,
+                        private val clock:()->Long={System.currentTimeMillis()/1000},
+                        private val elapsed:()->Long={SystemClock.elapsedRealtime()/1000}) {
+    companion object { private val memory=ForecastMemory() }
+    private val context=context.applicationContext
     val pool=Executors.newFixedThreadPool(3)
     private val main=Handler(Looper.getMainLooper())
-    private val cache=File(context.cacheDir,"weather").apply { mkdirs() }
+    val backend=backendOrigin.trimEnd('/')
+    private val cache=File(context.cacheDir,if(backend.isEmpty())"weather"else "weather-"+java.security.MessageDigest.getInstance("SHA-256").digest(backend.toByteArray()).take(6).joinToString(""){"%02x".format(it)}).apply { mkdirs() }
     private var generation=0L
     private var weatherJob: NetworkJob?=null
-    val backend=BuildConfig.BACKEND_URL.trimEnd('/')
-    fun cached(place: Place): Weather? = runCatching { WeatherJson.parse(File(cache,place.key+".json").readText(),place) }.getOrNull()?.takeIf { System.currentTimeMillis()/1000-it.fetchedAt < 86400 }
-    fun cancelWeather(){generation++;weatherJob?.cancel();weatherJob=null}
-    fun clear(){cancelWeather();cache.listFiles()?.forEach { it.delete() }}
-    fun bytes()=cache.listFiles()?.sumOf { it.length() }?:0L
+    private var inFlightKey:String?=null
+    private var attemptAt=0L
+    private val listeners=mutableListOf<(Weather?,String?)->Unit>()
+    private fun key(place:Place)="$backend|${place.key}"
+    fun cached(place:Place):Weather?{
+        val k=key(place);val hot=memory.get(k,elapsed())
+        if(hot!=null&&clock()-hot.weather.fetchedAt<86400){
+            val weather=hot.weather
+            return if(weather.place==place.copy(zone=weather.place.zone))weather else weather.copy(place=place.copy(zone=weather.place.zone))
+        }
+        return runCatching{
+            val raw=File(cache,place.key+".json").readText();val weather=WeatherJson.parse(raw,place)
+            if(clock()-weather.fetchedAt>=86400)null else weather.also{memory.put(k,it,raw,elapsed())}
+        }.getOrNull()
+    }
+    fun rawFor(place:Place):String?{if(cached(place)==null)return null;return memory.get(key(place),elapsed())?.raw}
+    fun cancelWeather(){generation++;weatherJob?.cancel();if(weatherJob!=null)inFlightKey?.let{memory.abandonInitial(it,attemptAt)};weatherJob=null;inFlightKey=null;listeners.clear()}
+    private fun weatherDirectories()=context.cacheDir.listFiles()?.filter{it.isDirectory&&(it.name=="weather"||Regex("weather-[a-f0-9]{12}").matches(it.name))}?:emptyList()
+    fun clear(){cancelWeather();memory.clear();weatherDirectories().forEach{folder->folder.listFiles()?.forEach{it.delete()}}}
+    fun bytes()=weatherDirectories().sumOf{folder->folder.listFiles()?.sumOf{it.length()}?:0L}
     fun refresh(place: Place, force: Boolean=false, callback: (Weather?,String?)->Unit) {
-        cancelWeather();val g=generation;val cached=cached(place)
-        if(cached!=null&&!force&&!cached.stale(System.currentTimeMillis()/1000)){callback(cached,null);return}
+        val k=key(place)
+        if(inFlightKey!=null&&inFlightKey!=k)cancelWeather()
+        val cached=cached(place)
+        if(cached!=null&&!cached.stale(clock())&&(!force||clock()-cached.fetchedAt<MIN_READ_SECONDS)){callback(cached,null);return}
+        if(inFlightKey==k&&weatherJob?.cancelled==false){listeners.add(callback);return}
+        cancelWeather();val g=generation
+        if(!memory.mayRead(k,elapsed())){callback(cached,if(cached!=null&&!cached.stale(clock()))null else "refresh_interval");return}
+        attemptAt=elapsed();memory.attempted(k,attemptAt);listeners.add(callback);inFlightKey=k
         val job=NetworkJob();weatherJob=job
+        fun complete(weather:Weather?,error:String?){
+            if(g!=generation||job.cancelled)return
+            weatherJob=null;inFlightKey=null;val pending=listeners.toList();listeners.clear()
+            pending.forEach{it(weather,error)}
+        }
         job.future=pool.submit {
-            var error: Exception?=null
-            for(attempt in 0..1){try {
+            try {
                 val body=if(backend.isNotEmpty())job.request("$backend/v1/weather?lat=${place.latitude}&lon=${place.longitude}") else direct(job,place)
                 val weather=WeatherJson.parse(body,place)
                 if(job.cancelled)return@submit
                 main.post { if(g==generation&&!job.cancelled){
+                    memory.put(k,weather,body,elapsed())
                     runCatching{val target=File(cache,place.key+".json");val tmp=File(cache,place.key+".tmp");tmp.writeText(body);if(!tmp.renameTo(target))tmp.delete()}
                     cache.listFiles()?.filter { it.extension=="json" }?.sortedByDescending { it.lastModified() }?.drop(12)?.forEach { it.delete() }
-                    callback(weather,null)
+                    complete(weather,null)
                 } };return@submit
-            }catch(e:Exception){error=e;if(job.cancelled)return@submit;if(attempt==0)try{Thread.sleep(400)}catch(_:InterruptedException){return@submit}}}
-            main.post { if(g==generation&&!job.cancelled)callback(cached,error?.message?:"Network unavailable") }
+            }catch(e:Exception){if(!job.cancelled)main.post{complete(cached,e.message?:"Network unavailable")}}
         }
     }
     private fun direct(job: NetworkJob, place: Place): String {

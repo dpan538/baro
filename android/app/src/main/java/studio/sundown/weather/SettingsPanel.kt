@@ -34,37 +34,67 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
     private var feedbackSend:Button?=null
     private var feedbackStatus:TextView?=null
     private var feedbackInput:EditText?=null
+    private var uiGeneration=0L
     init{visibility=GONE;isFocusable=true}
     private fun text(value:String,size:Float=22f)=TextView(context).apply{text=value;textSize=size;setTextColor(INK);typeface=font;includeFontPadding=false}
     private fun button(value:String,selected:Boolean=false,click:()->Unit):Button=Button(context).apply{
         text=value;textSize=18f;typeface=font;isAllCaps=false;minHeight=dp(56);minimumHeight=dp(56);setTextColor(ColorStateList(arrayOf(intArrayOf(-android.R.attr.state_enabled),intArrayOf()),intArrayOf(0xff88887f.toInt(),INK)));isSelected=selected
-        val shape=GradientDrawable().apply{setColor(if(selected)0xffdeded6.toInt() else 0xfff4f4ee.toInt());cornerRadius=dp(5).toFloat();if(selected)setStroke(dp(1),INK)}
+        val shape=GradientDrawable().apply{setColor(if(selected)0xffdeded6.toInt() else 0xfff4f4ee.toInt());cornerRadius=dp(8).toFloat();if(selected)setStroke(dp(1),INK)}
         background=RippleDrawable(ColorStateList.valueOf(0x24000000),shape,null)
-        setPadding(dp(14),dp(10),dp(14),dp(10));setOnClickListener{click()}
+        setPadding(dp(14),dp(10),dp(14),dp(10));PressFeedback.install(this);setOnClickListener{PressFeedback.click(this);click()}
     }
     private fun column()=LinearLayout(context).apply{orientation=LinearLayout.VERTICAL}
     private fun row()=LinearLayout(context).apply{orientation=LinearLayout.HORIZONTAL;gravity=Gravity.CENTER_VERTICAL}
     private fun gap(target:LinearLayout,height:Int){target.addView(View(context),LinearLayout.LayoutParams(1,dp(height)))}
     private fun line(target:LinearLayout){target.addView(View(context).apply{setBackgroundColor(0xffdcdcd3.toInt())},LinearLayout.LayoutParams(-1,dp(1)))}
     fun open(){
-        detail="";visibility=VISIBLE;activity.pager.overlayOpen=true;build();alpha=0f
+        animate().cancel();detail="";visibility=VISIBLE;activity.pager.overlayOpen=true;build();alpha=0f
         if(ValueAnimator.areAnimatorsEnabled())animate().alpha(1f).setDuration(220).setInterpolator(LinearInterpolator()).start()else alpha=1f
         requestFocus()
     }
     fun close(){
-        closeUpdate();activity.feedback.cancel();scrollAnimator?.cancel();animate().cancel();visibility=GONE;activity.pager.overlayOpen=false;detail="";feedbackInput=null;activity.redraw()
+        uiGeneration++;closeUpdate();activity.feedback.cancel();scrollAnimator?.cancel();animate().cancel();visibility=GONE;activity.pager.overlayOpen=false;detail="";feedbackInput=null;activity.redraw()
     }
     fun back(){if(updateCard!=null)closeUpdate()else if(detail.isNotEmpty()){detail="";build()}else close()}
     fun cancelRequests(){activity.updates.cancel();activity.feedback.cancel();feedbackSend?.isEnabled=true
         if(updateCard!=null){updateMessage?.text=tr("请求已暂停，可重试","Request paused. Retry when ready.");updateAction?.isEnabled=true;updateAction?.text=tr("重试","Retry");updateAction?.setOnClickListener{checkUpdate()}}
     }
-    fun dispose(){scrollAnimator?.cancel();activity.updates.cancel();activity.feedback.cancel()}
+    fun dispose(){uiGeneration++;scrollAnimator?.cancel();activity.updates.cancel();activity.feedback.cancel()}
+    private fun options(labels:List<String>,chosen:Int,language:Boolean=false,action:(Int)->Unit):View{
+        val box=FrameLayout(context).apply{setPadding(dp(4),dp(4),dp(4),dp(4));background=GradientDrawable().apply{setColor(0xfff2f2ed.toInt());cornerRadius=dp(12).toFloat();setStroke(dp(1),0xffcecec6.toInt())}}
+        val pill=View(context).apply{tag="baro-segment-indicator";importantForAccessibility=View.IMPORTANT_FOR_ACCESSIBILITY_NO;background=GradientDrawable().apply{setColor(INK);cornerRadius=dp(8).toFloat()}}
+        box.addView(pill,LayoutParams(0,-1))
+        val buttons=mutableListOf<Button>();val choices=row();var selected=chosen;var animation:ValueAnimator?=null
+        fun position(index:Int):Float{val available=box.width-box.paddingLeft-box.paddingRight;val step=(available-dp(6)*(labels.size-1)).toFloat()/labels.size;return index*(step+dp(6))}
+        labels.forEachIndexed{index,label->
+            val control=button(label){ }.apply{
+                isSelected=index==chosen;setTextColor(if(isSelected)PAPER else INK)
+                background=RippleDrawable(ColorStateList.valueOf(0x24989890),null,GradientDrawable().apply{setColor(-1);cornerRadius=dp(8).toFloat()})
+                setOnClickListener{
+                    PressFeedback.click(this)
+                    if(index!=selected){
+                        animation?.cancel();val start=pill.translationX;val colors=buttons.map{it.currentTextColor};selected=index
+                        buttons.forEachIndexed{n,b->b.isSelected=n==index};action(index);activity.redraw()
+                        fun apply(f:Float){pill.translationX=start+(position(index)-start)*f;buttons.forEachIndexed{n,b->b.setTextColor(androidx.core.graphics.ColorUtils.blendARGB(colors[n],if(n==index)PAPER else INK,f))}}
+                        if(android.animation.ValueAnimator.areAnimatorsEnabled())animation=ValueAnimator.ofFloat(0f,1f).apply{duration=200;interpolator=LinearInterpolator();addUpdateListener{apply(it.animatedValue as Float)};start()}else apply(1f)
+                        if(language){val generation=uiGeneration;postDelayed({if(generation==uiGeneration&&visibility==VISIBLE)build()},if(ValueAnimator.areAnimatorsEnabled())200 else 0)}
+                    }
+                }
+            }
+            buttons.add(control);choices.addView(control,LinearLayout.LayoutParams(0,dp(56),1f).apply{rightMargin=if(index<labels.lastIndex)dp(6)else 0})
+        }
+        box.addView(choices,LayoutParams(-1,dp(56)))
+        box.addOnLayoutChangeListener{_,l,_,r,_,oldL,_,oldR,_->if(r-l!=oldR-oldL){animation?.cancel();pill.layoutParams=pill.layoutParams.apply{width=((box.width-box.paddingLeft-box.paddingRight-dp(6)*(labels.size-1))/labels.size).coerceAtLeast(0)};pill.translationX=position(selected)}}
+        box.addOnAttachStateChangeListener(object:View.OnAttachStateChangeListener{override fun onViewAttachedToWindow(v:View){};override fun onViewDetachedFromWindow(v:View){animation?.cancel()}})
+        return box
+    }
     fun refreshLocation(){
         locationText?.text=when(model.locationStatus){"fix"->tr("已使用当前位置","Using current location");"waiting"->tr("定位中；暂用所选地点","Locating; using selected place");"permission"->tr("等待定位权限","Waiting for location permission");"denied"->tr("定位被拒绝；使用所选地点","Location denied; using selected place");"system_off"->tr("系统定位已关闭；使用所选地点","System location is off; using selected place");"timeout"->tr("定位超时；使用所选地点","Location timed out; using selected place");"unavailable"->tr("定位不可用；使用所选地点","Location unavailable; using selected place");else->tr("定位未开启","Location is off")}
         locationSwitch?.setOnCheckedChangeListener(null);locationSwitch?.isChecked=activity.locationEnabled();locationSwitch?.setOnCheckedChangeListener{_,on->activity.setLocation(on)}
     }
     override fun onSizeChanged(w:Int,h:Int,oldw:Int,oldh:Int){super.onSizeChanged(w,h,oldw,oldh);if(visibility==VISIBLE&&w!=oldw)post{build()}}
     private fun build(){
+        uiGeneration++
         val y=scroller?.scrollY?:0
         val card=updateCard
         removeAllViews();updateCard=null
@@ -85,9 +115,8 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
             },LinearLayout.LayoutParams(0,dp(56),1f).apply{setMargins(dp(2),dp(12),dp(2),dp(12))})};pane.addView(nav)
             fun category(name:String){val title=text(name,20f).apply{setPadding(0,dp(24),0,dp(18))};anchors.add(title);body.addView(title)}
             fun setting(index:Int,name:String,content:View){val group=column();gap(group,18);group.addView(text(String.format(java.util.Locale.US,"%02d   %s",index,name),24f));gap(group,16);group.addView(content);gap(group,20);body.addView(group);line(body)}
-            fun options(labels:List<String>,chosen:Int,action:(Int)->Unit):View{val r=row();labels.forEachIndexed{i,name->r.addView(button(name,i==chosen){action(i);activity.redraw();build()},LinearLayout.LayoutParams(0,-2,1f).apply{setMargins(dp(2),0,dp(2),0)})};return r}
             category(tr("界面与视觉","Appearance"))
-            setting(1,tr("界面语言","Language"),options(listOf("中文","English"),if(model.lang=="zh")0 else 1){model.lang=if(it==0)"zh" else "en"})
+            setting(1,tr("界面语言","Language"),options(listOf("中文","English"),if(model.lang=="zh")0 else 1,language=true){model.lang=if(it==0)"zh" else "en"})
             setting(2,tr("像素画风","Pixel style"),options(listOf(tr("精细","Fine"),tr("大块像素","Block")),if(model.block)1 else 0){model.block=it==1})
             val motion=Switch(context).apply{text=tr("天气动画","Weather animation");typeface=font;textSize=20f;minHeight=dp(56);isChecked=model.motion;setOnCheckedChangeListener{_,on->model.motion=on;activity.redraw()}}
             setting(3,tr("天气动画","Weather animation"),motion)

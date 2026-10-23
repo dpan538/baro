@@ -5,6 +5,40 @@ import java.time.*
 
 class DomainTest {
     private fun fixture()=Weather(Place("Test",0.0,0.0),1000,1000,mapOf("weather_code" to 0.0,"is_day" to 1.0),Series(emptyList(),emptyMap()),emptyList(),null,null,null)
+    @Test fun dialHysteresisRejectsBoundaryNoiseAndReverses(){
+        val dial=DialDetents(11);dial.begin(11)
+        assertTrue(dial.move(.57f).isEmpty());assertEquals(listOf(12),dial.move(.59f));assertEquals(0,dial.index)
+        assertTrue(dial.move(.48f).isEmpty());assertTrue(dial.move(.44f).isEmpty())
+        assertEquals(listOf(11),dial.move(.40f));assertEquals(11,dial.index)
+        assertEquals(listOf(10,9,8),dial.move(-3.2f));assertEquals(8,dial.index)
+        assertTrue(dial.move(Float.NaN).isEmpty());assertEquals(7.8f,dial.position,.001f)
+        dial.cancel();assertEquals(11,dial.index);assertEquals(11f,dial.position,0f)
+    }
+    @Test fun dialCrossesEveryToothAndWrapsBothWays(){
+        val dial=DialDetents();dial.begin(0)
+        assertEquals((-1 downTo -13).toList(),dial.move(-13f));assertEquals(11,dial.index)
+        assertEquals((-12..14).toList(),dial.move(14f));assertEquals(2,dial.index)
+        assertEquals((15..24).toList(),dial.move(1000f));assertEquals(24f,dial.position,0f)
+    }
+    @Test fun memoryReusesTheParsedReadingAndEvictsIdleOrLeastRecentlyUsed(){
+        val memory=ForecastMemory(2);val weather=fixture()
+        memory.put("a",weather,"raw-a",0);memory.put("b",weather,"raw-b",10)
+        assertSame(weather,memory.get("a",20)!!.weather)
+        memory.put("c",weather,"raw-c",30);assertNull(memory.get("b",30));assertEquals(2,memory.count())
+        assertEquals("raw-a",memory.get("a",3590)!!.raw)
+        assertNull(memory.get("c",3630));assertNotNull(memory.get("a",3630))
+        assertNull(memory.get("a",7230));assertEquals(0,memory.count())
+    }
+    @Test fun requestCooldownUsesElapsedTimeAndClearsWithExplicitCacheClear(){
+        val memory=ForecastMemory();assertTrue(memory.mayRead("a",0));memory.attempted("a",100)
+        assertFalse(memory.mayRead("a",399));assertTrue(memory.mayRead("a",400));assertTrue(memory.mayRead("b",101))
+        memory.clear();assertTrue(memory.mayRead("a",101));assertEquals(0,memory.count())
+    }
+    @Test fun interruptedInitialLoadCanRetryButCachedAndFailedAttemptsStayLimited(){
+        val memory=ForecastMemory();memory.attempted("initial",100);memory.abandonInitial("initial",99);assertFalse(memory.mayRead("initial",101))
+        memory.abandonInitial("initial",100);assertTrue(memory.mayRead("initial",101))
+        memory.put("cached",fixture(),"raw",100);memory.attempted("cached",100);memory.abandonInitial("cached",100);assertFalse(memory.mayRead("cached",101))
+    }
     @Test fun bothDirectionsToggleFromBothPages(){
         for(page in 0..1)for(direction in listOf(-1,1)){val s=SwipeDecision(8f,24f);s.begin(500f,100f,1000f,false);val dx=s.move(500f+direction*250,105f);assertTrue(s.finish(dx,direction*800f,1000f,false))}
     }

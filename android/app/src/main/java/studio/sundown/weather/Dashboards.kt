@@ -6,13 +6,16 @@ import android.text.TextPaint
 import android.text.StaticLayout
 import android.text.Layout
 import android.view.*
+import android.animation.ValueAnimator
+import android.os.SystemClock
+import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import kotlin.math.*
 
 val PAPER=Color.rgb(252,252,248)
 val INK=Color.rgb(29,31,29)
-val CHARCOAL=Color.rgb(48,48,45)
-val FRAME=Color.rgb(30,30,28)
+val CHARCOAL=Color.rgb(38,38,36)
+val FRAME=Color.rgb(22,22,21)
 val CORAL=Color.rgb(203,136,112)
 val BLUE=Color.rgb(21,156,255)
 val ORANGE=Color.rgb(255,122,26)
@@ -26,6 +29,8 @@ abstract class Dashboard(context:Context,val model:AppModel):View(context){
     protected val chinese=Typeface.createFromAsset(context.assets,"fonts/MiSansVF.ttf")
     protected var c:Canvas?=null
     var artRect=RectF();protected set
+    var artCornerRadius=0f;protected set
+    var frameOutline:Path?=null;protected set
     var dialRect=RectF();protected set
     var gearRect=RectF();protected set
     var paletteRect=RectF();protected set
@@ -37,6 +42,29 @@ abstract class Dashboard(context:Context,val model:AppModel):View(context){
     private var dialMoved=false
     var dialDragging=false;private set
     private var pressed=""
+    private val pressedBounds=RectF()
+    private var pressAlpha=0f
+    private var pressAnimator:ValueAnimator?=null
+    private fun press(to:Float){pressAnimator?.cancel();if(!ValueAnimator.areAnimatorsEnabled()){pressAlpha=to;invalidate();return};pressAnimator=ValueAnimator.ofFloat(pressAlpha,to).apply{duration=if(to>0)65 else 110;interpolator=LinearInterpolator();addUpdateListener{pressAlpha=it.animatedValue as Float;invalidate()};start()}}
+    private val detents=DialDetents()
+    private var dialAnimator:ValueAnimator?=null
+    private var lastTick=0L
+    var detentFeedbackCount=0;private set
+    protected val dialPhase get()=if(dialDragging||dialAnimator?.isRunning==true)detents.selected-detents.position else 0f
+    val dialSettling get()=dialAnimator?.isRunning==true
+    private fun selectPurpose(index:Int,tick:Boolean=true){
+        val value=((index%12)+12)%12
+        if(model.purpose==value)return
+        model.purpose=value
+        if(tick){detentFeedbackCount++;val now=SystemClock.uptimeMillis();if(now-lastTick>=35){performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);lastTick=now}}
+        onPurpose?.invoke();invalidate()
+    }
+    private fun settleDial(){
+        dialAnimator?.cancel()
+        if(!ValueAnimator.areAnimatorsEnabled()){detents.visual(detents.selected.toFloat());invalidate();return}
+        dialAnimator=ValueAnimator.ofFloat(detents.position,detents.selected.toFloat()).apply{duration=110;interpolator=LinearInterpolator();addUpdateListener{detents.visual(it.animatedValue as Float);invalidate()};start()}
+    }
+    private fun stepDial(delta:Int){if(delta==0)return;dialAnimator?.cancel();detents.begin(model.purpose);val from=detents.position;detents.move(delta.toFloat());selectPurpose(detents.index);detents.visual(from);settleDial()}
     val w get()=width/density
     val h get()=height/density
     val portrait get()=height>width
@@ -74,27 +102,28 @@ abstract class Dashboard(context:Context,val model:AppModel):View(context){
         val endX=x+dx*r;val endY=y+dy*r
         line(endX,endY,endX-dx*9-dy*4,endY-dy*9+dx*4,color,2f);line(endX,endY,endX-dx*9+dy*4,endY-dy*9-dx*4,color,2f)
     }
-    override fun onDraw(canvas:Canvas){c=canvas;canvas.save();canvas.scale(density,density);drawDashboard();if(isPressed&&pressed.isNotEmpty()){val r=when(pressed){"gear"->gearRect;"palette"->paletteRect;else->placeRect};rect(r,0x16000000,5f)};canvas.restore()}
+    override fun onDraw(canvas:Canvas){c=canvas;canvas.save();canvas.scale(density,density);drawDashboard();if(pressAlpha>0f&&!pressedBounds.isEmpty)rect(pressedBounds,((22*pressAlpha).roundToInt() shl 24),8f);canvas.restore()}
     abstract fun drawDashboard()
     override fun onKeyDown(keyCode:Int,event:KeyEvent):Boolean {
         if(dialRect.isEmpty)return super.onKeyDown(keyCode,event)
         val next=when(keyCode){KeyEvent.KEYCODE_DPAD_DOWN,KeyEvent.KEYCODE_DPAD_RIGHT->model.purpose+1;KeyEvent.KEYCODE_DPAD_UP,KeyEvent.KEYCODE_DPAD_LEFT->model.purpose-1;KeyEvent.KEYCODE_MOVE_HOME->0;KeyEvent.KEYCODE_MOVE_END->11;else->return super.onKeyDown(keyCode,event)}
-        model.purpose=((next%12)+12)%12;onPurpose?.invoke();invalidate();return true
+        var delta=next-model.purpose;if(delta>6)delta-=12 else if(delta< -6)delta+=12
+        stepDial(delta);return true
     }
     override fun onGenericMotionEvent(e:MotionEvent):Boolean {
-        if(e.actionMasked==MotionEvent.ACTION_SCROLL&&dialRect.contains(e.x/density,e.y/density)){val delta=e.getAxisValue(MotionEvent.AXIS_VSCROLL);if(delta!=0f){model.purpose=((model.purpose+(if(delta>0)-1 else 1))%12+12)%12;onPurpose?.invoke();invalidate()};return true};return super.onGenericMotionEvent(e)
+        if(e.actionMasked==MotionEvent.ACTION_SCROLL&&dialRect.contains(e.x/density,e.y/density)){val delta=e.getAxisValue(MotionEvent.AXIS_VSCROLL);if(delta!=0f)stepDial(if(delta>0)-1 else 1);return true};return super.onGenericMotionEvent(e)
     }
     override fun onTouchEvent(e:MotionEvent):Boolean{
         val x=e.x/density;val y=e.y/density
         when(e.actionMasked){
-            MotionEvent.ACTION_DOWN->{down=PointF(x,y);dialDragging=dialRect.contains(x,y);dialMoved=false;dialStart=model.purpose;if(dialDragging){isFocusable=true;isFocusableInTouchMode=true;requestFocus()};pressed=when{gearRect.contains(x,y)->"gear";paletteRect.contains(x,y)->"palette";placeRect.contains(x,y)->"place";else->""};isPressed=true;invalidate();return true}
-            MotionEvent.ACTION_POINTER_DOWN,MotionEvent.ACTION_CANCEL->{if(dialDragging&&dialMoved){model.purpose=dialStart;onPurpose?.invoke()};dialDragging=false;pressed="";isPressed=false;invalidate();return true}
-            MotionEvent.ACTION_MOVE->{if(dialDragging){if(abs(down.y-y)>7)dialMoved=true;val index=(dialStart+(down.y-y)/max(38f,dialRect.height()/10)).roundToInt().floorMod(12);if(index!=model.purpose){model.purpose=index;performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);onPurpose?.invoke();invalidate()}};return true}
-            MotionEvent.ACTION_UP->{if(dialDragging&&!dialMoved){val radius=dialRect.height()*.70;val offset=(Math.toDegrees(asin(((y-dialRect.centerY())/radius).coerceIn(-1.0,1.0)))/8.5).roundToInt();model.purpose=((dialStart+offset)%12+12)%12;onPurpose?.invoke()};if(!dialDragging&&hypot(x-down.x,y-down.y)<12){performClick();when(pressed){"gear"->if(gearRect.contains(x,y))onSettings?.invoke();"palette"->if(paletteRect.contains(x,y))onPlace?.invoke();"place"->if(placeRect.contains(x,y))onPlace?.invoke()}};dialDragging=false;pressed="";isPressed=false;invalidate();return true}
+            MotionEvent.ACTION_DOWN->{down=PointF(x,y);dialDragging=dialRect.contains(x,y);dialMoved=false;dialStart=model.purpose;if(dialDragging){dialAnimator?.cancel();detents.begin(model.purpose);isFocusable=true;isFocusableInTouchMode=true;requestFocus()};pressed=when{gearRect.contains(x,y)->"gear";paletteRect.contains(x,y)->"palette";placeRect.contains(x,y)->"place";else->""};pressedBounds.set(when(pressed){"gear"->gearRect;"palette"->paletteRect;"place"->placeRect;else->RectF()});press(if(pressed.isNotEmpty())1f else 0f);isPressed=true;invalidate();return true}
+            MotionEvent.ACTION_POINTER_DOWN,MotionEvent.ACTION_CANCEL->{if(dialDragging){val position=detents.position;detents.cancel();detents.visual(position);selectPurpose(dialStart,false);settleDial()};dialDragging=false;pressed="";press(0f);isPressed=false;invalidate();return true}
+            MotionEvent.ACTION_MOVE->{if(dialDragging){if(abs(down.y-y)>7)dialMoved=true;val travel=(down.y-y)/max(38f,(dialRect.height()*.70f*Math.toRadians(8.5)).toFloat());val crossed=detents.move(travel);if(crossed.isNotEmpty())selectPurpose(crossed.last());invalidate()}else if(pressed.isNotEmpty()&&!pressedBounds.contains(x,y)){pressed="";press(0f)};return true}
+            MotionEvent.ACTION_UP->{if(dialDragging){if(!dialMoved){val radius=dialRect.height()*.70;val offset=(Math.toDegrees(asin(((y-dialRect.centerY())/radius).coerceIn(-1.0,1.0)))/8.5).roundToInt();detents.move(offset.toFloat());selectPurpose(detents.index)};settleDial()};if(!dialDragging&&hypot(x-down.x,y-down.y)<12){performClick();if(pressed.isNotEmpty())PressFeedback.click(this);when(pressed){"gear"->if(gearRect.contains(x,y))onSettings?.invoke();"palette"->if(paletteRect.contains(x,y))onPlace?.invoke();"place"->if(placeRect.contains(x,y))onPlace?.invoke()}};dialDragging=false;pressed="";press(0f);isPressed=false;invalidate();return true}
         };return true
     }
     override fun performClick():Boolean=super.performClick()
-    private fun Int.floorMod(m:Int)=((this%m)+m)%m
+    override fun onDetachedFromWindow(){dialAnimator?.cancel();pressAnimator?.cancel();super.onDetachedFromWindow()}
 }
 
 class WeatherDashboard(context:Context,model:AppModel):Dashboard(context,model){
@@ -137,7 +166,7 @@ class WeatherDashboard(context:Context,model:AppModel):Dashboard(context,model){
         val key="weather-${if(portrait)"portrait" else "landscape"}-${model.lang}"
         if(metricsKey!=key){metrics=DesignMetrics(context,key);metricsKey=key}
         val m=metrics!!;val inset=(context as MainActivity).root.paddingTop/density;m.configure(w,h,inset)
-        val page=m.rect(".weather-page");val info=m.rect(".information-panel");artRect=m.rect(".visual-panel")
+        val page=m.rect(".weather-page");val info=m.rect(".information-panel");artRect=m.rect(".visual-panel");frameOutline=m.outline(".weather-page",page)
         rect(info,PAPER)
         val wx=model.weather;val scene=wx?.scene()?:"unknown"
         val stroke=(info.width()*.0034f).coerceIn(2f,3.4f)
@@ -201,7 +230,7 @@ class WeatherDashboard(context:Context,model:AppModel):Dashboard(context,model){
             val cover=m.rect(".cover-reading");val number=Units.number(wx?.value("cloud_cover"));val size=m.size(".cover-reading");p.reset();p.isAntiAlias=true;p.typeface=inter;p.textSize=size;p.color=nativeInk;val baseline=cover.centerY()-(p.fontMetrics.ascent+p.fontMetrics.descent)/2;c!!.drawText(number,cover.left,baseline,p);val nw=p.measureText(number);p.textSize=size*.52f;c!!.drawText("%",cover.left+nw+4,baseline,p)
         }
         // Preserve the exact approved outer corners; artwork itself remains a live EGL surface.
-        val mask=Path().apply{fillType=Path.FillType.EVEN_ODD;addRect(0f,0f,w,h,Path.Direction.CW);addRoundRect(page,min(26f,min(w,h+inset)*.014f),min(26f,min(w,h+inset)*.014f),Path.Direction.CW)}
+        val mask=Path().apply{fillType=Path.FillType.EVEN_ODD;addRect(0f,0f,w,h,Path.Direction.CW);addPath(frameOutline!!)}
         p.reset();p.isAntiAlias=true;p.color=0xff191e1d.toInt();c!!.drawPath(mask,p)
         if(wx==null||wx.stale(System.currentTimeMillis()/1000)||model.status=="offline"){text(model.source(),artRect.left+16,artRect.bottom-32,16f,PAPER,mono)}
     }
@@ -211,6 +240,13 @@ class NativePage(context:Context,val dashboard:Dashboard,val art:PixelArt):andro
     private val layer=FrameLayout(context)
     private var contentHeight=0
     private var dialTouch=false
+    fun pageMotion(progress:Float,engaged:Boolean){
+        val fraction=if(ValueAnimator.areAnimatorsEnabled())progress.coerceIn(0f,1f)else 0f;val d=resources.displayMetrics.density
+        val type=if(engaged)View.LAYER_TYPE_HARDWARE else View.LAYER_TYPE_NONE
+        if(dashboard.layerType!=type)dashboard.setLayerType(type,null)
+        layer.pivotX=width/2f;layer.pivotY=scrollY+height/2f
+        layer.scaleX=1f-fraction*.006f;layer.scaleY=1f-fraction*.006f;layer.translationY=fraction*3*d
+    }
     override fun onMeasure(widthSpec:Int,heightSpec:Int){
         val d=resources.displayMetrics.density;val width=MeasureSpec.getSize(widthSpec);val height=MeasureSpec.getSize(heightSpec)
         val widthDp=width/d;val heightDp=height/d
@@ -226,7 +262,7 @@ class NativePage(context:Context,val dashboard:Dashboard,val art:PixelArt):andro
         return super.onInterceptTouchEvent(e)
     }
     private val caption=android.widget.TextView(context).apply{setTextColor(PAPER);textSize=16f;setPadding(12,4,12,4);setBackgroundColor(0x80000000.toInt())}
-    init {isFillViewport=true;overScrollMode=OVER_SCROLL_NEVER;setBackgroundColor(if(dashboard is WeatherDashboard)0xff191e1d.toInt()else FRAME);addView(layer,LayoutParams(-1,-1));layer.addView(dashboard,FrameLayout.LayoutParams(-1,-1));layer.addView(art);layer.addView(caption);clipChildren=true;art.clipToOutline=true;art.outlineProvider=object:android.view.ViewOutlineProvider(){override fun getOutline(v:View,outline:android.graphics.Outline){outline.setRoundRect(0,0,v.width,v.height,if(dashboard is ObservationDashboard)24*resources.displayMetrics.density else 0f)}}}
+    init {isFillViewport=true;overScrollMode=OVER_SCROLL_NEVER;setBackgroundColor(if(dashboard is WeatherDashboard)0xff191e1d.toInt()else FRAME);addView(layer,LayoutParams(-1,-1));layer.addView(dashboard,FrameLayout.LayoutParams(-1,-1));layer.addView(art);layer.addView(caption);clipChildren=true;art.clipToOutline=true;art.outlineProvider=object:android.view.ViewOutlineProvider(){override fun getOutline(v:View,outline:android.graphics.Outline){outline.setRoundRect(0,0,v.width,v.height,dashboard.artCornerRadius*resources.displayMetrics.density)}}}
     fun updateState(){
         val m=dashboard.model;val wx=m.weather
         val known=wx!=null&&(dashboard !is ObservationDashboard||wx.scene(m.window(wx).start)!="unknown")
@@ -236,12 +272,11 @@ class NativePage(context:Context,val dashboard:Dashboard,val art:PixelArt):andro
     }
 
     override fun dispatchDraw(canvas:Canvas){
-        if(dashboard is WeatherDashboard&&!dashboard.artRect.isEmpty){
-            val d=resources.displayMetrics.density;val a=dashboard.artRect
-            val b=RectF((dashboard.w-a.right-1)*d,(if(dashboard.portrait)dashboard.w-a.right-1 else a.top-1)*d,(a.right+1)*d,(a.bottom+1)*d)
-            val radius=min(26f,min(dashboard.w,dashboard.h+(context as MainActivity).root.paddingTop/d)*.014f)*d
-            val path=Path().apply{addRoundRect(b,radius,radius,Path.Direction.CW)}
-            canvas.save();canvas.clipPath(path);super.dispatchDraw(canvas);canvas.restore();val border=Paint(Paint.ANTI_ALIAS_FLAG).apply{color=0xff828981.toInt();style=Paint.Style.STROKE;strokeWidth=d};val inside=RectF(b).apply{inset(d*.5f,d*.5f)};canvas.drawRoundRect(inside,radius,radius,border)
+        if(dashboard is WeatherDashboard&&dashboard.frameOutline!=null){
+            val d=resources.displayMetrics.density
+            val path=Path(dashboard.frameOutline!!).apply{transform(Matrix().apply{setScale(d,d)})}
+            canvas.save();canvas.clipPath(path);super.dispatchDraw(canvas)
+            val border=Paint(Paint.ANTI_ALIAS_FLAG).apply{color=0xff828981.toInt();style=Paint.Style.STROKE;strokeWidth=2*d};canvas.drawPath(path,border);canvas.restore()
         }else super.dispatchDraw(canvas)
     }
     override fun onLayout(changed:Boolean,l:Int,t:Int,r:Int,b:Int){

@@ -29,13 +29,13 @@ class NativeSmallViewportTest {
     @Test fun readablePortraitScrollAndDialRetainSeparateGestureOwnership(){
         ActivityScenario.launch(MainActivity::class.java).use{s->
             s.onActivity{a->a.model.motion=false;a.model.block=InstrumentationRegistry.getArguments().getString("pixels")=="block";a.model.page=1;a.model.purpose=11;a.redraw()}
-            if(!NativeTestEnvironment.uiOnly)s.onActivity{it.refresh(true)}
+            if(!NativeTestEnvironment.uiOnly)s.onActivity{it.repository.clear();it.model.weather=null;it.refresh(true)}
             var ready=false
             for(attempt in 0..59){s.onActivity{ready=it.model.weather!=null&&(NativeTestEnvironment.uiOnly||it.model.status=="ready")};if(ready)break;SystemClock.sleep(500)}
             assertTrue("This product capture requires real API data",ready)
             if(!NativeTestEnvironment.uiOnly)s.onActivity{a->
-                val raw=File(i.targetContext.cacheDir,"weather/"+a.model.place.key+".json")
-                raw.copyTo(File(i.targetContext.getExternalFilesDir(null),"small-live-response.json"),overwrite=true)
+                val raw=a.repository.rawFor(a.model.place);assertNotNull(raw)
+                File(i.targetContext.getExternalFilesDir(null),"small-live-response.json").writeText(raw!!)
             }
             for(lang in listOf("zh","en")){
                 s.onActivity{a->a.model.lang=lang;a.model.purpose=11;a.redraw();a.pager.observationPage.scrollTo(0,0)};i.waitForIdleSync();SystemClock.sleep(500)

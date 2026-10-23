@@ -21,6 +21,12 @@ class DesignMetrics(context:Context,path:String){
         val x=n.getDouble("x").toFloat()*sx;val y=n.getDouble("y").toFloat()*sy-inset
         return RectF(x,y,x+n.getDouble("w").toFloat()*sx,y+n.getDouble("h").toFloat()*sy)
     }
+    fun outline(key:String,bounds:RectF=rect(key)):Path{
+        val a=node(key)?.optJSONArray("radii")
+        val limit=minOf(bounds.width(),bounds.height())/2
+        val radii=FloatArray(8){i->((a?.optDouble(i/2,0.0)?:0.0).toFloat()*sx).coerceIn(0f,maxOf(0f,limit))}
+        return Path().apply{addRoundRect(bounds,radii,Path.Direction.CW)}
+    }
     fun size(key:String,index:Int=0):Float {
         val scaled=node(key,index)?.optDouble("size",16.0)?.toFloat()?.times(sx)?:16f
         return if(readableFallback)maxOf(if(key.endsWith(":heading"))24f else if(key.endsWith(":reading"))27f else 16f,scaled)else scaled

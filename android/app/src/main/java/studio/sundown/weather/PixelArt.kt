@@ -23,7 +23,7 @@ class PixelArt(context: Context, private val instrument: Boolean): TextureView(c
     private var surface: EGLSurface=EGL14.EGL_NO_SURFACE
     private var program=0;private var copy=0;private var texture=0;private var framebuffer=0
     private var gw=0;private var gh=0;private var sw=1;private var sh=1
-    @Volatile var active=false;set(value){field=value;worker.removeCallbacks(frame);worker.post(frame)}
+    @Volatile var active=false;set(value){if(field==value)return;field=value;worker.removeCallbacks(frame);worker.post(frame)}
     @Volatile var motion=true
     @Volatile var block=false
     @Volatile var weather: Weather?=null
@@ -34,6 +34,11 @@ class PixelArt(context: Context, private val instrument: Boolean): TextureView(c
     private var last=0L
     private val scenes=listOf("clear","partly","overcast","rain","storm","snow","fog","wind","night","sunset","dawn","unknown")
     private val instruments=listOf("partly","rain","storm","snow","night","sunset","dawn","clear","overcast","fog","wind")
+    fun updateScene(next:Weather?,at:Long?,coarse:Boolean,animated:Boolean){
+        val changed=weather!==next||sampleTime!=at||block!=coarse||motion!=animated
+        weather=next;sampleTime=at;block=coarse;motion=animated
+        if(changed)refresh()
+    }
     init{surfaceTextureListener=this;isOpaque=true;importantForAccessibility=IMPORTANT_FOR_ACCESSIBILITY_NO}
     private fun shader(type: Int, path: String): Int {
         val code=context.assets.open("shaders/$path").bufferedReader().use { it.readText() }
