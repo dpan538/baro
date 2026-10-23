@@ -10,7 +10,7 @@ fields=dict(line.split('=',1) for line in config.read_text().splitlines() if '='
 fields.update({'hw.lcd.width':'1704','hw.lcd.height':'1136','hw.lcd.density':'160','hw.ramSize':'3072','showDeviceFrame':'no'})
 config.write_text('\n'.join(f'{key}={value}' for key,value in fields.items())+'\n')
 PYCONFIG
-emulator @baro_ci_api36 -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect > /tmp/baro-emulator.log 2>&1 &
+emulator @baro_ci_api36 -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader > /tmp/baro-emulator.log 2>&1 &
 adb wait-for-device
 for i in $(seq 1 60); do
   if [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = 1 ]; then break; fi
