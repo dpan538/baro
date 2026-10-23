@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <style name="AppTheme" parent="android:style/Theme.Material.NoActionBar">
-    <item name="android:fontFamily">sans</item><item name="android:windowLightStatusBar">false</item>
-    <item name="android:windowActionModeOverlay">true</item><item name="android:windowBackground">#252727</item>
-    <item name="android:statusBarColor">#252727</item><item name="android:navigationBarColor">#252727</item>
-    <item name="android:colorAccent">#F0BA83</item><item name="android:windowLightNavigationBar">false</item>
+  <style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar">
+    <item name="android:fontFamily">sans</item><item name="android:windowLightStatusBar">true</item>
+    <item name="android:windowActionModeOverlay">true</item><item name="android:windowBackground">#FCFCF8</item>
+    <item name="android:statusBarColor">#FCFCF8</item><item name="android:navigationBarColor">#FCFCF8</item>
+    <item name="android:colorAccent">#159CFF</item><item name="android:windowLightNavigationBar">true</item>
     <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
   </style>
 </resources>

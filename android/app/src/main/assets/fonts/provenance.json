@@ -1,0 +1,23 @@
+{
+  "notice": "Original font bytes; native MiSansVF is an unmodified official variable font. Original web fonts/licenses remain frozen in the UI baseline.",
+  "files": [
+    {
+      "file": "fonts/MiSansVF.ttf",
+      "sha256": "0ddef90648998900175cfdca9a6f087a2544c182f130b0ad4f7e94a03a115e79",
+      "source": "https://hyperos.mi.com/font/",
+      "modified": false
+    },
+    {
+      "file": "fonts/Inter.ttf",
+      "sha256": "29160a80ff49ddcab2c97711247e08b1fab27a484a329ce8b813d820dc559031",
+      "source": "https://github.com/rsms/inter",
+      "modified": false
+    },
+    {
+      "file": "fonts/RobotoMono.ttf",
+      "sha256": "66a80e79d17e4c7cabd162e2916578a4cc08fd19eef6e2a643305eae9c567b2b",
+      "source": "https://github.com/googlefonts/RobotoMono",
+      "modified": false
+    }
+  ]
+}

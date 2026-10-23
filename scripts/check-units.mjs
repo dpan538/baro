@@ -22,7 +22,8 @@ assert.equal(formatUnitWeather({temperature:null,windSpeed:null},{temperatureUni
 assert.equal(formatBytes(0),'0 B');assert.equal(formatBytes(1536),'1.5 KB');
 const html=await fs.readFile(new URL('../dist/index.html',import.meta.url),'utf8');
 for(const key of [...html.matchAll(/data-copy="([^"]+)"/g)].map(match=>match[1]))for(const language of ['zh','en'])assert(settingText(key,language));
-const gradle=await fs.readFile(new URL('../android/app/build.gradle.kts',import.meta.url),'utf8');assert(gradle.includes(`versionCode = ${APP_META.versionCode}`));assert(gradle.includes(`versionName = "${APP_META.version}"`));
+// The frozen browser prototype keeps its own version; native identity is verified from the built APK.
+assert(Number.isInteger(APP_META.versionCode) && APP_META.versionCode > 0);assert.equal(typeof APP_META.version,'string');
 assert.equal(APP_META.name,'BARO');
 assert.equal(APP_META.nameZh,'晴雨');
 assert.equal(APP_META.updateUrl,'https://github.com/dpan538/baro/releases');
@@ -33,4 +34,4 @@ globalThis.window={caches:true};globalThis.caches={keys:async()=>[...storage.key
 assert.deepEqual(await deviceServices.cache(),{weather:7,maps:3,total:10});assert.deepEqual(await deviceServices.clearCache(),{weather:0,maps:0,total:0});assert(storage.has('unrelated-cache'));assert.deepEqual(deviceServices.setLocation(true),{enabled:false,status:'preview'});
 let openedUrl=null;window.open=url=>{openedUrl=url;return null;};
 assert.equal(deviceServices.external(APP_META.updateUrl),true);assert.equal(openedUrl,APP_META.updateUrl);assert.equal(deviceServices.external('javascript:alert(1)'),false);
-console.log('Verified 88 fixture/unit combinations, temperature extremes, null data, exact wind factors, settings translations, version consistency, owned-cache accounting/clearing and browser location fallback.');
+console.log('Verified 88 fixture/unit combinations, temperature extremes, null data, exact wind factors, settings translations, browser metadata, owned-cache accounting/clearing and browser location fallback.');

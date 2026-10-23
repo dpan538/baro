@@ -12,7 +12,7 @@ Bilingual, built for the big screen. Data by Open-Meteo.
 
 [**Run the web preview**](PREVIEW.md) · [Project status](docs/IMPLEMENTATION-STATUS.md) · [中文说明](#中文说明) · [Architecture](docs/ARCHITECTURE.md) · [UI system](docs/DESIGN-SYSTEM.md) · [Daytime](docs/images/weather-english.jpg) · [Sunrise](docs/images/weather-dawn.jpg) · [Sunset](docs/images/weather-sunset.jpg)
 
-> **Current status:** the browser UI is frozen at [`ui-baseline-2026-10-23`](https://github.com/dpan538/baro/tree/ui-baseline-2026-10-23). The user has resumed Kotlin Android, backend and live API development; see the [Android handoff](docs/ANDROID-KOTLIN-HANDOFF.md). The current implementation is still a sample-data browser prototype with a historical Java/WebView scaffold; the new native/live implementation is not yet delivered.
+> **Native development:** Kotlin Android, an independent BARO relay and real Open-Meteo integration are implemented and undergoing native visual/installation acceptance. The frozen browser UI remains at [`ui-baseline-2026-10-23`](https://github.com/dpan538/baro/tree/ui-baseline-2026-10-23). See the [native build guide](android/README.md), [field inventory](docs/NATIVE-DATA-SOURCES.md) and [evidence ledger](docs/ANDROID-IMPLEMENTATION.md). Public deployment and a stable APK are not yet verified.
 
 ![BARO weather screen with pixel storm clouds](docs/images/weather-storm.jpg)
 
@@ -33,7 +33,7 @@ Bilingual, built for the big screen. Data by Open-Meteo.
 
 ## Develop
 
-Use Node.js 22+ for the current browser prototype. The existing Android scaffold can be resumed later with JDK 17/21 and Android SDK 36.
+Use JDK 17/21 and Android SDK 36 for the Kotlin app; see [native instructions](android/README.md). Node.js 22+ is used for the preserved browser reference and its source checks.
 
 ```sh
 git clone https://github.com/dpan538/baro.git
@@ -46,19 +46,17 @@ npm run dev
 
 Open `http://127.0.0.1:4175/`; `/gallery.html` compares complete pages; choose the observation page there, or open `/?weather=storm&page=sky&lang=zh`. Swipe right from weather to enter and left to return. For example: `?weather=storm&lang=en&pixels=fine&motion=on`.
 
-The Android wrapper and host are retained for later integration. Automatic CI runs source checks and generates the web gallery; it does not build or publish APKs.
+Android CI builds the Kotlin preview, runs backend/domain/lint checks and exercises a disposable emulator. Its debug artifact is not a stable release and may have a different development certificate from local builds.
 
-When Android work resumes, configure `ANDROID_HOME` or an untracked `android/local.properties`. The checked-in Gradle wrapper pins version 8.13 and verifies its distribution checksum. Generated packages remain outside Git.
+For native builds, configure `ANDROID_HOME` or an untracked `android/local.properties`. The checked-in Gradle wrapper pins version 8.13 and verifies its distribution checksum. Generated packages remain outside Git.
 
-`dist/` contains the authored web source bundled in the Android WebView, not generated output. Java handles the offline asset origin, foreground device services and system navigation; WebGL2 draws the weather artwork. No frontend framework or production backend is required for this preview.
+`dist/` contains the authored, frozen browser reference. The native APK uses Kotlin Canvas/View controls and OpenGL ES, and does not embed that webpage. The dedicated [backend](backend/README.md) supplies shared upstream caching, place search and a server-side feedback relay; public deployment remains a separate configured step.
 
 ## Data, privacy and distribution
 
-Weather and air-quality values are sample fixtures, never presented as live observations. The retained Android host has no Internet permission. Optional Android location works only while the activity is visible and does not replace sample weather with real data. Browser previews never request your location.
+The Kotlin app fetches real weather and air quality as model estimates, with explicit source timestamps, missing values, offline/stale cache and no shipping sample-data mode. Foreground location changes the forecast place only after a valid fix; denied or unavailable location retains the selected place. No account, telemetry or background tracking is included.
 
-Update checking currently opens this repository's Releases page. Feedback opens GitHub's issue chooser or copies the draft; it does not submit an Issue automatically. There is no in-app APK downloader, background tracker, account or telemetry.
-
-See [preview instructions](PREVIEW.md), [privacy](docs/PRIVACY.md), [implementation status](docs/IMPLEMENTATION-STATUS.md) and the [Open-Meteo field contract](docs/open-meteo-contract.md). UI and rendering have been checked in browsers and an Android emulator at 3456×2304; that is not a claim of complete Xiaomi device acceptance.
+Native updates compare versionCode and verify downloaded APK hash, package, version and installed signer before opening the Android installer. Feedback retains failed drafts and accepts success only after an independently verified Issue receipt; it needs a dedicated BARO server credential. Public release/download and feedback delivery are not yet accepted. See [privacy](docs/PRIVACY.md), [native distribution](docs/ANDROID-DISTRIBUTION.md) and the [acceptance ledger](docs/ANDROID-IMPLEMENTATION.md).
 
 The current Xiaomi Pad 9 Pro Max target and Android inset contract are documented in [the tablet display contract](docs/TABLET-DISPLAY-CONTRACT.md). Use [the local device preview](http://127.0.0.1:4175/tablet-preview.html) for exact 3:2 / 2:3 geometry.
 
@@ -68,11 +66,11 @@ The current Xiaomi Pad 9 Pro Max target and Android inset contract are documente
 
 左边是今日天气，右边是流动的像素天空。中文或英文界面，为大屏而生；气象数据路线采用 Open-Meteo。
 
-第二页是独立的环境观测仪器面板：二十九个模块、右下目的拨轮与专用横向像素视窗。拨轮选择用户目的和关注点，联动信息组合；底部环境解读把与当前目的有关的温湿、风雨、光线或器材结露条件汇成更大字的圆角段落，并补充闷热、结露、水汽或光线等相关解释。首页右滑进入，左滑返回；气象趋势仍为示例，非实时预测。
+第二页是独立的环境观测仪器面板：二十九个模块、右下目的拨轮与专用横向像素视窗。拨轮选择用户目的和关注点，联动信息组合；底部环境解读把与当前目的有关的温湿、风雨、光线或器材结露条件汇成更大字的圆角段落，并补充闷热、结露、水汽或光线等相关解释。原生 App 在任一主页面完成左滑或右滑，都会切换到另一页。产品只使用真实 API 模型数据与明确说明的派生计算；无示例入口或示例数据，缺失字段保留 —。
 
-当前网页 UI 已备份冻结，用户已恢复 Kotlin 安卓、后端和真实 API 开发，具体要求见[开发交接](docs/ANDROID-KOTLIN-HANDOFF.md)。现有实现仍为示例数据网页与历史 Java/WebView 壳层，不能冒称已完成原生与实时接入。界面一次只显示一种语言，不提供中英并排模式；项目统一使用 BARO 名称。
+冻结网页 UI 作为原生移植的视觉合同。Kotlin、独立后端和真实 Open-Meteo/CAMS 接入已实现，正在持续进行模拟器截图与安装验收，见[实施记录](docs/ANDROID-IMPLEMENTATION.md)。界面一次只显示中文或英文，不提供中英并排模式。公开部署、正式签名和小米真机验收仍单列为未验证项。
 
-源码、文档、构建与分发分开组织，参考同作者的 Annota 工程。BARO 当前使用 Java/WebView/WebGL2；它不是 Annota 的原生阅读器，也不包含其 PDF、笔迹或反馈服务。
+源码、文档、构建与分发分开组织，参考同作者的 Annota 工程。BARO 原生端使用 Kotlin / Canvas / OpenGL ES，独立维护后端；没有挪用 Annota 的阅读器功能、生产服务、Token 或签名身份。
 
 [运行网页预览](PREVIEW.md) · [使用反馈](https://github.com/dpan538/baro/issues/new/choose) · [贡献说明](CONTRIBUTING.md)
 

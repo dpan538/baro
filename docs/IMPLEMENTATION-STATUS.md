@@ -1,6 +1,11 @@
 # Implementation status
 
-The user resumed Kotlin Android, backend and live API development on 2026-10-23. The current implementation remains a browser weather-screen prototype with the historical Java/WebView host and Android metadata 0.9.2 (11); the new app is not yet implemented. The UI is frozen at `ui-baseline-2026-10-23`. See [handoff and acceptance requirements](ANDROID-KOTLIN-HANDOFF.md). There is no public BARO APK release. Earlier paused-work statements below are historical.
+Current native status (2026-10-24, Australia/Brisbane): Java/WebView has been replaced by Kotlin, native Canvas/controls and the original OpenGL ES artwork. The independent backend and actual Open-Meteo/CAMS integration have local/emulator evidence. Gradle build/lint and 12 domain / 14 backend tests pass; native behavior, real settings touches, lifecycle and local update-validation checks are recorded in the [native ledger](ANDROID-IMPLEMENTATION.md). Visual comparison remains under active iteration; screenshots with system overlays or wrong geometry are rejected. No public backend, public APK release, automatic public feedback receipt or Xiaomi hardware acceptance is claimed. See [native data sources](NATIVE-DATA-SOURCES.md) and [distribution](ANDROID-DISTRIBUTION.md).
+
+The following browser/history records retain their original scope and do not describe the current native implementation.
+
+
+The frozen UI reference is `ui-baseline-2026-10-23`; its tag is preserved. The Kotlin handoff supersedes earlier paused Android notes.
 
 Implemented: eleven distinct sample scenarios; weather and time-aware icons; local sunrise/sunset selection; high/low and feels-like temperatures; AQI display rules; separate CN/EN UI; unit conversion; fine/block pixel animation; grouped left-panel settings and scene selection; optional Android foreground location; owned-data cache accounting/clearing; app metadata, GitHub links and copy-feedback.
 

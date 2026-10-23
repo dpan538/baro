@@ -29,3 +29,11 @@ verification/*
 !verification/open-meteo-v6-forecast.json
 !verification/open-meteo-v6-air.json
 !verification/misans-font-index.json
+# Dedicated relay state and native local test outputs
+backend/data/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+android/verification/*
+!android/verification/README.md
+!android/verification/acceptance.json

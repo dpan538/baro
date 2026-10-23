@@ -1,0 +1,32 @@
+[
+  {
+    "source": "dist/weather-shader.js",
+    "constant": "VERTEX",
+    "target": "weather.vert",
+    "sha256": "f7d081dbfde456b1dba2da5145ce6e6d454996b67e45a38a4ff46e81e2d9c98c"
+  },
+  {
+    "source": "dist/weather-shader.js",
+    "constant": "COPY",
+    "target": "copy.frag",
+    "sha256": "4f6f5b59c5f12b0c6e5e156a3072d24076364aee5cb6925ea7b39a27482e9b32"
+  },
+  {
+    "source": "dist/weather-shader.js",
+    "constant": "ART",
+    "target": "weather.frag",
+    "sha256": "40ab47c7911e219f23e37f41039e480e2cc29a387eae7bebec73f3b7c3fce39e"
+  },
+  {
+    "source": "dist/instrument-art.js",
+    "constant": "INSTRUMENT_VERTEX",
+    "target": "instrument.vert",
+    "sha256": "a392d782590ad80e7cb2a2f42945d03ce08577edac00fbd684e96245021c92a2"
+  },
+  {
+    "source": "dist/instrument-art.js",
+    "constant": "INSTRUMENT_FRAGMENT",
+    "target": "instrument.frag",
+    "sha256": "a06010d2012ae6f134703efd20099575404673cc848e30941bdbaa086fa1f736"
+  }
+]
