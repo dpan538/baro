@@ -16,13 +16,15 @@ object NativeTestEnvironment {
         val i=InstrumentationRegistry.getInstrumentation()
         val raw=i.context.assets.open("live-brisbane.json").bufferedReader().use{it.readText()}
         (i.targetContext.applicationContext as Application).registerActivityLifecycleCallbacks(object:Application.ActivityLifecycleCallbacks{
-            override fun onActivityCreated(activity:Activity,state:Bundle?){
+            override fun onActivityCreated(activity:Activity,state:Bundle?){}
+            override fun onActivityPostCreated(activity:Activity,state:Bundle?){
                 if(activity !is MainActivity)return
                 val arts=listOf(activity.pager.weatherPage.art,activity.pager.observationPage.art)
                 arts.forEach{it.surfaceTextureListener=null;it.visibility=View.INVISIBLE;it.dispose()}
                 activity.root.viewTreeObserver.addOnPreDrawListener{arts.forEach{it.visibility=View.INVISIBLE};true}
             }
-            override fun onActivityResumed(activity:Activity){
+            override fun onActivityResumed(activity:Activity){}
+            override fun onActivityPostResumed(activity:Activity){
                 if(activity !is MainActivity)return
                 activity.repository.cancelWeather();activity.model.weather=WeatherJson.parse(raw,activity.model.place);activity.model.status="offline";activity.redraw()
             }

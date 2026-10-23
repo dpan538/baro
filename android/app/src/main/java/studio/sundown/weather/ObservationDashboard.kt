@@ -347,7 +347,14 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         }
         draw("ins-optical"){
             if(model.purpose in 4..6){
-                val body=base(it,heading("色温","CCT"),color=pale);value(body,"—","K ≈",27f);note(heading("未测量","Unmeasured"),body)
+                if(it.height()<96){
+                    base(it,"",color=pale)
+                    titleText(heading("色温","CCT"),it.left+12,it.top+5,24f)
+                    text("— K",it.right-12,it.top+5,24f,INK,inter,Paint.Align.RIGHT)
+                    fit(heading("未测量","Unmeasured"),it.left+12,it.bottom-22,it.width()-24,16f)
+                }else{
+                    val body=base(it,heading("色温","CCT"),color=pale);value(body,"—","K",27f);note(heading("未测量","Unmeasured"),body)
+                }
             }else if(portrait){val body=base(it,"PM2.5",color=pale);value(body,Units.number(wx?.pm25),"μg/m³",30f);note(wx?.airAt?.let{epoch->"CAMS · "+wx!!.clock(epoch)}?:heading("空气模型暂无数据","Air model unavailable"),body)}
             else scalar(it,"PM2.5",Units.number(wx?.pm25),"μg/m³")
         }
