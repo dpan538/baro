@@ -252,16 +252,14 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         val label=heading("光影倒计时","Light timer")
         titleText(label,b.left+12,b.top+10)
         val w=wx
-        val now=System.currentTimeMillis()/1000
-        val date=Instant.ofEpochSecond(now).atZone(w?.zone?:java.time.ZoneId.systemDefault()).toLocalDate()
-        val angle=if(model.purpose==6)-4.0 else 6.0
-        val event=w?.let{(0L..2L).flatMap{i->Astronomy.crossings(date.plusDays(i),it.place,angle)}.filter{it.first>now}.minByOrNull{it.first}}
-        val sec=event?.first?.minus(now)?.coerceAtLeast(0)
+        val now=model.now
+        val target=w?.let{lightTarget(it,model.purpose,now,model.window(it))}
+        val sec=target?.epoch?.minus(now)?.coerceAtLeast(0)
         val count=sec?.let{String.format(java.util.Locale.US,"%02d:%02d:%02d",it/3600,(it%3600)/60,it%60)}?:"—"
-        val phase=if(model.purpose==6)heading("蓝调时刻","Blue hour")else heading("黄金时刻","Golden hour")
+        val phase=when(target?.kind){"blue"->heading("蓝调时段","Blue hour");"dawn"->heading("晨光时段","Dawn window");"end"->heading("时段结束","Window ends");"golden"->heading("黄金时刻","Golden hour");else->heading("无对应事件","No event")}
         text(count,b.left+12,b.bottom-47,32f,INK,inter)
         text(phase,b.right-12,b.top+12,16f,INK,languageFont(phase),Paint.Align.RIGHT)
-        text((w?.clock(event?.first)?:"—")+" ≈",b.right-12,b.bottom-30,16f,INK,mono,Paint.Align.RIGHT)
+        text((w?.clock(target?.epoch)?:"—")+" ≈",b.right-12,b.bottom-30,16f,INK,mono,Paint.Align.RIGHT)
     }
     private fun rain(b:RectF,totalB:RectF){
         val body=base(b,heading("短时降水","Rain trend"),true)
@@ -307,7 +305,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
     private var metricsKey=""
     private var metrics:DesignMetrics?=null
     override fun drawDashboard(){
-        wx=model.weather;val win=wx?.let{observationWindow(it,model.purpose)};at=win?.start?:System.currentTimeMillis()/1000
+        wx=model.weather;val win=wx?.let{model.window(it)};at=win?.start?:System.currentTimeMillis()/1000
         title=if(w>=1500)26f else 24f
         val key="observation-${if(portrait)"portrait" else "landscape"}-${model.lang}-${model.purpose}"
         if(metricsKey!=key){metrics=DesignMetrics(context,key);metricsKey=key}

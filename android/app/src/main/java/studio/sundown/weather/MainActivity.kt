@@ -25,6 +25,7 @@ class MainActivity:Activity(){
     private lateinit var observationArt:PixelArt
     private var visible=false
     private var locating=false
+    private var lastWeatherAttempt=0L
     private var locationGeneration=0L
     private val main=Handler(Looper.getMainLooper())
     private val devicePrefs by lazy{getSharedPreferences("sundown-device",MODE_PRIVATE)}
@@ -73,9 +74,17 @@ class MainActivity:Activity(){
     override fun onPause(){visible=false;main.removeCallbacks(ticker);repository.cancelWeather();placeSearch?.cancel();feedback.cancel();settings.cancelRequests();stopLocation();artLifecycle();super.onPause()}
     override fun onDestroy(){placeSearch?.cancel();settings.dispose();weatherArt.dispose();observationArt.dispose();repository.close();super.onDestroy()}
     override fun onSaveInstanceState(out:Bundle){out.putDouble("weather_elapsed",weatherArt.elapsed);out.putDouble("observation_elapsed",observationArt.elapsed);super.onSaveInstanceState(out)}
-    private val ticker=object:Runnable{override fun run(){if(!visible)return;pager.observationPage.dashboard.invalidate();val wx=model.weather;if(wx!=null&&System.currentTimeMillis()/1000-wx.fetchedAt>=CACHE_SECONDS&&model.status!="loading")refresh();main.postDelayed(this,60000)}}
+    private val ticker=object:Runnable{override fun run(){
+        if(!visible)return
+        val wx=model.weather;val before=wx?.let{model.window(it)}
+        model.now=System.currentTimeMillis()/1000
+        if(wx!=null&&model.window(wx)!=before)redraw()else if(model.page==1)pager.observationPage.dashboard.invalidate()
+        if(wx!=null&&model.now-wx.fetchedAt>=CACHE_SECONDS&&model.status!="loading"&&model.now-lastWeatherAttempt>=60)refresh()
+        main.postDelayed(this,1000)
+    }}
     fun refresh(force:Boolean=false){
         if(!visible)return
+        lastWeatherAttempt=System.currentTimeMillis()/1000
         model.status="loading";redraw();val place=model.place
         repository.refresh(place,force){weather,error->
             model.weather=weather;model.status=if(error==null)"ready" else "offline"
@@ -84,13 +93,14 @@ class MainActivity:Activity(){
         }
     }
     fun redraw(){
+        model.now=System.currentTimeMillis()/1000
         pager.syncPage();root.setBackgroundColor(if(model.page==0)0xff191e1d.toInt()else FRAME);pager.weatherPage.updateState();pager.observationPage.updateState()
         val enabled=model.motion&&android.animation.ValueAnimator.areAnimatorsEnabled()
-        weatherArt.weather=model.weather;observationArt.weather=model.weather;observationArt.sampleTime=model.weather?.let{observationWindow(it,model.purpose).start}
+        weatherArt.weather=model.weather;observationArt.weather=model.weather;observationArt.sampleTime=model.weather?.let{model.window(it).start}
         weatherArt.block=model.block;observationArt.block=model.block;weatherArt.motion=enabled;observationArt.motion=enabled
         pager.weatherPage.requestLayout();pager.observationPage.requestLayout();pager.weatherPage.dashboard.invalidate();pager.observationPage.dashboard.invalidate();weatherArt.refresh();observationArt.refresh();artLifecycle()
     }
-    private fun artLifecycle(transition:Boolean=false){weatherArt.active=visible&&model.weather!=null&&(model.page==0||transition);observationArt.active=visible&&model.weather?.let{it.scene(observationWindow(it,model.purpose).start)!="unknown"}==true&&(model.page==1||transition)}
+    private fun artLifecycle(transition:Boolean=false){weatherArt.active=visible&&model.weather!=null&&(model.page==0||transition);observationArt.active=visible&&model.weather?.let{it.scene(model.window(it).start)!="unknown"}==true&&(model.page==1||transition)}
     fun selectPlace(place:Place,manual:Boolean=true){
         repository.cancelWeather();model.place=place;model.weather=repository.cached(place)
         if(manual){devicePrefs.edit().putBoolean("location_follow",false).apply();stopLocation();model.locationStatus="off"}

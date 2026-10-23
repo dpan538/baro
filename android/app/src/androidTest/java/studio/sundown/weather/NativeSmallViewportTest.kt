@@ -26,7 +26,7 @@ class NativeSmallViewportTest {
     }
     @Test fun readablePortraitScrollAndDialRetainSeparateGestureOwnership(){
         ActivityScenario.launch(MainActivity::class.java).use{s->
-            s.onActivity{a->a.model.motion=false;a.model.page=1;a.model.purpose=11;a.redraw()}
+            s.onActivity{a->a.model.motion=false;a.model.block=InstrumentationRegistry.getArguments().getString("pixels")=="block";a.model.page=1;a.model.purpose=11;a.redraw()}
             var ready=false
             for(attempt in 0..59){s.onActivity{ready=it.model.weather!=null};if(ready)break;SystemClock.sleep(500)}
             assertTrue("This product capture requires real API data",ready)

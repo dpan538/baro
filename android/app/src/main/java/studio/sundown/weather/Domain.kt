@@ -60,6 +60,37 @@ data class Weather(val place: Place, val fetchedAt: Long, val validAt: Long, val
     }
 }
 
+data class ObservationWindow(val start:Long,val end:Long,val available:Boolean)
+fun observationWindow(w:Weather,purpose:Int,reference:Long=w.validAt):ObservationWindow {
+    if(purpose !in 4..6)return ObservationWindow(w.validAt,w.validAt+7200,true)
+    val date=Instant.ofEpochSecond(reference).atZone(w.zone).toLocalDate()
+    val rising=purpose==5
+    val startAngle=when(purpose){4->6.0;5->-6.0;else->-4.0};val endAngle=if(rising)6.0 else -6.0
+    for(offset in -1L..2L){
+        val day=date.plusDays(offset)
+        val starts=Astronomy.crossings(day,w.place,startAngle)
+        val start=starts.find{it.second==rising}?.first?:continue
+        val nextStarts=starts+Astronomy.crossings(day.plusDays(1),w.place,startAngle)
+        val reset=nextStarts.filter{it.first>start&&it.second!=rising}.minByOrNull{it.first}?.first
+        val end=(Astronomy.crossings(day,w.place,endAngle)+Astronomy.crossings(day.plusDays(1),w.place,endAngle))
+            .filter{it.first>start&&it.second==rising}.minByOrNull{it.first}?.first?:continue
+        if(end>reference&&(reset==null||end<reset))return ObservationWindow(start,end,true)
+    }
+    return ObservationWindow(reference,reference,false)
+}
+data class LightTarget(val epoch:Long,val kind:String)
+fun lightTarget(w:Weather,purpose:Int,now:Long,selected:ObservationWindow?=null):LightTarget? {
+    if(purpose in 4..6){
+        val window=selected?:observationWindow(w,purpose,now)
+        if(!window.available||window.end<=now)return null
+        val ongoing=now>=window.start
+        return LightTarget(if(ongoing)window.end else window.start,if(ongoing)"end"else when(purpose){5->"dawn";6->"blue";else->"golden"})
+    }
+    val date=Instant.ofEpochSecond(now).atZone(w.zone).toLocalDate()
+    val event=(0L..2L).flatMap{Astronomy.crossings(date.plusDays(it),w.place,6.0)}.filter{it.first>now}.minByOrNull{it.first}?:return null
+    return LightTarget(event.first,"golden")
+}
+
 object Physics {
     fun dew(t: Double?, rh: Double?): Double? {
         if (t == null || rh == null || rh <= 0 || rh > 100 || t <= -243.04) return null

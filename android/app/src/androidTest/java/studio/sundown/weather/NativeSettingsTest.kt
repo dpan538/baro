@@ -44,9 +44,24 @@ class NativeSettingsTest {
         seed();ActivityScenario.launch(MainActivity::class.java).use{s->s.onActivity{it.settings.open()};SystemClock.sleep(300);tap(s,"检查更新");s.onActivity{it.settings.close()};SystemClock.sleep(700);s.onActivity{assertEquals(View.GONE,it.settings.visibility);assertFalse(it.pager.overlayOpen)}}
     }
     @Test fun backgroundPausesGpuAndResumeRestarts(){
-        seed();ActivityScenario.launch(MainActivity::class.java).use{s->s.onActivity{it.model.motion=true;it.redraw()};SystemClock.sleep(500);s.moveToState(androidx.lifecycle.Lifecycle.State.CREATED);SystemClock.sleep(250)
-            var count=0L;s.onActivity{count=it.pager.weatherPage.art.renderedFrames};SystemClock.sleep(400);s.onActivity{assertEquals(count,it.pager.weatherPage.art.renderedFrames)}
-            s.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED);SystemClock.sleep(500);s.onActivity{assertTrue(it.pager.weatherPage.art.renderedFrames>count)}
+        seed()
+        // Isolate GPU lifecycle from network latency. This recorded provider input
+        // exists only in androidTest; live product captures have a separate gate.
+        val raw=i.context.assets.open("live-brisbane.json").bufferedReader().use{it.readText()}
+        fun prepare(a:MainActivity){a.repository.cancelWeather();a.model.weather=WeatherJson.parse(raw,a.model.place);a.model.motion=true;a.redraw()}
+        fun awaitFrame(s:ActivityScenario<MainActivity>,previous:Long){
+            val deadline=SystemClock.uptimeMillis()+10000;var advanced=false
+            while(SystemClock.uptimeMillis()<deadline){s.onActivity{a->assertNull(a.pager.weatherPage.art.error);advanced=a.pager.weatherPage.art.renderedFrames>previous};if(advanced)return;SystemClock.sleep(100)}
+            assertTrue("Native GPU did not present a resumed frame",advanced)
+        }
+        ActivityScenario.launch(MainActivity::class.java).use{s->
+            s.onActivity(::prepare);awaitFrame(s,1)
+            s.moveToState(androidx.lifecycle.Lifecycle.State.CREATED)
+            var count=-1L;var stable=0;val deadline=SystemClock.uptimeMillis()+5000
+            while(stable<4&&SystemClock.uptimeMillis()<deadline){SystemClock.sleep(250);s.onActivity{a->assertFalse(a.pager.weatherPage.art.active);val now=a.pager.weatherPage.art.renderedFrames;stable=if(now==count)stable+1 else 0;count=now}}
+            assertEquals("GPU must quiesce after an in-flight frame",4,stable)
+            SystemClock.sleep(500);s.onActivity{assertEquals(count,it.pager.weatherPage.art.renderedFrames)}
+            s.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED);s.onActivity(::prepare);awaitFrame(s,count)
         }
     }
     @Test fun nativeHttpFeedbackFailureRetainsExactDraftAndIdentity(){

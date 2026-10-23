@@ -224,7 +224,7 @@ class NativePage(context:Context,val dashboard:Dashboard,val art:PixelArt):andro
     init {isFillViewport=true;overScrollMode=OVER_SCROLL_NEVER;setBackgroundColor(if(dashboard is WeatherDashboard)0xff191e1d.toInt()else FRAME);addView(layer,LayoutParams(-1,-1));layer.addView(dashboard,FrameLayout.LayoutParams(-1,-1));layer.addView(art);layer.addView(caption);clipChildren=true;art.clipToOutline=true;art.outlineProvider=object:android.view.ViewOutlineProvider(){override fun getOutline(v:View,outline:android.graphics.Outline){outline.setRoundRect(0,0,v.width,v.height,if(dashboard is ObservationDashboard)24*resources.displayMetrics.density else 0f)}}}
     fun updateState(){
         val m=dashboard.model;val wx=m.weather
-        val known=wx!=null&&(dashboard !is ObservationDashboard||wx.scene(observationWindow(wx,m.purpose).start)!="unknown")
+        val known=wx!=null&&(dashboard !is ObservationDashboard||wx.scene(m.window(wx).start)!="unknown")
         art.visibility=if(known)View.VISIBLE else View.INVISIBLE
         caption.text=if(dashboard is ObservationDashboard&&!known)m.tr("该时段无天气数据","No weather data for this window")else m.source()
         caption.visibility=if(dashboard is ObservationDashboard&&known)View.GONE else View.VISIBLE

@@ -31,11 +31,11 @@ if [ "$BARO_CI_BOOTED" != true ]; then tail -100 output/native-ci/emulator.log; 
 adb -s "$BARO_CI_SERIAL" shell settings put secure immersive_mode_confirmations confirmed
 adb -s "$BARO_CI_SERIAL" install -r android/app/build/outputs/apk/debug/app-debug.apk
 adb -s "$BARO_CI_SERIAL" install -r android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
-timeout 900 adb -s "$BARO_CI_SERIAL" shell am instrument -w -e class studio.sundown.weather.NativeFlowTest studio.sundown.weather.test/androidx.test.runner.AndroidJUnitRunner | tee output/native-ci/instrumentation.txt
+timeout 900 adb -s "$BARO_CI_SERIAL" shell am instrument -w -e pixels block -e class studio.sundown.weather.NativeFlowTest studio.sundown.weather.test/androidx.test.runner.AndroidJUnitRunner | tee output/native-ci/instrumentation.txt
 # adb returns zero even for a failing instrumentation runner; inspect its real result.
 grep -Eq '^OK \([0-9]+ tests?\)' output/native-ci/instrumentation.txt
 adb -s "$BARO_CI_SERIAL" shell wm density 200
 adb -s "$BARO_CI_SERIAL" shell wm user-rotation lock 1
-timeout 180 adb -s "$BARO_CI_SERIAL" shell am instrument -w -e class studio.sundown.weather.NativeSmallViewportTest studio.sundown.weather.test/androidx.test.runner.AndroidJUnitRunner | tee output/native-ci/small-viewport.txt
+timeout 180 adb -s "$BARO_CI_SERIAL" shell am instrument -w -e pixels block -e class studio.sundown.weather.NativeSmallViewportTest studio.sundown.weather.test/androidx.test.runner.AndroidJUnitRunner | tee output/native-ci/small-viewport.txt
 grep -Eq '^OK \([0-9]+ tests?\)' output/native-ci/small-viewport.txt
 adb -s "$BARO_CI_SERIAL" pull /sdcard/Android/data/studio.sundown.weather/files output/native-ci/

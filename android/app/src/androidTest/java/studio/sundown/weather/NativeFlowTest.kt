@@ -15,7 +15,7 @@ import java.io.File
 class NativeFlowTest {
     private val instrument=InstrumentationRegistry.getInstrumentation()
     private val ctx get()=instrument.targetContext
-    private fun seed(page:Int=0){ctx.getSharedPreferences("baro-native",Context.MODE_PRIVATE).edit().clear().putBoolean("motion",false).putString("language","zh").putInt("page",page).commit()}
+    private fun seed(page:Int=0){ctx.getSharedPreferences("baro-native",Context.MODE_PRIVATE).edit().clear().putBoolean("motion",false).putBoolean("block",InstrumentationRegistry.getArguments().getString("pixels")=="block").putString("language","zh").putInt("page",page).commit()}
     private fun idle(){instrument.waitForIdleSync();SystemClock.sleep(350)}
     private fun swipe(scenario:ActivityScenario<MainActivity>,direction:Int,yFraction:Float=.7f,vertical:Boolean=false,cancel:Boolean=false){
         val coords=FloatArray(4);scenario.onActivity{a->val loc=IntArray(2);a.pager.getLocationOnScreen(loc);val width=a.pager.width;val height=a.pager.height;coords[0]=loc[0]+width*.5f;coords[1]=loc[1]+height*yFraction;coords[2]=if(vertical)coords[0]+4 else coords[0]+width*.3f*direction;coords[3]=if(vertical)coords[1]+height*.15f else coords[1]+3}
@@ -66,7 +66,7 @@ class NativeFlowTest {
             var ready=false
             for(attempt in 0..59){s.onActivity{ready=it.model.weather!=null&&it.model.status=="ready"};if(ready)break;SystemClock.sleep(500)}
             assertTrue("Live API weather must be loaded before product screenshots",ready)
-            s.onActivity{a->java.io.File(ctx.getExternalFilesDir(null),"live-visual-provenance.json").writeText(org.json.JSONObject().put("source","Open-Meteo live API").put("backend",a.repository.backend).put("validAt",a.model.weather!!.validAt).put("fetchedAt",a.model.weather!!.fetchedAt).toString());val raw=java.io.File(ctx.cacheDir,"weather/"+a.model.place.key+".json");assertTrue(raw.isFile);raw.copyTo(java.io.File(ctx.getExternalFilesDir(null),"live-visual-response.json"),overwrite=true)}
+            s.onActivity{a->java.io.File(ctx.getExternalFilesDir(null),"live-visual-provenance.json").writeText(org.json.JSONObject().put("source","Open-Meteo live API").put("backend",a.repository.backend).put("pixels",if(a.model.block)"block"else "fine").put("validAt",a.model.weather!!.validAt).put("fetchedAt",a.model.weather!!.fetchedAt).toString());val raw=java.io.File(ctx.cacheDir,"weather/"+a.model.place.key+".json");assertTrue(raw.isFile);raw.copyTo(java.io.File(ctx.getExternalFilesDir(null),"live-visual-response.json"),overwrite=true)}
             for(orientation in listOf(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE,android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)){
                 instrument.uiAutomation.executeShellCommand("wm user-rotation lock ${if(orientation==0)0 else 1}").close();SystemClock.sleep(1500);idle();s.onActivity{assertEquals(orientation==0,it.pager.width>it.pager.height)}
                 dismissEducation();val selected=InstrumentationRegistry.getArguments().getString("purposes")?.split(",")?.map{it.toInt().also{value->require(value in 0..11)}}?: (0..11).toList()

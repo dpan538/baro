@@ -38,6 +38,16 @@ class AppModel(context:Context){
     var weather:Weather?=null
     var status="loading"
     var locationStatus="off"
+    var now=System.currentTimeMillis()/1000
+    private var windowKey=""
+    private var cachedWindow:ObservationWindow?=null
+    fun window(w:Weather):ObservationWindow {
+        if(purpose !in 4..6)return observationWindow(w,purpose,now)
+        val key="${w.place.latitude},${w.place.longitude},${w.place.zone}:$purpose:${now/60}"
+        val cached=cachedWindow
+        if(key==windowKey&&cached!=null&&cached.end>now)return cached
+        return observationWindow(w,purpose,now).also{windowKey=key;cachedWindow=it}
+    }
     fun tr(zh:String,en:String)=if(lang=="zh")zh else en
     val tempUnit get()=if(fahrenheit)"°F" else "°C"
     val windUnit get()=when(wind){"ms"->"m/s";"mph"->"mph";"kts"->"kts";else->"km/h"}
@@ -61,18 +71,6 @@ class AppModel(context:Context){
     }
 }
 
-data class ObservationWindow(val start:Long,val end:Long,val available:Boolean)
-fun observationWindow(w:Weather,purpose:Int):ObservationWindow {
-    if(purpose !in 4..6)return ObservationWindow(w.validAt,w.validAt+7200,true)
-    val date=Instant.ofEpochSecond(w.validAt).atZone(w.zone).toLocalDate()
-    val rising=purpose==5;val startAngle=if(purpose==4)6.0 else if(purpose==5)-6.0 else -4.0;val endAngle=if(purpose==5)6.0 else -6.0
-    for(i in 0L..2L){
-        val day=date.plusDays(i)
-        val start=Astronomy.crossings(day,w.place,startAngle).find{it.second==rising}?.first
-        val end=Astronomy.crossings(day,w.place,endAngle).find{it.second==rising}?.first
-        if(start!=null&&end!=null&&end>w.validAt&&end>start)return ObservationWindow(start,end,true)
-    };return ObservationWindow(w.validAt,w.validAt,false)
-}
 fun interpretation(m:AppModel,w:Weather?,at:Long):String {
     if(w==null)return m.tr("天气数据暂不可用。请联网后选择地点重试。","Weather is unavailable. Connect and choose a place to retry.")
     val t=w.value("temperature_2m",at);val rh=w.value("relative_humidity_2m",at);val td=w.value("dew_point_2m",at)?:Physics.dew(t,rh)

@@ -27,4 +27,27 @@ class DomainTest {
     @Test fun noInvalidCoordinates(){for(a in listOf(Double.NaN,Double.POSITIVE_INFINITY,91.0))assertThrows(IllegalArgumentException::class.java){Place("x",a,0.0)}}
     @Test fun moonCycleAndIlluminationStayBounded(){for(day in 0..60){val m=Astronomy.moon(946684800+day*86400L);assertTrue(m.age>=0&&m.age<29.531);assertTrue(m.illumination in 0.0..1.0)}}
     @Test fun staleTimestampRemainsStale(){val w=fixture().copy(fetchedAt=1000,validAt=1000);assertTrue(w.stale(2800));assertTrue(w.stale(100000));assertFalse(w.copy(fetchedAt=1000,validAt=1000).stale(1100))}
+    @Test fun photoCountdownTargetsTheSelectedPurposeAtNight(){
+        val place=Place("Brisbane",-27.47,153.03,"Australia/Brisbane")
+        val now=LocalDate.parse("2026-10-24").atTime(1,0).atZone(ZoneId.of(place.zone)).toEpochSecond()
+        val w=fixture().copy(place=place,validAt=now-86400)
+        for((purpose,angle,rising) in listOf(Triple(4,6.0,false),Triple(5,-6.0,true),Triple(6,-4.0,false))){
+            val event=lightTarget(w,purpose,now)!!
+            assertTrue(event.epoch>now);assertEquals(angle,Astronomy.sun(event.epoch,place).elevation,.05)
+            assertEquals(rising,Astronomy.sun(event.epoch+60,place).elevation>Astronomy.sun(event.epoch-60,place).elevation)
+            if(purpose!=5)assertTrue(Instant.ofEpochSecond(event.epoch).atZone(ZoneId.of(place.zone)).hour>=16)
+        }
+    }
+    @Test fun anActivePhotoWindowCountsToItsEnd(){
+        val p=Place("Brisbane",-27.47,153.03,"Australia/Brisbane");val now=LocalDate.parse("2026-10-24").atTime(1,0).atZone(ZoneId.of(p.zone)).toEpochSecond();val w=fixture().copy(place=p,validAt=now)
+        val window=observationWindow(w,4,now);val target=lightTarget(w,4,window.start+300)!!
+        assertEquals("end",target.kind);assertEquals(window.end,target.epoch)
+    }
+    @Test fun photoWindowsCrossCivilMidnightAndKeepPolarAbsence(){
+        val p=Place("Helsinki",60.17,24.94,"Europe/Helsinki");val date=LocalDate.parse("2026-06-20");val now=date.atTime(12,0).atZone(ZoneId.of(p.zone)).toEpochSecond();val w=fixture().copy(place=p,validAt=now)
+        val window=observationWindow(w,4,now);assertTrue(window.available)
+        assertEquals(date,Instant.ofEpochSecond(window.start).atZone(ZoneId.of(p.zone)).toLocalDate());assertEquals(date.plusDays(1),Instant.ofEpochSecond(window.end).atZone(ZoneId.of(p.zone)).toLocalDate())
+        val pole=w.copy(place=Place("Pole",89.0,0.0,"UTC"));assertNull(lightTarget(pole,4,now));assertNull(lightTarget(pole,5,now));assertNull(lightTarget(pole,6,now))
+    }
+
 }
