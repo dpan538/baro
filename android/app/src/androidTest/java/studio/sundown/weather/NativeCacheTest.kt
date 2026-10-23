@@ -99,4 +99,20 @@ class NativeCacheTest {
             }finally{i.runOnMainSync{repo.clear();repo.close()}}
         }
     }
+    @Test fun interruptedStaleRefreshKeepsDisclosedCacheAndTheReadLimit(){
+        val clock=Clock();server(clock).use{server->val repo=repository(server,clock);val resumed=repository(server,clock)
+            try{
+                i.runOnMainSync{repo.clear()};val first=read(repo).first!!;clock.advance(1800)
+                val gate=CountDownLatch(1);server.gate=gate
+                i.runOnMainSync{repo.refresh(place){_,_->fail("Stopped owner received a refresh")}}
+                awaitRequest(server,2);i.runOnMainSync{repo.cancelWeather()};server.gate=null;gate.countDown()
+                val fallback=read(resumed);assertSame(first,fallback.first);assertEquals("refresh_interval",fallback.second)
+                assertTrue(first.stale(clock.wall.get()));assertEquals(2,server.requests.get())
+                val model=AppModel(i.targetContext).apply{weather=fallback.first;status="offline"}
+                for(language in listOf("zh","en")){model.lang=language;assertTrue(model.source().contains(if(language=="zh")"过期缓存"else "STALE"))}
+                clock.advance(299);assertSame(first,read(resumed).first);assertEquals(2,server.requests.get())
+                clock.advance(1);val fresh=read(resumed);assertNull(fresh.second);assertNotSame(first,fresh.first);assertEquals(3,server.requests.get())
+            }finally{i.runOnMainSync{repo.clear();repo.close();resumed.close()}}
+        }
+    }
 }

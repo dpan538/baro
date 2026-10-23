@@ -60,10 +60,14 @@ for start in range(a.start,a.end+1,a.batch):
     target=out/'batches'/f'{start:03}-{start+count-1:03}.jsonl';pull(f'soak-{start}.jsonl',target)
     batch=[json.loads(x) for x in target.read_text().splitlines() if x.strip()]
     rows.extend(batch);write('rounds.jsonl',''.join(json.dumps(row)+'\n'for row in rows))
-    for name in {row['providerResponseFile'] for row in batch}: pull(name,out/name)
+    for name in {row['providerResponseFile'] for row in batch if 'providerResponseFile' in row}: pull(name,out/name)
     write(f'samples/batterystats-after-{start+count-1}.txt',shell('dumpsys batterystats '+package))
     for row in batch:
         n=row['round']
+        if row['status']!='pass':
+            pull(f'soak-{n}-failure.png',out/f'soak-{n}-failure.png')
+            write(f'samples/failure-{n}-logcat.txt',shell('logcat -d -v epoch -t 4000'))
+            continue
         if n%25==0:
             for page in ['observation','weather']:pull(f'soak-{n}-{page}.png',out/f'soak-{n}-{page}.png')
     assert process.returncode==0 and f'OK (1 test)' in log.read_text() and len(batch)==count and all(row['status']=='pass'for row in batch),f'Batch failed; preserved evidence: {log}'
@@ -71,4 +75,8 @@ write('battery-after.txt',shell('dumpsys battery'))
 write('batterystats-after.txt',shell('dumpsys batterystats '+package))
 write('logcat-after.txt',shell('logcat -d -v epoch -t 4000'))
 assert len(rows)==a.end-a.start+1
+if a.start==1 and a.end==300:
+    # A usable fallback is functional coverage, not a newly successful provider read.
+    fresh_in_run={row['providerFetchedAt'] for row in rows if row['providerFetchedAt']>=rows[0]['epochMs']/1000}
+    assert len(fresh_in_run)>=2,'Preserved run did not observe two actual provider refreshes during collection'
 print(f'Completed {len(rows)} actual launch/interact/close cycles; {len(cold)} production cold starts.',flush=True)
