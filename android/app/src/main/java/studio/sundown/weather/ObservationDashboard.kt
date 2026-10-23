@@ -228,7 +228,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
             if(moon!=null){val path=Path();val waxing=moon.fraction<=.5;val cosPhase=cos(2*PI*moon.fraction)
                 for(i in 0..80){val yy=-radius+2*radius*i/80;val limb=sqrt(max(0f,radius*radius-yy*yy));val xx=if(waxing)limb else -limb;if(i==0)path.moveTo(x+xx,y+yy)else path.lineTo(x+xx,y+yy)}
                 for(i in 80 downTo 0){val yy=-radius+2*radius*i/80;val limb=sqrt(max(0f,radius*radius-yy*yy));val xx=cosPhase*limb*(if(waxing)1 else -1);path.lineTo(x+xx.toFloat(),y+yy)};path.close();p.reset();p.isAntiAlias=true;p.color=0xfffff4c9.toInt();c!!.drawPath(path,p)}
-            val phases=if(model.lang=="zh")listOf("新月","蛾眉月","上弦月","盈凸月","满月","亏凸月","下弦月","残月")else listOf("New","Wax. crescent","First quarter","Wax. gibbous","Full","Wan. gibbous","Last quarter","Wan. crescent");text(moon?.let{phases[(it.fraction*8).roundToInt()%8]}?:"—",body.left,body.top+48,16f)
+            val phases=if(model.lang=="zh")listOf("新月","蛾眉月","上弦月","盈凸月","满月","亏凸月","下弦月","残月")else listOf("New","Wax. crescent","First quarter","Wax. gibbous","Full","Wan. gibbous","Last quarter","Wan. crescent");if(!focus)text(moon?.let{phases[(it.fraction*8).roundToInt()%8]}?:"—",body.left,body.top+48,16f)
         }
         if(focus){note(heading("平均朔望月近似","Mean lunation estimate"),body);return}
         if(wx!=null){val date=Instant.ofEpochSecond(at).atZone(wx!!.zone).toLocalDate();val key=date.toString()+wx!!.place.key
@@ -338,7 +338,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         }
         draw("ins-optical"){
             if(model.purpose in 4..6){
-                val body=base(it,heading("色温","CCT"),color=pale);value(body,"—","K ≈",27f);note(heading("无现场光谱测量","No spectral measurement"),body)
+                val body=base(it,heading("色温","CCT"),color=pale);value(body,"—","K ≈",27f);note(heading("未测量","Unmeasured"),body)
             }else if(portrait){val body=base(it,"PM2.5",color=pale);value(body,Units.number(wx?.pm25),"μg/m³",30f);note(wx?.airAt?.let{epoch->"CAMS · "+wx!!.clock(epoch)}?:heading("空气模型暂无数据","Air model unavailable"),body)}
             else scalar(it,"PM2.5",Units.number(wx?.pm25),"μg/m³")
         }
