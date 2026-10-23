@@ -18,7 +18,7 @@ Bilingual, built for the big screen. Data by Open-Meteo.
 
 ## What is included
 
-- A purpose-driven second instrument page with fourteen coupled modules, a lower-right touch dial, its own typography and panoramic pixel scene. [Panel behavior and data limits](docs/INSTRUMENT-PANEL.md).
+- A purpose-driven second instrument page with fourteen coupled modules, a lower-right touch dial, its own typography and panoramic pixel scene. [Panel behavior and data limits](docs/INSTRUMENT-PANEL.md) · [User requirements and acceptance record](docs/USER-DESIGN-REQUIREMENTS.md). Each metric has one owner; dew-point values/trend stay together, and one window replaces duplicate clocks.
 - A nearly fullscreen tablet layout: weather information on the left, animated pixel sky on the right.
 - Eleven sample scenarios with distinct cities, local times, temperatures and conditions. The three coloured dots open the scene library.
 - A shared weather system with native-density fine artwork up to 1536 columns and 96-column block artwork, ordered dithering, and continuous animation targeting 24 fps. Cloud layers cross the sky over minutes; lighting, precipitation and occasional events follow independent rhythms.

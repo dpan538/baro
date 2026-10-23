@@ -2,6 +2,10 @@
 
 ## Browser prototype — 2026-10-23
 
+- Rebuild observation around a nested instrument chassis with a smaller independent transect, narrower primary readout, stacked wind/pressure/dew groups, larger labels and separated tabular digits.
+- Assign each metric one owner, merge dew-point spread with its trend, retain one time-window entry and remove repeated cloud/humidity summaries, clocks and decorative physics graphics.
+- Add quantitative graphic-mapping checks and a persistent user-design requirement/acceptance record.
+
 - Redraw the sunset event diagram as three continuous semicircles without a horizon line; match its outer bounds and shared sizing to the sunrise fan.
 
 - Add an independent fourteen-module observation instrument panel with a lower-right purpose dial and dedicated panoramic pixel program.

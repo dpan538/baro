@@ -121,6 +121,7 @@ export function skyAt(day,minute){
   const low=skyClamp(baseLow+wave(.29,2)*7-(day.preset==='fog'?Math.max(0,t-8)*3:0));
   const humidity=skyClamp(weather.humidity+wave(.18,2)*5,15,100);
   const temperature=weather.temperature+wave(.20,-1)*2;
+  const feelsLike=Number.isFinite(weather.feelsLike)?weather.feelsLike+temperature-weather.temperature:null;
   const visibility=Math.max(.1,weather.visibility*(1+wave(.17,.5)*.12)+(day.preset==='fog'?Math.max(0,t-8)*.12:0));
   const dewPoint=skyDewPoint(temperature,humidity),dewSpread=dewPoint===null?null:Math.max(0,temperature-dewPoint);
   const windSpeed=Math.max(0,weather.windSpeed+wave(.48,.2)*3),windFrom=skyWrap(from+wave(.23,2)*13);
@@ -133,7 +134,7 @@ export function skyAt(day,minute){
   // This is a palette impression for the illustration, not a measured sky CCT.
   const colorTemperature=phase==='day'?5800:phase==='golden'?3400:phase==='civil'?2600:phase==='blue'?9000:null;
   const windGust=Math.max(windSpeed,gust+wave(.4,2)*4);
-  const model={available:true,minute,epoch,sun,phase,context,high,mid,low,humidity,temperature,dewPoint,dewSpread,visibility,
+  const model={available:true,minute,epoch,sun,phase,context,high,mid,low,humidity,temperature,feelsLike,dewPoint,dewSpread,visibility,
     windSpeed,windGust,windFrom,windToward:skyWrap(windFrom+180),pm25,pressure:pressure+delta*pressureTrend/3,
     pressureTrend,precipitation,glow,moon,starScore,colorTemperature};
   day.cache.set(minute,model);return model;

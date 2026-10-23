@@ -6,7 +6,7 @@
   "description": "Today's weather on the left, a living pixel sky on the right. Bilingual, built for the big screen. Data by Open-Meteo.",
   "scripts": {
     "dev": "node scripts/serve.cjs",
-    "check": "node scripts/check-weather.mjs && node scripts/check-sky.mjs && node scripts/check-planning.mjs && node scripts/check-open-meteo.mjs && node scripts/check-i18n.mjs && node scripts/check-time.mjs && node scripts/check-units.mjs && node --check dist/settings.js && node --check dist/device-services.js && node --check dist/app.js && node --check dist/open-meteo.js && node --check dist/i18n.js && node --check dist/weather-art.js && node --check dist/weather-shader.js && node --check dist/weather-icons.js && node --check dist/sky-model.js && node --check dist/observatory.js && node --check dist/planning-model.js && node --check dist/instrument-art.js",
+    "check": "node scripts/check-weather.mjs && node scripts/check-sky.mjs && node scripts/check-planning.mjs && node scripts/check-instrument.mjs && node scripts/check-open-meteo.mjs && node scripts/check-i18n.mjs && node scripts/check-time.mjs && node scripts/check-units.mjs && node --check dist/settings.js && node --check dist/device-services.js && node --check dist/app.js && node --check dist/open-meteo.js && node --check dist/i18n.js && node --check dist/weather-art.js && node --check dist/weather-shader.js && node --check dist/weather-icons.js && node --check dist/sky-model.js && node --check dist/observatory.js && node --check dist/planning-model.js && node --check dist/instrument-art.js && node --check dist/instrument-content.js",
     "design-board": "node scripts/build-design-board.mjs",
     "gallery": "node scripts/build-gallery.mjs",
     "fonts": "node scripts/prepare-cjk-font.mjs"

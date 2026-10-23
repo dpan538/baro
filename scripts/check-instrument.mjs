@@ -1,0 +1,34 @@
+import assert from 'node:assert/strict';
+import {WEATHER_PRESETS} from '../dist/weather-art.js';
+import {makeSkyDay} from '../dist/sky-model.js';
+import {SKY_PURPOSES,makePlanningView} from '../dist/planning-model.js';
+import {composeInstrumentContent,instrumentGraphicData,instrumentPrimaryKind} from '../dist/instrument-content.js';
+let cases=0;
+for(const [preset,weather] of Object.entries(WEATHER_PRESETS))for(const [purpose] of SKY_PURPOSES)for(const language of ['zh','en']){
+ const view=makePlanningView(makeSkyDay(weather,preset),purpose,language),content=composeInstrumentContent(view);
+ assert.equal(content.modules.length,10);const cards=[content.primary,...content.modules];
+ assert.equal(new Set(cards.map(m=>m.kind)).size,11,'Each metric family must have one owner');
+ const fields=cards.flatMap(m=>m.fields);assert.equal(new Set(fields).size,fields.length,'Do not repeat a field in another component');
+ assert.equal(content.owners.dewSpread,'dew');assert.equal(content.owners.dewPoint,'dew');
+ assert.equal(content.owners.humidity,['drying','gear'].includes(purpose)?'primary':'moisture');
+ assert.equal(content.owners.windGust,purpose==='cycling'?'primary':'wind');
+ const dew=instrumentGraphicData('dew',view);assert.equal(dew.value,dew.series[0]);assert.equal(dew.series.length,25);assert(dew.maximum>=Math.max(...dew.series));
+ const pressure=instrumentGraphicData('pressure',view);assert(Math.abs(pressure.end-pressure.start-pressure.delta)<1e-9);
+ const wind=instrumentGraphicData('wind',view);assert(wind.gust>=wind.mean);assert.equal(wind.angle,view.m.windFrom*Math.PI/180);
+ const cloud=instrumentGraphicData('clouds',view);for(const p of cloud.layers)assert.equal(p.ratio,p.value/100);
+ const visibility=instrumentGraphicData('visibility',view);for(const marker of visibility.markers)assert.equal(marker.visible,view.m.visibility>=marker.km);
+ const bearing=instrumentGraphicData('bearing',view);assert(Math.abs(bearing.referenceOffset)<=45);
+ cases++;
+}
+const day=makeSkyDay(WEATHER_PRESETS.clear,'clear'),v=makePlanningView(day,'commute');
+const changed={...v,m:{...v.m,humidity:12,windFrom:90,colorTemperature:2000,sun:{...v.m.sun,azimuth:359}}};
+assert.equal(instrumentGraphicData('humidity',changed).ratio,.12);
+assert.equal(instrumentGraphicData('wind',changed).angle,Math.PI/2);
+assert.equal(instrumentGraphicData('light',changed).ratio,0);
+assert.equal(instrumentGraphicData('light',{...changed,m:{...changed.m,colorTemperature:10000}}).ratio,1);
+assert.equal(instrumentGraphicData('bearing',changed).referenceOffset,1);
+assert.equal(instrumentGraphicData('temperature',changed).value,instrumentGraphicData('temperature',v).value,'Unrelated fields must not drive the plot');
+assert.equal(instrumentPrimaryKind('cycling'),'wind');
+assert.equal(composeInstrumentContent(makePlanningView(day,'gear')).modules.find(m=>m.slot==='moisture').kind,'precipitation');
+assert.equal(composeInstrumentContent(makePlanningView(day,'camp')).modules.find(m=>m.slot==='thermal').kind,'apparent');
+console.log(`Verified ${cases} unique information compositions, one owner per metric, merged dew-point data, and quantitative mappings for wind, pressure, cloud, visibility, humidity, light and compass graphics.`);

@@ -3,7 +3,7 @@ from pathlib import Path
 from fontTools import subset
 root=Path(__file__).resolve().parents[1]
 assets=root/'dist/assets/fonts'
-files=['observatory.js','planning-model.js','sky-model.js','weather-art.js']
+files=['observatory.js','instrument-content.js','planning-model.js','sky-model.js','weather-art.js']
 text=''.join((root/'dist'/f).read_text() for f in files)
 options=subset.Options()
 options.flavor='woff2'

@@ -4,13 +4,36 @@ The second page is an independent instrument interface. Open it by swiping right
 
 ## Interaction and composition
 
-The lower-right dial is the only control that changes the information set. Drag vertically, scroll, tap a visible purpose or use arrow keys; Home/End select the first/last purpose. Twelve purposes cover commuting, walking, cycling, outdoor stays, sunset/dawn/blue-hour photography, stargazing, distant views, camping, ventilation/drying and equipment moisture.
+The lower-right dial is the only information control. It chooses twelve user activities and concerns, rather than configuring widgets. Drag, tap a visible purpose, scroll, or use arrow keys; Home/End select endpoints and arrow movement wraps. There is no export flow, time slider, top toolbar, literal gear/chain or motivational headline. Advice remains optional, with at most three lines and twenty Unicode characters per line.
 
-Selecting a purpose computes the relevant local-time window and replaces related information. For example, commuting emphasizes precipitation and gusts; equipment care shows humidity and dew-point trends; stargazing replaces the cloud-section graphic with lunar optics. The dial does not select or configure widgets. There is no time slider, purpose button strip, export flow, top toolbar, literal gear or chain.
+The page uses a new nested instrument chassis. A dedicated illustrated transect occupies approximately one third of the top width; the primary readout occupies approximately four ninths, reduced from the previous two-thirds card. The remaining top strip owns the location, sample date and **only** time window. A `+1` marker disambiguates an overnight interval without adding a duplicate clock.
 
-Fourteen modules form the panel: the main vertically divided readout, nested temperature/clock/solar capsule, panoramic atmospheric window, radial scale, hatched orange trend, barcode percentage, double arc, waveform/capsule filter, interchangeable cloud/lunar/dew section, flow schematic, air-clarity readout, monospace wind/pressure ticket, paired environmental readouts and purpose dial. Cards use different physical forms instead of repeating one metric template. On narrow screens the data scrolls while the purpose dial stays at the lower right.
+Ten auxiliary modules sit within one cream assembly, beside the lower-right dial. Wind/gust/direction, pressure/three-hour change and dew spread/dew point/trend are stacked on the left. Smaller temperature, optical or particulate readouts fill short strips; humidity, visibility, cloud coverage, solar elevation and azimuth use different forms. The dew component has no decorative inner casing. Scalar components use compact tracks instead of large empty metric cards. Distant-view purposes shorten the scalar replacement and reassign the freed vertical track.
 
-Data is primary. Optional advice is limited to three lines per environment/purpose, each at most twenty Unicode characters in either interface language; most combinations have zero or one line. These limits are covered by the source tests. No motivational headlines or long preparation lists are shown.
+Fourteen modules remain, including primary, transect, window, ten auxiliary data families and dial. `instrument-content.js` assigns every metric field to exactly one owner. A primary humidity readout replaces the auxiliary humidity module with precipitation; cycling puts wind in the primary and replaces its auxiliary instance; camping combines primary temperature with a separate feels-like value. Cloud percentages appear only in the cloud family. Neither the primary nor the transect repeats the global time window or cloud summary.
+
+The full user decision record and acceptance checklist are maintained in [user design requirements](USER-DESIGN-REQUIREMENTS.md). Earlier screenshots remain historical evidence, not the current design specification.
+
+## Graphic-to-data contract
+
+Generic oscillators, prism diagrams, flow rings and repeated hatched curves have been removed. Each visible graphic has a defined input and scale:
+
+| Family | Quantitative encoding |
+| --- | --- |
+| Precipitation | Stepped probability envelope from the selected window's 25 illustrative samples, fixed 0–100% scale |
+| Humidity | Segmented coverage proportional to relative humidity; shown in exactly one component |
+| Wind | Direction vector rotates to the meteorological **from** direction; mean and gust remain in the same group |
+| Pressure | Numeric hPa and signed three-hour change; no invented historical waveform |
+| Dew spread | Sampled spread curve and a 2°C guide, sharing one component with the spread value and dew point; Fahrenheit differences use scale conversion without a temperature offset |
+| Temperature | Selected-window low/high bounds with the initial reading marked within the range |
+| Visibility | Calibrated distance gates at 1, 5, 10, 25 and 50 km activate only within the sample visibility; these are scale markers, not simulated optical ray paths |
+| Cloud layers | Three independent fills on a common 0–100% coverage scale; height represents coverage, not cloud altitude or physical thickness |
+| Solar elevation | Signed -90° to 90° semicircular scale, with zero at the top calibration tick and a needle computed from solar elevation |
+| Solar azimuth | Numeric bearing, cardinal direction and moving angular ticks around the current bearing, including the nearest cardinal calibration |
+| Lunar illumination | Approximate phase terminator from the mean lunation; no reused weather-scene Moon image |
+| Reference CCT | Approximate palette value and marker over a 2000–10000 K colour reference; not a measured camera white balance |
+| Glow | Uncalibrated 0–100 condition score encoded by diagonal segments; never labelled probability |
+| PM2.5 / feels-like | Compact numerical readouts with units; no unrelated decorative graphic |
 
 ## Rendering and typography
 
@@ -30,4 +53,4 @@ Cloud percentages describe separate sample layers; diagrams do not establish act
 
 ## Verification
 
-Pure checks cover equinox geometry, polar crossings, timezone/DST conversion, lunar-cycle limits, dew-point and wind rules, 66 deterministic sky samples, and 264 purpose/environment/language combinations. Browser inspection covers all eleven sample environments in Chinese and English at the gallery's 1440×960 frame size, real dial dragging and keyboard selection, dedicated WebGL2 rendering, and page handoff. Additional responsive and lifecycle results belong in implementation status only after they are actually observed.
+Pure checks cover equinox geometry, polar crossings, timezone/DST conversion, lunar-cycle limits, dew-point and wind rules, 66 deterministic sky samples, 264 planning combinations and another 264 information-ownership/graphic-mapping combinations. Browser inspection covers all eleven sample environments in Chinese and English at the gallery's 1440×960 frame size, real dial dragging and keyboard selection, dedicated WebGL2 rendering, and page handoff. Additional responsive and lifecycle results belong in implementation status only after they are actually observed.
