@@ -13,6 +13,7 @@ import java.io.File
 
 /** Destructive only to the dedicated BARO emulator preferences. */
 class NativeFlowTest {
+    companion object { @org.junit.BeforeClass @JvmStatic fun environment(){NativeTestEnvironment.install()} }
     private val instrument=InstrumentationRegistry.getInstrumentation()
     private val ctx get()=instrument.targetContext
     private fun seed(page:Int=0){ctx.getSharedPreferences("baro-native",Context.MODE_PRIVATE).edit().clear().putBoolean("motion",false).putBoolean("block",InstrumentationRegistry.getArguments().getString("pixels")=="block").putString("language","zh").putInt("page",page).commit()}
@@ -39,6 +40,26 @@ class NativeFlowTest {
     }
     @Test fun cancelledAndVerticalGesturesStayOnPage(){seed();ActivityScenario.launch(MainActivity::class.java).use{s->idle();swipe(s,1,.65f,cancel=true);s.onActivity{assertEquals(0,it.model.page)};swipe(s,1,.65f,vertical=true);s.onActivity{assertEquals(0,it.model.page)}}}
     @Test fun settingsAndDialOwnTheirTouchesAndPersist(){seed(1);ActivityScenario.launch(MainActivity::class.java).use{s->idle();s.onActivity{a->val r=a.pager.observationPage.dashboard.dialRect;val x=r.centerX()*a.resources.displayMetrics.density;val y=r.centerY()*a.resources.displayMetrics.density;val v=a.pager.observationPage.dashboard;val time=SystemClock.uptimeMillis();v.dispatchTouchEvent(MotionEvent.obtain(time,time,MotionEvent.ACTION_DOWN,x,y,0));v.dispatchTouchEvent(MotionEvent.obtain(time,time+150,MotionEvent.ACTION_MOVE,x,y-220,0));v.dispatchTouchEvent(MotionEvent.obtain(time,time+180,MotionEvent.ACTION_UP,x,y-220,0));assertEquals(1,a.model.page);assertNotEquals(0,a.model.purpose);a.settings.open();assertTrue(a.pager.overlayOpen)};swipe(s,-1,.5f);s.onActivity{assertEquals(1,it.model.page);it.settings.close();it.model.fahrenheit=true;it.model.lang="en"};s.recreate();idle();s.onActivity{assertEquals(1,it.model.page);assertTrue(it.model.fahrenheit);assertEquals("en",it.model.lang);assertNotEquals(0,it.model.purpose)}}}
+    @Test fun fullWeatherDescriptionsKeepTheSolarColumnClear(){
+        seed();ActivityScenario.launch(MainActivity::class.java).use{s->s.onActivity{a->
+            a.repository.cancelWeather()
+            val raw=instrument.context.assets.open("live-brisbane.json").bufferedReader().use{it.readText()};val recorded=WeatherJson.parse(raw,a.model.place)
+            data class Run(val text:String,val right:Float,val size:Float)
+            class TextCanvas:android.graphics.Canvas(Bitmap.createBitmap(1,1,Bitmap.Config.ARGB_8888)){
+                val runs=mutableListOf<Run>()
+                override fun drawText(text:String,x:Float,y:Float,paint:android.graphics.Paint){runs.add(Run(text,x+paint.measureText(text),paint.textSize));super.drawText(text,x,y,paint)}
+            }
+            for(lang in listOf("zh","en"))for(portrait in listOf(false,true))for(code in listOf(56,57,65,67,95,96,99)){
+                a.model.lang=lang;a.model.weather=recorded.copy(current=recorded.current+("weather_code" to code.toDouble()))
+                val board=WeatherDashboard(a,a.model);val width=if(portrait)1136 else 1704;val height=if(portrait)1704 else 1136;val d=a.resources.displayMetrics.density
+                board.layout(0,0,(width*d).toInt(),(height*d).toInt());val canvas=TextCanvas();board.draw(canvas)
+                val run=canvas.runs.single{it.text==a.model.conditionName(a.model.weather)}
+                val metrics=DesignMetrics(a,"weather-${if(portrait)"portrait"else "landscape"}-$lang");metrics.configure(width.toFloat(),height.toFloat(),0f)
+                assertTrue("$lang $code overlaps the solar column",run.right+16<=metrics.rect("#solar-event-time").left)
+                assertTrue("Condition text must remain readable",run.size>=16)
+            }
+        }}
+    }
     @Test fun realRecordedApiUnitsNullStalenessAndWrongPlace(){
         val raw=instrument.context.assets.open("live-brisbane.json").bufferedReader().use{it.readText()};val place=Place("Brisbane",-27.47,153.03);val w=WeatherJson.parse(raw,place);assertEquals("Australia/Brisbane",w.place.zone);assertNotNull(w.value("temperature_2m"));assertNotNull(w.value("wind_speed_300hPa"));assertTrue(w.stale(w.fetchedAt+2000))
         val bad=JSONObject(raw);bad.getJSONObject("forecast").getJSONObject("current_units").put("temperature_2m","°F");assertNull(WeatherJson.parse(bad.toString(),place).value("temperature_2m"));assertThrows(IllegalArgumentException::class.java){WeatherJson.parse(raw,Place("London",51.5,0.0))}
@@ -61,6 +82,7 @@ class NativeFlowTest {
         visit(instrument.uiAutomation.rootInActiveWindow);SystemClock.sleep(250)
     }
     @Test fun captureNativeBothLanguagesAndOrientations(){
+        org.junit.Assume.assumeFalse("Full GLES product captures are verified locally, not in the hosted UI-only profile",NativeTestEnvironment.uiOnly)
         seed();ActivityScenario.launch(MainActivity::class.java).use{s->idle()
             s.onActivity{it.refresh(true)}
             var ready=false

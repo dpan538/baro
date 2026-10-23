@@ -100,7 +100,7 @@ class PixelArt(context: Context, private val instrument: Boolean): TextureView(c
     override fun onSurfaceTextureAvailable(st:SurfaceTexture,w:Int,h:Int){sw=w;sh=h;worker.post{try{initEgl(st);frame.run()}catch(e:Exception){error=e.message}}}
     override fun onSurfaceTextureSizeChanged(st:SurfaceTexture,w:Int,h:Int){worker.post{sw=w;sh=h;refresh()}}
     override fun onSurfaceTextureUpdated(st:SurfaceTexture){}
-    override fun onSurfaceTextureDestroyed(st:SurfaceTexture):Boolean{worker.removeCallbacksAndMessages(null);worker.post{releaseEgl();st.release()};return false}
+    override fun onSurfaceTextureDestroyed(st:SurfaceTexture):Boolean{worker.removeCallbacks(frame);if(!worker.post{releaseEgl();st.release()})st.release();return false}
     private fun releaseEgl(){if(display!=EGL14.EGL_NO_DISPLAY){EGL14.eglMakeCurrent(display,EGL14.EGL_NO_SURFACE,EGL14.EGL_NO_SURFACE,EGL14.EGL_NO_CONTEXT);EGL14.eglDestroySurface(display,surface);EGL14.eglDestroyContext(display,eglContext);EGL14.eglTerminate(display)};surface=EGL14.EGL_NO_SURFACE;display=EGL14.EGL_NO_DISPLAY}
     fun dispose(){active=false;worker.post{releaseEgl();thread.quitSafely()}}
 }

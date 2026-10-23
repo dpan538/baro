@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 
 class NativeSettingsTest {
     private val i=InstrumentationRegistry.getInstrumentation()
-    private fun seed(){i.targetContext.getSharedPreferences("baro-native",Context.MODE_PRIVATE).edit().clear().putBoolean("motion",false).commit()}
+    private fun seed(){i.targetContext.getSharedPreferences("baro-native",Context.MODE_PRIVATE).edit().clear().putBoolean("motion",false).putBoolean("block",InstrumentationRegistry.getArguments().getString("pixels")=="block").commit()}
     private fun find(root:View,label:String):View? {
         if(root is TextView&&root.text.toString()==label)return root
         if(root is ViewGroup)for(n in 0 until root.childCount)find(root.getChildAt(n),label)?.let{return it}
@@ -63,6 +63,26 @@ class NativeSettingsTest {
             SystemClock.sleep(500);s.onActivity{assertEquals(count,it.pager.weatherPage.art.renderedFrames)}
             s.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED);s.onActivity(::prepare);awaitFrame(s,count)
         }
+    }
+    @Test fun destroyedActivityReleasesArtWorkerWithPendingDisposal(){
+        seed();val scenario=ActivityScenario.launch(MainActivity::class.java)
+        val release=CountDownLatch(1);val entered=CountDownLatch(1)
+        lateinit var owner:Thread;lateinit var art:PixelArt;lateinit var worker:android.os.Handler
+        try{
+            val raw=i.context.assets.open("live-brisbane.json").bufferedReader().use{it.readText()}
+            scenario.onActivity{a->a.repository.cancelWeather();a.model.weather=WeatherJson.parse(raw,a.model.place);a.redraw();art=a.pager.weatherPage.art}
+            val readyDeadline=SystemClock.uptimeMillis()+10000
+            while(!art.isAvailable&&SystemClock.uptimeMillis()<readyDeadline)SystemClock.sleep(100)
+            assertTrue(art.isAvailable)
+            worker=PixelArt::class.java.getDeclaredField("worker").apply{isAccessible=true}.get(art) as android.os.Handler
+            owner=PixelArt::class.java.getDeclaredField("thread").apply{isAccessible=true}.get(art) as Thread
+            worker.post{entered.countDown();release.await(30,TimeUnit.SECONDS)}
+            assertTrue(entered.await(10,TimeUnit.SECONDS))
+            scenario.close();i.waitForIdleSync();i.runOnMainSync{assertFalse(art.isAvailable)}
+        }finally{release.countDown();scenario.close()}
+        val deadline=SystemClock.uptimeMillis()+5000
+        while(owner.isAlive&&SystemClock.uptimeMillis()<deadline)SystemClock.sleep(50)
+        assertFalse("Surface destruction must retain queued worker disposal",owner.isAlive)
     }
     @Test fun nativeHttpFeedbackFailureRetainsExactDraftAndIdentity(){
         val health=org.json.JSONObject(NetworkJob().request("http://10.0.2.2:8787/healthz"));assertFalse("This test must never reach a configured public Issue writer",health.getBoolean("feedbackConfigured"))

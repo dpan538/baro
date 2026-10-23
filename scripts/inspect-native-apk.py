@@ -11,7 +11,7 @@ package,code,version=identity.groups();assert package=='studio.sundown.weather'
 with zipfile.ZipFile(apk) as z:
  assert z.testzip() is None
  names=z.namelist()
- assert not any(b'Lstudio/sundown/weather/DemoFactory;' in z.read(name) for name in names if re.fullmatch(r'classes[0-9]*\.dex',name)),'Sample weather generator unexpectedly bundled'
+ assert not any(marker in z.read(name) for name in names if re.fullmatch(r'classes[0-9]*\.dex',name) for marker in (b'Lstudio/sundown/weather/DemoFactory;',b'Lstudio/sundown/weather/NativeTestEnvironment;',b'Lstudio/sundown/weather/NativeFlowTest;')),'Test/sample code unexpectedly bundled'
  for name in names:
   if name.startswith('assets/layouts/') and name.endswith('.json') and not name.endswith('/icons.json'):
    nodes=json.loads(z.read(name))['nodes']

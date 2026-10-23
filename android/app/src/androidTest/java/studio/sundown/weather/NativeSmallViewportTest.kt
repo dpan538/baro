@@ -12,6 +12,7 @@ import java.io.File
 
 /** Run on the dedicated emulator at the 2.5x logical portrait profile. */
 class NativeSmallViewportTest {
+    companion object { @org.junit.BeforeClass @JvmStatic fun environment(){NativeTestEnvironment.install()} }
     private val i=InstrumentationRegistry.getInstrumentation()
     private fun drag(x:Float,y:Float,endY:Float,endX:Float=x){
         val start=SystemClock.uptimeMillis()
@@ -21,6 +22,7 @@ class NativeSmallViewportTest {
         send(MotionEvent.ACTION_UP,endY,endX);i.waitForIdleSync();SystemClock.sleep(700)
     }
     private fun capture(name:String){
+        if(NativeTestEnvironment.uiOnly)return
         val image=i.uiAutomation.takeScreenshot();assertNotNull(image)
         File(i.targetContext.getExternalFilesDir(null),"small-$name.png").outputStream().use{image.compress(Bitmap.CompressFormat.PNG,100,it)};image.recycle()
     }

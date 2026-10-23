@@ -102,14 +102,19 @@ class WeatherDashboard(context:Context,model:AppModel):Dashboard(context,model){
     private var metricsKey=""
     private val icons=org.json.JSONObject(context.assets.open("layouts/icons.json").bufferedReader().use{it.readText()})
     private val nativeInk=Color.rgb(21,29,28)
-    private fun css(key:String,value:String,index:Int=0,overrideRect:RectF?=null,sizeFactor:Float=1f):Float {
+    private fun css(key:String,value:String,index:Int=0,overrideRect:RectF?=null,sizeFactor:Float=1f,maxRight:Float?=null):Float {
         val m=metrics!!;val r=overrideRect?:m.rect(key,index);if(r.isEmpty)return 0f
-        val size=m.size(key,index)*sizeFactor
+        val baseSize=m.size(key,index)
         val font=when{value.any{it.code in 0x3400..0x9fff}->chinese;m.font(key,index).contains("Roboto")->mono;else->inter}
-        p.reset();p.isAntiAlias=true;p.color=nativeInk;p.typeface=Typeface.create(font,m.weight(key,index),false);p.textSize=size
-        val fm=p.fontMetrics;val baseline=r.top+(m.line(key,index)*sizeFactor-(fm.descent-fm.ascent))/2-fm.ascent
-        val spacing=m.spacing(key,index)*sizeFactor
-        p.textAlign=Paint.Align.LEFT;p.letterSpacing=spacing/size;c!!.drawText(value,r.left,baseline,p)
+        p.reset();p.isAntiAlias=true;p.color=nativeInk;p.typeface=Typeface.create(font,m.weight(key,index),false);p.textSize=baseSize*sizeFactor
+        p.letterSpacing=m.spacing(key,index)/baseSize
+        val measured=p.measureText(value)
+        val factor=if(maxRight!=null&&measured>maxRight-r.left)max(16f/baseSize,sizeFactor*(maxRight-r.left)/max(1f,measured))else sizeFactor
+        val size=baseSize*factor;p.textSize=size
+        val fm=p.fontMetrics;val line=m.line(key,index)*(if(maxRight==null)factor else 1f)
+        val baseline=r.top+(line-(fm.descent-fm.ascent))/2-fm.ascent
+        p.textAlign=Paint.Align.LEFT;c!!.drawText(value,r.left,baseline,p)
+
         return p.measureText(value)
     }
     private fun svg(key:String,r:RectF,vw:Float=32f,vh:Float=32f,stroke:Float=2.8f){
@@ -154,7 +159,7 @@ class WeatherDashboard(context:Context,model:AppModel):Dashboard(context,model){
         val day=wx?.today();css(".temperature-range","↑ ${model.temp(day?.high)}°  ↓ ${model.temp(day?.low)}°")
         val icon=when(scene){"clear"->"sun";"night"->"moon";"dawn"->"sunrise";"sunset"->"sunset";else->scene}
         svg(icon,m.rect("#condition-icon"),stroke=stroke)
-        css("#condition-primary",model.conditionName(wx))
+        css("#condition-primary",model.conditionName(wx),maxRight=m.rect("#solar-event-time").left-24)
         val event=wx?.nextSolar();css("#solar-event-label .label-primary",if(event==null)tr("暂无事件","NO EVENT")else if(event.first)tr("日出时间","SUNRISE")else tr("日落时间","SUNSET"))
         val solar=event?.second?.let{java.time.Instant.ofEpochSecond(it).atZone(wx!!.zone)}
         val solarClock=if(model.lang=="en")solar?.format(java.time.format.DateTimeFormatter.ofPattern("h:mm",java.util.Locale.US))?:"—"else wx?.clock(event?.second)?:"—"
