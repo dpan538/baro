@@ -29,7 +29,8 @@ class NativeTextAuditTest {
                     val rotating=kotlin.math.abs(values[Matrix.MSKEW_X])>.001f
                     if(!rotating){val global=RectF(b);matrix.mapRect(global);runs.add(value to global)}
                     if(!rotating&&!clip.contains(RectF(b).apply{inset(1.1f,1.1f)}))issues.put(JSONObject().put("text",value).put("ink",b.toString()).put("clip",clip.toString()))
-                    if(value.contains('…'))issues.put(JSONObject().put("text",value).put("reason","ellipsis"))
+                    // These two complete source strings use an intentional progress mark, not truncation.
+                    if(value.contains('…')&&value !in listOf("正在获取天气…","Loading weather…"))issues.put(JSONObject().put("text",value).put("reason","ellipsis"))
                 }
                 override fun drawText(text:String,x:Float,y:Float,paint:Paint){record(text,x,y,paint);super.drawText(text,x,y,paint)}
                 override fun drawText(text:CharArray,index:Int,count:Int,x:Float,y:Float,paint:Paint){record(String(text,index,count),x,y,paint);super.drawText(text,index,count,x,y,paint)}
