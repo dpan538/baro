@@ -87,7 +87,12 @@ class PixelArt(context: Context, private val instrument: Boolean): TextureView(c
             i("scene",instruments.indexOf(scene).coerceAtLeast(0))
         }else{vec("resolution",w,h);f("loopTime",time%45);i("scene",scenes.indexOf(scene).coerceAtLeast(0));i("night",if(wx?.value("is_day")==0.0&&scene !in listOf("dawn","sunset","fog"))1 else 0)}
         GL.glDrawArrays(GL.GL_TRIANGLES,0,3)
-        GL.glBindFramebuffer(GL.GL_FRAMEBUFFER,0);GL.glViewport(0,0,sw,sh);GL.glUseProgram(copy)
+        // TextureView may resize its backing buffer on a different traversal than the View.
+        // Fill the actual EGL target, including a still-live buffer from the preceding size.
+        val targetWidth=IntArray(1);val targetHeight=IntArray(1)
+        check(EGL14.eglQuerySurface(display,surface,EGL14.EGL_WIDTH,targetWidth,0))
+        check(EGL14.eglQuerySurface(display,surface,EGL14.EGL_HEIGHT,targetHeight,0))
+        GL.glBindFramebuffer(GL.GL_FRAMEBUFFER,0);GL.glViewport(0,0,targetWidth[0],targetHeight[0]);GL.glUseProgram(copy)
         GL.glActiveTexture(GL.GL_TEXTURE0);GL.glBindTexture(GL.GL_TEXTURE_2D,texture);GL.glUniform1i(GL.glGetUniformLocation(copy,"image"),0);GL.glDrawArrays(GL.GL_TRIANGLES,0,3)
         check(EGL14.eglSwapBuffers(display,surface));renderedFrames++
     }

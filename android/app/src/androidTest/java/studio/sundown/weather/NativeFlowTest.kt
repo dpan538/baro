@@ -81,25 +81,34 @@ class NativeFlowTest {
         }
         visit(instrument.uiAutomation.rootInActiveWindow);SystemClock.sleep(250)
     }
-    private fun awaitPresentedArtwork(s:ActivityScenario<MainActivity>,page:Int){
-        var presented=false
+    private fun capturePresentedArtwork(s:ActivityScenario<MainActivity>,page:Int):Bitmap{
         for(attempt in 0..39){
+            val bounds=IntArray(4)
             s.onActivity{a->
                 val art=if(page==0)a.pager.weatherPage.art else a.pager.observationPage.art
                 assertNull(art.error)
-                val image=art.getBitmap(8,8)
-                if(image!=null){
-                    presented=(2..5).any{x->(2..5).any{y->val color=image.getPixel(x,y);android.graphics.Color.red(color)>12||android.graphics.Color.green(color)>12||android.graphics.Color.blue(color)>12}}
-                    image.recycle()
-                }
+                val location=IntArray(2);art.getLocationOnScreen(location)
+                bounds[0]=location[0];bounds[1]=location[1];bounds[2]=art.width;bounds[3]=art.height
+                assertEquals(art.width,art.measuredWidth);assertEquals(art.height,art.measuredHeight)
             }
-            if(presented)break
+            val image=instrument.uiAutomation.takeScreenshot()
+            if(image!=null){
+                val filled=(1..3).sumOf{x->(1..3).count{y->
+                    val px=bounds[0]+bounds[2]*x/4;val py=bounds[1]+bounds[3]*y/4
+                    if(px !in 0 until image.width||py !in 0 until image.height)false else{
+                        val color=image.getPixel(px,py);android.graphics.Color.red(color)>3||android.graphics.Color.green(color)>3||android.graphics.Color.blue(color)>3
+                    }
+                }}
+                if(filled>=8)return image
+                image.recycle()
+            }
             SystemClock.sleep(250)
         }
-        assertTrue("The actual TextureView must present artwork before accepting a product capture",presented)
+        throw AssertionError("The actual composed panorama must fill its viewport before accepting a product capture")
     }
     @Test fun captureNativeBothLanguagesAndOrientations(){
         org.junit.Assume.assumeFalse("Full GLES product captures are verified locally, not in the hosted UI-only profile",NativeTestEnvironment.uiOnly)
+        ctx.getExternalFilesDir(null)?.listFiles()?.filter{it.name.startsWith("native-")&&it.extension=="png"}?.forEach{it.delete()}
         seed();ActivityScenario.launch(MainActivity::class.java).use{s->idle()
             s.onActivity{it.refresh(true)}
             var ready=false
@@ -110,8 +119,7 @@ class NativeFlowTest {
                 instrument.uiAutomation.executeShellCommand("wm user-rotation lock ${if(orientation==0)0 else 1}").close();SystemClock.sleep(1500);idle();s.onActivity{assertEquals(orientation==0,it.pager.width>it.pager.height)}
                 dismissEducation();val selected=InstrumentationRegistry.getArguments().getString("purposes")?.split(",")?.map{it.toInt().also{value->require(value in 0..11)}}?: (0..11).toList()
                 for(lang in listOf("zh","en"))for(variant in listOf(0)+selected.map{it+1}){val page=if(variant==0)0 else 1;val purpose=(variant-1).coerceAtLeast(0);s.onActivity{a->a.model.lang=lang;a.model.page=page;a.model.purpose=purpose;a.pager.requestLayout();a.redraw()};SystemClock.sleep(500);idle();dismissEducation()
-                    awaitPresentedArtwork(s,page)
-                    val image=instrument.uiAutomation.takeScreenshot();assertNotNull(image);assertEquals(orientation==0,image.width>image.height);if(page==0){val pixel=image.getPixel(40,200);assertTrue("Weather paper hidden by a clip or system overlay",android.graphics.Color.red(pixel)>245&&android.graphics.Color.green(pixel)>245)}
+                    val image=capturePresentedArtwork(s,page);assertEquals(orientation==0,image.width>image.height);if(page==0){val pixel=image.getPixel(40,200);assertTrue("Weather paper hidden by a clip or system overlay",android.graphics.Color.red(pixel)>245&&android.graphics.Color.green(pixel)>245)}
                     val tag="${if(page==0)"weather" else "observation"}-${if(orientation==0)"landscape" else "portrait"}-$lang"
                     println("Captured live $tag purpose $purpose")
                     val out=File(ctx.getExternalFilesDir(null),"native-$tag"+(if(purpose>0)"-purpose-$purpose"else "")+".png");out.outputStream().use{image.compress(Bitmap.CompressFormat.PNG,100,it)};image.recycle()

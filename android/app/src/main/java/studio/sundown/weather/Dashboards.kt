@@ -250,7 +250,9 @@ class NativePage(context:Context,val dashboard:Dashboard,val art:PixelArt):andro
         // Geometry is derived from the actual dp viewport, then converted once to pixels.
         val bitmap=Bitmap.createBitmap(1,1,Bitmap.Config.ARGB_8888);dashboard.draw(Canvas(bitmap));bitmap.recycle()
         val d=resources.displayMetrics.density;val a=dashboard.artRect
-        art.layout((a.left*d).roundToInt(),(a.top*d).roundToInt(),(a.right*d).roundToInt(),(a.bottom*d).roundToInt());art.invalidateOutline()
+        val artLeft=(a.left*d).roundToInt();val artTop=(a.top*d).roundToInt();val artRight=(a.right*d).roundToInt();val artBottom=(a.bottom*d).roundToInt()
+        art.measure(MeasureSpec.makeMeasureSpec(artRight-artLeft,MeasureSpec.EXACTLY),MeasureSpec.makeMeasureSpec(artBottom-artTop,MeasureSpec.EXACTLY))
+        art.layout(artLeft,artTop,artRight,artBottom);art.invalidateOutline()
         caption.measure(MeasureSpec.makeMeasureSpec((a.width()*d).toInt(),MeasureSpec.AT_MOST),MeasureSpec.makeMeasureSpec(80,MeasureSpec.AT_MOST));caption.layout((a.left*d).toInt()+24,(a.bottom*d).toInt()-caption.measuredHeight-20,(a.left*d).toInt()+24+caption.measuredWidth,(a.bottom*d).toInt()-20)
     }
 }
