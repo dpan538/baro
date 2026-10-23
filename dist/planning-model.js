@@ -9,6 +9,53 @@ export const SKY_PURPOSES=Object.freeze([
   ['camp','露营','CAMPING'],['drying','晾晒通风','AIR & DRYING'],['gear','器材防潮','EQUIPMENT']
 ]);
 const planningClamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+// Plain-language interpretation of the selected window, not a second forecast.
+// Surface comfort, rain, wind and optical/moisture conditions share one sentence.
+function planningInterpretationLead({preset,purpose,window,m,end},language='zh'){
+ const elevation=m.sun?.elevation??0,night=elevation<-6;
+ const wetHeat=m.wetBulb>=25||(m.temperature>=28&&m.humidity>=70);
+ const rainy=m.rainRate>.2||m.precipitation>60,gusty=m.windGust>=35;
+ const poorView=m.visibility<8,dew=m.dewSpread<3&&m.humidity>=80;
+ const cold=m.temperature<=8,cooling=end.temperature<m.temperature-3;
+ if(language==='en'){
+  if(preset==='snow')return 'Snowy, cold; muted views.';
+  if(preset==='storm'){const conditions=[wetHeat?'muggy':cold?'cold':m.humidity>=80?'humid':null,gusty?'gusty':null,poorView?'hazy':null].filter(Boolean);return 'Storms'+(conditions.length?'; '+conditions.join(', '):' in this window')+'.';}
+  if(rainy)return night?'Rain during the night.':'Rain in the selected window.';
+  if(wetHeat)return night?'Warm, humid night.':'Hot, humid air near ground.';
+  if(cold)return night?'Cold air after dark.':'Cool air, low temperatures.';
+  if(cooling)return 'Cooling across this window.';
+  if(poorView)return dew?'Hazy, humid near the ground.':'Hazy, distant views muted.';
+  if(dew)return 'Humid air near the surface.';
+  if(gusty)return 'Strong gusts at the surface.';
+  if(window?.available!==false&&['sunset','dawn','blue'].includes(purpose))return {sunset:'Low evening light.',dawn:'Dawn light near the horizon.',blue:'Blue hour, low natural light.'}[purpose];
+  if(elevation<6)return night?'Dark, mild conditions.':'Low sun, changing light.';
+  return m.temperature>=26?'Warm air near the ground.':m.humidity<35?'Dry air in daytime.':m.radiation?.total>0&&m.radiation.diffuse/m.radiation.total>.7?'Mild air, soft daylight.':'Mild air, daytime light.';
+ }
+ const photoTime=window?.available!==false?{sunset:'傍晚',dawn:'清晨',blue:'蓝调时段'}[purpose]:null;
+ const time=photoTime??(night?'夜间':elevation<6?'晨昏':'白天');
+ const sky=preset==='storm'?'雷雨':preset==='snow'?'降雪':rainy?'有雨':m.visibility<1?'浓雾':m.low>85?'云厚':elevation<6&&!night?'低光':'';
+ const comfort=wetHeat?'潮湿闷热':cold?'气温偏低':cooling?'稍后降温':m.temperature>=26?'气温偏暖':m.humidity>=80?'空气潮湿':m.humidity<35?'空气干燥':'体感温和';
+ const details=[comfort];
+ if(gusty)details.push('阵风较强');
+ if(poorView)details.push('远景模糊');
+ if(details.length<3&&m.pwv>40&&!poorView)details.push('远景通透度偏低');
+ if(details.length<3&&m.radiation?.total>0&&m.radiation.diffuse/m.radiation.total>.7)details.push('日光柔和');
+ return `${time}${sky}，${details.slice(0,3).join('、')}。`;
+}
+export function planningAdvice(view,language='zh'){
+ const {m,end}=view,en=language==='en',c=(zh,english)=>en?english:zh,details=[];
+ if(m.dewSpread<3&&m.humidity>=80)details.push(c('近地空气接近饱和，冷表面可能结露。','Air is near saturation; cool surfaces may collect dew.'));
+ if(m.pwv>40&&m.visibility<10)details.push(c('整层水汽较多，远处景物层次偏弱。','Moist air reduces the definition of distant scenery.'));
+ else if((m.sun?.elevation??0)<-6&&m.low>85)details.push(c('低云遮挡较多，夜空目标不易辨认。','Low cloud obscures much of the night sky.'));
+ else if(m.radiation?.total>0&&m.radiation.diffuse/m.radiation.total>.7)details.push(c('日光以漫射为主，阴影边缘较柔和。','Diffuse light softens the edges of shadows.'));
+ else if(Math.abs(m.surfaceDelta)>=6)details.push(c('地表与空气温差大，长焦远景可能发虚。','Surface heating may soften distant telephoto detail.'));
+ if(details.length<2&&end.temperature<m.temperature-1.5&&end.temperature>=m.temperature-3)details.push(c('时段后段还会降温，体感比眼下更凉。','The later part of this window is cooler.'));
+ if(!details.length){const cloud=Math.max(m.low??0,m.mid??0,m.high??0);details.push(cloud>80?c('云层遮挡较多，天空开阔程度有限。','Clouds obscure much of the sky.'):cloud<30?c('云层遮挡较少，天空比较开阔。','Cloud cover leaves much of the sky open.'):c('天空有云，明暗会受到云层遮挡影响。','Partial cloud cover changes the light reaching the ground.'));}
+ const limit=en?100:72;
+ let text=planningInterpretationLead(view,language);
+ for(const detail of details){const next=text+(en?' ':'')+detail;if([...next].length<=limit)text=next;}
+ return text;
+}
 export function planningWindow(day,purpose){
   const now=day.initialMinute,tz=day.weather.timezone;
   const requested={sunset:[6,false],dawn:[-6,true],blue:[-4,false],stars:[-18,false]}[purpose];
@@ -52,16 +99,10 @@ export function makePlanningView(day,purpose,language='zh'){
   else if(purpose==='cycling'){primary={label:c('阵风','WIND GUST'),value:round(m.windGust),unit:'km/h',note:c('地面风场 · 示例','SURFACE WIND · DEMO')};secondary=[c('降水概率','PRECIPITATION CHANCE'),round(m.precipitation)+'%'];}
   else if(purpose==='camp'||purpose==='outing'){primary={label:c('气温','AIR TEMPERATURE'),value:round(m.temperature,1),unit:'°C',note:c('时段起点','AT WINDOW START')};secondary=[c('时段末气温','AT WINDOW END'),round(end.temperature,1)+'°C'];}
   else{primary={label:c('降水概率','PRECIPITATION CHANCE'),value:round(m.precipitation),unit:'%',note:c('两小时示意趋势 · 非雷达','2-HOUR ILLUSTRATION · NOT RADAR')};secondary=[c('阵风','WIND GUST'),round(m.windGust)+' km/h'];}
-  const suggestions=[];
-  // Advice is deliberately sparse: at most three short lines, beside the data.
-  if(day.preset==='storm')suggestions.push(c('雷暴时避开空旷高处','Lightning: shelter'));
-  else if(m.precipitation>60)suggestions.push(c('随身带伞','Carry an umbrella'));
-  if(purpose==='gear'&&m.dewSpread<3)suggestions.push(c('镜头留意结露','Lens dew possible'));
-  if((purpose==='camp'||purpose==='outing')&&end.temperature<m.temperature-1.5)suggestions.push(c('入夜备一件外套','Pack a warm layer'));
   const metrics={photo,night,air};
   const trendKey=photo?'glow':purpose==='horizon'?'visibility':air?'humidity':purpose==='camp'||purpose==='outing'?'temperature':'precipitation';
   const barKey=photo?'low':purpose==='stars'?'high':air?'humidity':'precipitation';
-  return {purpose,m,end,samples,window,lightStage,rainSamples,primary,secondary,suggestions:suggestions.slice(0,3),metrics,trendKey,barKey,
+  return {purpose,m,end,samples,window,lightStage,rainSamples,primary,secondary,metrics,trendKey,barKey,
     interval:time(m.epoch)+'–'+time(end.epoch),dayLabel:window.nextDay?c('明日','TOMORROW'):c('今日','TODAY'),
     trend:samples.map(v=>v[trendKey]),barValue:planningClamp(m[barKey],0,100),
     preset:day.preset,location:en?day.weather.cityEn:day.weather.cityZh};

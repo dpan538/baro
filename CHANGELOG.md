@@ -1,6 +1,12 @@
 # Changelog
 
 ## Browser prototype — 2026-10-23
+- Add a dedicated 2:3 tablet layout across effective display densities; preserve the four-lane landscape layout and lower-right purpose dial.
+- Replace plain humidity rings, lunar crater blobs and the tall solar ladder with graduated humidity filaments, an etched phase/cycle disc, and a calibrated solar-angle/trajectory combination.
+- Fit visibility and temperature primary cards to their content, calibrate temperature range markers, and expand the environment interpretation into two readable lines of conditions and explanation.
+- Add an equal-height environment interpretation footer across three lanes, replacing the primary advice list with a contextual summary (subsequently expanded at the user’s request).
+- Halve the tall-reference PWV/soil group, compact upper wind and radiation, enlarge place/date and stage hints, and replace the radiation arc with direct/scattered ray fields and a quantitative share rail.
+- Double fine observation sampling per axis within the GPU/1536-column budget, add small native scene details, and preserve the accepted 192-column basic clouds.
 - Rebuild observation density around independently sized lanes, short scalar strips, stronger humidity contrast, a larger Moon and a new integrated two-hour rain amount.
 - Replace priority sidebars with restrained heading ink and add distinct pressure, humidity, altitude, radiation and soil graphics.
 - Redraw eleven observation scenes in native WebGL with distinct frontal buildings; refine basic observation art to 192 columns while preserving the weather page's 96-column default.

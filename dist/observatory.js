@@ -1,5 +1,5 @@
 import { makeSkyDay, skyDirection, skyClock } from './sky-model.js';
-import { SKY_PURPOSES, makePlanningView } from './planning-model.js';
+import { SKY_PURPOSES, makePlanningView, planningAdvice } from './planning-model.js';
 import { composeInstrumentContent, instrumentGraphicData, instrumentPriority } from './instrument-content.js';
 import { InstrumentRenderer } from './instrument-art.js';
 import { WIND_UNITS } from './weather-units.js';
@@ -20,7 +20,9 @@ function insMoonGraphic(g){
  const r=46,cx=150,cy=58,k=-Math.cos(g.fraction*2*Math.PI),waxing=g.fraction<.5;let d='';
  for(let i=0;i<=50;i++){const y=-r+i*2*r/50,x=Math.sqrt(Math.max(0,r*r-y*y));d+=(i?'L':'M')+(cx+(waxing?x:-x))+' '+(cy+y);}
  for(let i=50;i>=0;i--){const y=-r+i*2*r/50,x=Math.sqrt(Math.max(0,r*r-y*y));d+='L'+(cx+(waxing?-k:k)*x)+' '+(cy+y);}
- return insSvg(`<defs><clipPath id="ins-lunar-lit"><path d="${d}Z"/></clipPath></defs><circle cx="150" cy="58" r="48" fill="#2a343d" stroke="#18232d" stroke-width="2"/><path d="${d}Z" fill="#f5ead0"/><g clip-path="url(#ins-lunar-lit)" fill="#777e80" opacity=".33"><circle cx="131" cy="35" r="12"/><circle cx="147" cy="43" r="7"/><circle cx="169" cy="68" r="14"/><circle cx="132" cy="79" r="8"/><circle cx="170" cy="29" r="5"/><circle cx="153" cy="86" r="4"/><circle cx="123" cy="61" r="4"/></g><circle cx="150" cy="58" r="48" fill="none" stroke="#18232d" stroke-width="1.5"/>`,'96 3 108 108');
+ let ticks='';for(let i=0;i<32;i++){const a=i/32*Math.PI*2,ri=i%4?52:49;ticks+=`<path d="M${cx+Math.sin(a)*ri} ${cy-Math.cos(a)*ri}L${cx+Math.sin(a)*55} ${cy-Math.cos(a)*55}"/>`;}
+ const a=g.fraction*Math.PI*2;
+ return insSvg(`<defs><clipPath id="ins-lunar-lit"><path d="${d}Z"/></clipPath><pattern id="ins-moon-etch" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M0 5L5 0" stroke="#504b3f" stroke-width=".6" opacity=".35"/></pattern></defs><g stroke="currentColor" stroke-width=".7" opacity=".65">${ticks}</g><circle cx="150" cy="58" r="46" fill="#292722"/><path d="${d}Z" fill="#eee5ca"/><path d="${d}Z" fill="url(#ins-moon-etch)"/><g clip-path="url(#ins-lunar-lit)" fill="none" stroke="#766e59" stroke-width=".6" opacity=".5"><ellipse cx="150" cy="58" rx="24" ry="46"/><ellipse cx="150" cy="58" rx="39" ry="46"/><path d="M107 42Q150 54 193 42M105 58H195M107 74Q150 62 193 74"/></g><path d="${d}Z" fill="none" stroke="#292722" stroke-width=".6"/><circle cx="150" cy="58" r="46" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="${cx+Math.sin(a)*55}" cy="${cy-Math.cos(a)*55}" r="2.8" fill="#944b34"/>`,'92 0 116 116');
 }
 function insMetric(kind,v,s,primary=false){
  const en=s.language==='en',c=(zh,english)=>en?english:zh,g=instrumentGraphicData(kind,v),n=insN;
@@ -44,22 +46,29 @@ function insMetric(kind,v,s,primary=false){
   graphic=insSvg(`<path d="M8 ${threshold}H292" stroke="currentColor" stroke-dasharray="3 5" opacity=".35"/><defs><pattern id="ins-dew-hatch" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M-1 6L6 -1M5 7L7 5" stroke="currentColor" stroke-width=".7" opacity=".45"/></pattern></defs><path d="${coords}L292 112H8Z" fill="url(#ins-dew-hatch)"/><path d="${coords}" fill="none" stroke="#ed7c55" stroke-width="3"/>`)+`<span class="ins-dew-threshold" style="top:${threshold/120*100}%">${delta(g.threshold)}${tu}</span>`;
  }else if(kind==='temperature'){
   value=temp(g.value);unit=tu;
-  const low=g.low-1,high=g.high+1,p=(g.value-low)/(high-low)*100;
+  const low=g.low,high=g.high,p=high>low?Math.max(0,Math.min(100,(g.value-low)/(high-low)*100)):50;
   graphic=`<div class="ins-thermal-bar"><i style="left:${p}%"></i></div><div class="ins-thermal-ends"><span>${c('低','L')} ${temp(g.low)}°</span><span>${c('高','H')} ${temp(g.high)}°</span></div>`;
  }else if(kind==='apparent'){value=temp(g.value);unit=tu;
  }else if(kind==='humidity'){
-  value=n(g.value);unit='%';const ha=(g.ratio*360-90)*Math.PI/180;
-  graphic=insSvg(`<defs><pattern id="ins-rh-hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(40)"><path d="M0 0V5" stroke="currentColor" stroke-width="1" opacity=".35"/></pattern></defs><circle cx="60" cy="60" r="50" fill="url(#ins-rh-hatch)"/><circle cx="60" cy="60" r="39" fill="var(--ins-group-bg, #e8e0cc)"/><circle cx="60" cy="60" r="44" fill="none" stroke="currentColor" stroke-width="9" opacity=".12"/><circle cx="60" cy="60" r="44" fill="none" stroke="${primary?'#29231c':'#93472f'}" stroke-width="12" stroke-linecap="round" pathLength="100" stroke-dasharray="${g.ratio*100} 100" transform="rotate(-90 60 60)"/><circle cx="${60+44*Math.cos(ha)}" cy="${60+44*Math.sin(ha)}" r="4" fill="currentColor"/>`,'0 0 120 120');
+  value=n(g.value);unit='%';let filaments='',scale='';
+  for(let i=0;i<42;i++){const x=12+i*5.5,h=22+i*1.65;filaments+=`<path d="M${x} 99V${99-h}" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" opacity="${g.ratio>0&&i/41<=g.ratio?1:.16}"/>`;}
+  for(let i=0;i<=5;i++){const x=12+i*45.1;scale+=`<path d="M${x} 104V108" stroke="currentColor"/>`;}
+  const marker=12+225.5*g.ratio;
+  graphic=insSvg(`<g>${filaments}</g><path d="M${marker-4} 4L${marker} 10L${marker+4} 4Z" fill="currentColor"/><path d="M${marker} 12V101" stroke="currentColor" stroke-width=".6" stroke-dasharray="1 3"/><path d="M8 103H242" stroke="currentColor" opacity=".6"/>${scale}`,'0 0 252 110').replace('<svg ','<svg preserveAspectRatio="none" ')+`<div class="ins-rh-scale">${[0,20,40,60,80,100].map(x=>`<span>${x}${x===100?'%':''}</span>`).join('')}</div>`;
  }else if(kind==='precipitation'){
-  value=n(g.value);unit='%';let steps='M4 '+(108-g.series[0]*91);
-  g.series.forEach((p,i)=>{steps+='H'+(4+i*292/(g.series.length-1))+'V'+(108-p*91);});
-  graphic=insSvg(`<path d="M4 108H296M4 17H296" stroke="currentColor" opacity=".16"/><path d="${steps}V108H4Z" fill="currentColor" opacity=".45"/><path d="${steps}" fill="none" stroke="currentColor" stroke-width="3"/>`);
+  value=n(g.value);unit='%';
+  graphic=insSvg(`<path d="M8 88H292M8 52H292M8 16H292" stroke="currentColor" opacity=".2" stroke-dasharray="2 4"/>${g.series.map((p,i)=>{const x=8+i*284/(g.series.length-1),y=88-p*72;return `<path d="M${x} 88V16" stroke="currentColor" stroke-width="1" opacity=".12"/><path d="M${x} 88V${y}" stroke="currentColor" stroke-width="3" opacity=".42"/><circle cx="${x}" cy="${y}" r="1.8" fill="currentColor"/>`;}).join('')}`,'0 0 300 94')+`<div class="ins-prob-keys"><span>+0</span><span>+${Math.round((v.window.end-v.window.start)/2)}</span><span>+${v.window.end-v.window.start} min</span></div>`;
  }else if(kind==='visibility'){value=n(g.value,1);unit='km';
  }else if(kind==='clouds'){
  return `<h2>${label}</h2><div class="ins-cloud-columns">${g.layers.map((p,i)=>`<div><span>${(en?['High','Mid','Low']:['高云','中云','低云'])[i]}</span><div class="ins-cloud-track"><i style="width:${p.ratio*100}%"></i></div><strong data-field="${p.field}">${n(p.value)}<small>%</small></strong></div>`).join('')}</div>`;
  }else if(kind==='solar'){
   value=n(g.value,1);unit='°';
-  graphic=`<div class="ins-height-ruler">${Array.from({length:19},(_,i)=>`<b style="top:${i/18*100}%;width:${i%3?18:32}px"></b>`).join('')}<i style="top:${(90-g.value)/180*100}%"><em></em></i></div><div class="ins-altitude-ends"><span>+90°</span><span>0°</span><span>−90°</span></div>`;
+  const angle=(g.value??0)*Math.PI/180,sx=110+59*Math.cos(angle),sy=70-59*Math.sin(angle);let ticks='';
+  for(let i=-90;i<=90;i+=10){const a=i*Math.PI/180,r=i%30?55:51;ticks+=`<path d="M${110+r*Math.cos(a)} ${70-r*Math.sin(a)}L${110+60*Math.cos(a)} ${70-60*Math.sin(a)}"/>`;}
+  const elevations=v.samples.map(x=>x.sun?.elevation??0),lo=Math.min(...elevations)-2,hi=Math.max(...elevations)+2;
+  const path=elevations.map((x,i)=>`${i?'L':'M'}${4+i*292/(elevations.length-1)} ${27-(x-lo)/(hi-lo)*22}`).join('');
+  graphic=insSvg(`<path d="M110 10A60 60 0 0 1 110 130M30 70H190" fill="none" stroke="currentColor" opacity=".3"/><g stroke="currentColor" stroke-width=".8">${ticks}</g><path d="M110 70L${sx} ${sy}" stroke="#924b35" stroke-width="2"/><circle cx="${sx}" cy="${sy}" r="5" fill="#924b35"/><circle cx="110" cy="70" r="2" fill="currentColor"/><g fill="currentColor" font-size="11"><text x="91" y="13">90°</text><text x="175" y="74">0°</text><text x="85" y="137">−90°</text></g>`,'25 0 180 142')+`<div class="ins-solar-track">${insSvg(`<path d="M4 29H296" stroke="currentColor" opacity=".15"/><path d="${path}" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="4" cy="${27-(elevations[0]-lo)/(hi-lo)*22}" r="2.5" fill="currentColor"/>`,'0 0 300 32')}<span>${n(elevations[0],1)}° → ${n(elevations.at(-1),1)}°</span></div>`;
+  if(!Number.isFinite(g.value))graphic='';
  }else if(kind==='bearing'){
   value=n(g.value);unit='°';detail=skyDirection(g.value,s.language);let ticks='';
   for(let i=-6;i<=6;i++){const a=(Math.round(g.value/10)*10+i*10-g.value)*Math.PI/180,x=280-110*Math.cos(a),y=72+110*Math.sin(a),xx=280-(i%3?119:127)*Math.cos(a),yy=72+(i%3?119:127)*Math.sin(a);ticks+=`<path d="M${x} ${y}L${xx} ${yy}"/>`;}
@@ -79,7 +88,7 @@ function insMetric(kind,v,s,primary=false){
  if(kind==='lunar'||kind==='darkness'){
   const phases=en?['New','Waxing crescent','First quarter','Waxing gibbous','Full','Waning gibbous','Last quarter','Waning crescent']:['新月','蛾眉月','上弦月','盈凸月','满月','亏凸月','下弦月','残月'];
   const phase=phases[Math.round(g.fraction*8)%8],tz=v.window.day.weather.timezone;
-  return `<h2>${label}${kind==='lunar'?'<small class="ins-lunar-bortle">Bortle —</small>':''}</h2>${kind==='lunar'?`<div class="ins-lunar-line"><strong>${n(g.value)}<small>%</small></strong>${insMoonGraphic(g)}<span>${phase}</span></div>`:`<div class="ins-bortle">Bortle <strong>—</strong><small>${c('测光未接入','Unmeasured')}</small></div>`}<div class="ins-moon-times"><span>↑ ${skyClock(g.rise,tz)} ≈</span><span>↓ ${skyClock(g.set,tz)} ≈</span></div>`;
+  return `<h2>${label}${kind==='lunar'?'<small class="ins-lunar-bortle">Bortle —</small>':''}</h2>${kind==='lunar'?`<div class="ins-lunar-line"><strong>${n(g.value)}<small>%</small></strong>${insMoonGraphic(g)}<span>${phase}</span><small class="ins-moon-age">${c("月龄约","Age ≈")} ${n(g.fraction*29.53059)} ${c("日","d")}</small></div>`:`<div class="ins-bortle">Bortle <strong>—</strong><small>${c('测光未接入','Unmeasured')}</small></div>`}<div class="ins-moon-times"><span>↑ ${skyClock(g.rise,tz)} ≈</span><span>↓ ${skyClock(g.set,tz)} ≈</span></div>`;
  }
  if(kind==='drift'){
   value=wind(g.speed);unit=wu.label;detail=`300 hPa · ${n(g.from)}° · Δv ${wind(g.difference)} ${wu.label}`;
@@ -88,22 +97,30 @@ function insMetric(kind,v,s,primary=false){
  }
  if(kind==='column') {value=n(g.value,1);unit='mm';graphic=`<div class="ins-column-ruler"><i style="height:${g.ratio*100}%"></i>${Array.from({length:8},(_,i)=>`<b style="bottom:${i/7*100}%"></b>`).join('')}</div><div class="ins-column-ends"><span>70</span><span>0</span></div>`;detail=c('整层积分','Full column');}
  if(kind==='freezing'){value=n(g.value);unit='m';detail=c('海平面以上','Above sea level');}
- if(kind==='cape'){value=n(g.value);unit='J/kg';graphic=`<div class="ins-energy-scale"><i style="left:${g.ratio*100}%"></i></div>`;detail=c('能量 · 非概率','Energy · not probability');}
+ if(kind==='cape'){value=n(g.value);unit='J/kg';graphic=`<div class="ins-energy-scale"><i style="width:${g.ratio*100}%"></i></div><div class="ins-energy-ends"><span>0</span><span>4000 J/kg</span></div>`;detail=c('能量 · 非概率','Not a probability');}
  if(kind==='soil'){value=n(g.value,2);unit='m³/m³';detail=c('0–1 cm · 体积含水率','0–1 cm · volume fraction');graphic=`<div class="ins-soil-cells">${Array.from({length:40},(_,i)=>`<i class="${i/40<g.ratio?'active':''}"></i>`).join('')}</div>`;}
  if(kind==='radiation'){
-  const f=g.total>0?g.diffuse/g.total:0,ra=Math.PI+f*Math.PI;
-  const arc=insSvg(`<path d="M35 108A115 90 0 0 1 265 108" fill="none" stroke="${g.total?'#d28a70':'currentColor'}" stroke-width="17" stroke-linecap="round" opacity="${g.total?1:.18}"/>${g.total?`<path d="M35 108A115 90 0 0 1 265 108" fill="none" stroke="currentColor" stroke-width="17" stroke-linecap="round" pathLength="100" stroke-dasharray="${f*100} 100"/>`:""}<circle cx="${150+115*Math.cos(ra)}" cy="${108+90*Math.sin(ra)}" r="5" fill="${g.total?'currentColor':'transparent'}"/>`,'0 0 300 130');
-  return `<h2>${label}<small class="ins-flux-state">${g.total===0?c('夜间','Night'):g.ratio===null?'—':n(g.ratio,1)+':1'}</small></h2><div class="ins-flux-values"><strong>${n(g.direct)}<small> / </small>${n(g.diffuse)}</strong><span>W/m²<small>${c('水平面','Horizontal')}</small></span></div><div class="ins-radiation-arc">${arc}<span>${g.total?c('漫射','Diffuse')+' '+n(f*100)+'%':c('无太阳辐射','No solar flux')}</span></div>`;
+  const f=g.total>0?g.diffuse/g.total:0,daylight=g.total>0,horizon=daylight?77:38;
+  let beams='',skyRays='';
+  for(let i=0;i<7;i++){
+   const x=30+i*11,a=(25+i*22)*Math.PI/180;
+   if(g.direct>0)beams+=`<path d="M${x} 22l32 47"/>`;
+   if(g.diffuse>0)skyRays+=`<path d="M${240+60*Math.cos(a)} ${75-58*Math.sin(a)}Q240 35 240 73"/>`;
+  }
+  const diagram=insSvg(`<defs><pattern id="ins-flux-ground" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8L8 0" stroke="currentColor" opacity=".3"/></pattern></defs><path d="M14 ${horizon}H306V${horizon+10}H14Z" fill="url(#ins-flux-ground)"/><path d="M14 ${horizon}H306" stroke="currentColor" stroke-width="1.5"/>
+   ${daylight?`<circle cx="55" cy="13" r="7" fill="#d99975"/><g fill="none" stroke="#d99975" stroke-width="${1+(1-f)*2.5}" opacity="${.25+(1-f)*.75}">${beams}</g><path d="M179 70A61 58 0 0 1 301 70" fill="none" stroke="currentColor" opacity=".22" stroke-dasharray="2 4"/><g fill="none" stroke="#d9d3bb" stroke-width="${.7+f*2.2}" opacity="${.25+f*.75}">${skyRays}</g>`:`<path d="M24 53H132M188 53H296" stroke="currentColor" opacity=".25" stroke-dasharray="2 5"/><circle cx="160" cy="65" r="12" fill="none" stroke="#d99975" stroke-width="2"/><path d="M160 42V47M138 65H143M177 65H182" stroke="#d99975"/><path d="M148 80H172" stroke="currentColor" stroke-width="2"/>`}
+   ${daylight?`<rect x="14" y="94" width="${292*(1-f)}" height="5" fill="#d99975"/><rect x="${14+292*(1-f)}" y="94" width="${292*f}" height="5" fill="#d9d3bb"/>`:''}`,'0 0 320 105');
+  return `<h2>${label}<small class="ins-flux-state">${daylight?(g.ratio===null?'—':n(g.ratio,1)+':1'):c('夜间','Night')}</small></h2><div class="ins-flux-values"><strong>${n(g.direct)}<small> / </small>${n(g.diffuse)}</strong><span>W/m²<small>${c('水平面','Horizontal')}</small></span></div><div class="ins-radiation-arc">${diagram}<span>${daylight?c('漫射占比','Diffuse share')+' '+n(f*100)+'%':c('太阳低于地平线 · 无短波入射','Sun below horizon · no flux')}</span></div>`;
  }
  if(kind==='seeing'){
   value=(g.value>0?'+':'')+delta(g.value);unit=tu;detail=`${c('地表','Skin')} ${temp(g.surface)}${tu} · ${c('热差代理','proxy')}`;
   const p=Math.min(50,Math.abs(g.value)/15*50);graphic=`<div class="ins-contrast-scale"><b></b><i style="left:${g.value<0?50-p:50}%;width:${p}%"></i></div>`;
  }
  if(kind==='rain'){
-  return `<h2>${label}</h2><div class="ins-reading"><strong>${n(g.value,1)}</strong><span>mm/h</span></div><div class="ins-rain-bars">${g.series.map(x=>`<i style="height:${Math.max(2,x/g.maximum*100)}%"></i>`).join('')}</div><div class="ins-rain-keys"><span>+0</span><span>+60</span><span>+120 min</span></div><small>${c('15 分钟步长 · 示意','15-min steps · demo')}</small>`;
+  return `<h2>${label}<small class="ins-rain-source">${c('15 分钟 · 示例','15-min · demo')}</small></h2><div class="ins-reading"><strong>${n(g.value,1)}</strong><span>mm/h</span></div><div class="ins-rain-bars">${g.series.map(x=>`<i style="height:${x>0?Math.max(2,x/g.maximum*100):0}%"></i>`).join('')}</div><div class="ins-rain-keys"><span>+0</span><span>+60</span><span>+120 min</span></div><small>${c('15 分钟步长 · 示意','15-min steps · demo')}</small>`;
  }
  if(kind==='rainTotal'){value=n(g.value,1);unit='mm';}
- if(kind==='cin'){value=n(g.value);unit='J/kg';detail=c('抑制能量 · 示例','Inhibition · demo');}
+ if(kind==='cin'){value=n(g.value);unit='J/kg';detail=c('抑制能量 · 示例','Inhibition · demo');graphic=`<div class="ins-cin-scale"><i style="width:${Math.min(1,Math.abs(g.value)/200)*100}%"></i></div><div class="ins-energy-ends"><span>−200</span><span>0 J/kg</span></div>`;}
  if(kind==='lcl'){value=n(g.value);unit='m';detail=c('地面以上 · 近似','Above ground · approx.');}
  if(kind==='vpd'){value=n(g.value,2);unit='kPa';detail=c('近地水汽压差','Near-surface deficit');}
  if(kind==='wetBulb'){value=temp(g.value);unit=tu;detail=c('近地近似值','Surface approximation');}
@@ -120,7 +137,7 @@ export class ObservatoryController{
    <div class="ins-scalar-stack"><article class="ins-module ins-cell ins-slot-thermal" id="ins-thermal"></article><article class="ins-module ins-cell ins-slot-optical" id="ins-optical"></article><article class="ins-module ins-cell ins-slot-freezing" id="ins-freezing"></article></div>
    <div class="ins-signal-stack"><article class="ins-signal-top ins-module ins-cell" id="ins-signal"></article><article class="ins-cape-top ins-module ins-cell" id="ins-cape"></article></div>
    <div class="ins-rain-stack"><article class="ins-rain-top ins-module ins-cell" id="ins-rain"></article><article class="ins-rain-total ins-module ins-cell" id="ins-rain-total"></article></div>
-   <div class="ins-assembly">${[['wind','pressure','dew','micro'],['moisture','clouds','column','soil'],['distance','solar','bearing','radiation'],['stage','lunar','drift','seeing','stability']].map(lane=>`<div class="ins-lane">${lane.map(slot=>`<article class="ins-module ins-cell ins-slot-${slot}" id="ins-${slot}"></article>`).join('')}</div>`).join('')}</div>
+   <div class="ins-assembly">${[['wind','pressure','dew'],['moisture','clouds','column','soil'],['distance','solar','bearing','radiation'],['stage','lunar','drift','seeing','stability']].map(lane=>`<div class="ins-lane">${lane.map(slot=>`<article class="ins-module ins-cell ins-slot-${slot}" id="ins-${slot}"></article>`).join('')}</div>`).join('')}<div class="ins-environment-pair"><article class="ins-module ins-cell ins-slot-micro" id="ins-micro"></article><article class="ins-module ins-cell ins-slot-advice" id="ins-advice"></article></div></div>
    <section class="ins-wheel ins-module" id="ins-wheel" role="listbox" tabindex="0"><svg aria-hidden="true" viewBox="0 0 720 574" preserveAspectRatio="xMidYMid slice" id="ins-wheel-svg"></svg><div id="ins-wheel-options" class="ins-live"></div><div class="ins-wheel-foot"><span id="ins-wheel-hint"></span><span id="ins-wheel-position"></span></div></section>
   </div><span class="ins-live" id="ins-live" aria-live="polite"></span>`;
   this.wheel=this.el('wheel');this.wheelResize=new ResizeObserver(()=>{if(this.active)this.renderWheel();});this.wheelResize.observe(this.wheel);document.querySelector('#observatory-open').addEventListener('click',()=>this.open());this.el('home').addEventListener('click',()=>this.close());
@@ -165,7 +182,8 @@ export class ObservatoryController{
   this.page.dataset.purpose=purpose;this.page.dataset.environment=s.presetKey;
   this.page.setAttribute('aria-label',c('环境观测仪器面板，示例数据','Environmental instrument panel, demo data'));
   const primary=this.el('focus');primary.dataset.kind=content.primary.kind;primary.dataset.priority='core';primary.dataset.fields=content.primary.fields.join(' ');
-  primary.innerHTML=insMetric(content.primary.kind,v,s,true)+`<div class="ins-advice">${v.suggestions.map(t=>`<span>${t}</span>`).join('')}</div>`;
+  primary.innerHTML=insMetric(content.primary.kind,v,s,true);
+  this.el('advice').innerHTML=`<h2>${c('环境解读','Conditions, simply')}</h2><p>${insEscape(planningAdvice(v,s.language))}</p>`;
   this.el('context').innerHTML=`<span class="ins-context-place">${insEscape(v.location)} · ${v.window.day.date.slice(5).replace('-','/')}</span><h2>${c('观测时段','Observation window')}</h2><strong data-field="window">${v.window.available?v.interval:c('无对应交点','No crossing')}${v.window.available&&v.window.end>=1440?'<small>+1</small>':''}</strong><span class="ins-source">${c('示例 · 气象趋势为示意','Demo · illustrative weather trend')}</span>`;
   this.el('panorama-caption').textContent=(insScenes[s.presetKey]??insScenes.partly)[en?1:0]+c(' · 像素示意',' · pixel study');
   for(const module of content.modules){const el=this.el(module.slot);el.dataset.kind=module.kind;el.dataset.priority=instrumentPriority(v,module.kind);el.dataset.fields=module.fields.join(' ');el.innerHTML=insMetric(module.kind,v,s);}

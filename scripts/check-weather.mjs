@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { createWeatherFrame, resolveWeatherScene, WEATHER_PRESETS, WEATHER_CODE_GROUPS, MOTION } from '../dist/weather-art.js';
 import { resolvePixelGrid, FINE_MOTION } from '../dist/weather-shader.js';
+import { instrumentResolution } from '../dist/instrument-art.js';
 
 const names=Object.keys(WEATHER_PRESETS);
 for(const name of names) {
@@ -43,3 +44,12 @@ for(const [width,height,limit] of [[320,480,4096],[1440,960,4096],[3456,2304,409
 }
 console.log(`Verified ${names.length} Canvas fallback states at three panel shapes: weather mapping, valid pixels, motion and eight-second fallback loops.`);
 console.log('Verified native-density fine grids, the 3.4K tablet split, block-mode sizing, aspect preservation and GPU texture limits.');
+const observationFine=instrumentResolution(420,240,1.6,'fine');
+assert.deepEqual(observationFine,{width:1344,height:768,grid:{columns:1344,rows:768}},'Fine observation art doubles native samples in both axes');
+assert.deepEqual(instrumentResolution(420,240,1.6,'block').grid,{columns:192,rows:110},'Basic observation art preserves the accepted cloud grid');
+for(const [w,h,dpr,limit] of [[400,240,2,4096],[900,300,3,4096],[300,2000,2,1024],[4000,400,2,1024]]){
+ const r=instrumentResolution(w,h,dpr,'fine',limit);
+ assert(r.width<=Math.min(1536,limit)&&r.height<=limit,'Supersampling must fit both GPU axes and the art budget');
+ assert(Math.abs(r.width*h-r.height*w)<=Math.max(w,h),'Sampling preserves scene proportions');
+}
+console.log('Verified independent observation supersampling, preserved 192-column basic mode and GPU-safe aspect limits.');

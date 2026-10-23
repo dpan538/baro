@@ -1,6 +1,15 @@
 import { resolvePixelGrid } from './weather-shader.js';
 
 export const INSTRUMENT_SCENES=Object.freeze(['partly','rain','storm','snow','night','sunset','dawn','clear','overcast','fog','wind']);
+export function instrumentResolution(width,height,dpr=1,pixelStyle='fine',limit=4096){
+ // Fine observation art gets twice the native samples on each axis. Keep the
+ // full scene inside both the GPU limit and the shared 1536-column art budget.
+ const ratio=Math.max(1,width)/Math.max(1,height),scale=Math.max(1,dpr)*(pixelStyle==='fine'?2:1);
+ let w=Math.max(1,Math.round(width*scale)),h=Math.max(1,Math.round(height*scale));
+ const cap=Math.max(1,Math.floor(limit)),factor=Math.min(1,cap/w,cap/h,pixelStyle==='fine'?1536/w:1);
+ w=Math.max(1,Math.round(w*factor));h=Math.max(1,Math.min(cap,Math.round(w/ratio)));
+ return {width:w,height:h,grid:resolvePixelGrid(w,h,pixelStyle,cap,192)};
+}
 const INSTRUMENT_VERTEX=`#version 300 es
 void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Position=vec4(p*2.-1.,0.,1.);}`;
 const INSTRUMENT_FRAGMENT=`#version 300 es
@@ -86,7 +95,7 @@ void pine(inout vec3 col,vec2 at,float h,float seed,bool snow){
 }
 void cabin(inout vec3 col,vec2 at,float scale,bool raised,bool snow){
  vec2 q=(p-at)/scale;float base=raised?.09:0.;
- // Foundation blocks, a front facade and a darker receding side.
+ // Foundation blocks and a front facade with layered masonry.
  col=mix(col,stone(q,vec3(.16,.22,.25),vec3(.43,.47,.41)),rect(q,vec2(-.25,base-.045),vec2(.21,base+.025)));
  col=mix(col,stone(q,vec3(.31,.32,.29),vec3(.70,.65,.51)),rect(q,vec2(-.22,base+.02),vec2(.14,base+.19)));
 
@@ -239,6 +248,17 @@ void main(){
  bool coastal=scene==0||storm||scene==5;
  if(coastal){float horizon=.265;if(p.y<horizon)col=water(uv,horizon,lightPoint.x/aspect);float edge=.37+.09*sin(p.y*7.)+.025*noise(vec2(p.y*73.,3.));float top=.18+mountain(p.x,8.,.05)*.15;if(uv.x<edge&&p.y<top){col=stone(p*vec2(1.,.8),vec3(.045,.10,.15),vec3(.40,.43,.35));float moss=step(.58,fbm(p*27.));col=mix(col,vec3(.25,.35,.23),moss*.36);float lip=exp(-pow((top-p.y)/.008,2.));col=mix(col,vec3(.42,.45,.30),lip*.65);float fissure=pow(max(0.,sin(p.x*167.+p.y*10.+noise(p*30.)*3.)),18.);col*=1.-fissure*.25;}}
  else{float foreground=.13+mountain(p.x,7.,.05)*.20;if(p.y<foreground){col=terrainMaterial(p,foreground,5,snow);float stems=step(.88,hash(vec2(floor(p.x*390.),0.)))*step(.5,fract(p.y*83.+p.x*8.));col=mix(col,scene==10?vec3(.66,.61,.33):vec3(.25,.36,.24),stems*.35);}}
+ // Fine-only field details stay tied to each environment and use the same
+ // analytic pixel primitives as the architecture, never image textures.
+ if(!coarse){
+  if(coastal){
+   for(int i=0;i<8;i++){float n=float(i),x=aspect*(.04+n*.038),y=.12+mountain(x,8.,.05)*.11;vec2 q=p-vec2(x,y);float size=.006+hash(vec2(n,5.))*.005;col=mix(col,vec3(.41,.45,.38),cover(ellipse(q,vec2(size*1.8,size))));}
+   if(scene==5){vec2 q=p-vec2(aspect*.40,.18);col=mix(col,vec3(.30,.28,.27),rect(q,vec2(-.055,.02),vec2(.055,.031))+rect(q,vec2(-.047,-.012),vec2(-.040,.02))+rect(q,vec2(.040,-.012),vec2(.047,.02)));}
+   if(storm||scene==0){vec2 q=p-vec2(aspect*.08,.19);col=mix(col,vec3(.57,.61,.56),rect(q,vec2(-.010,0),vec2(.010,.052))+stroke(q,vec2(0,0),vec2(0,-.035),.0014));col=mix(col,vec3(.17,.28,.31),stroke(q,vec2(-.015,.052),vec2(.015,.052),.002));}
+  }else if(!snow&&scene!=7){
+   for(int i=0;i<18;i++){float n=float(i),x=aspect*(n+.5)/18.,y=.12+mountain(x,7.,.05)*.12;vec2 q=p-vec2(x,y);float h=.012+hash(vec2(n,8.))*.018;col=mix(col,vec3(.29,.40,.27),stroke(q,vec2(0,0),vec2(.002,h),.0008)+stroke(q,vec2(.001,h*.5),vec2(-.006,h*.7),.0008));}
+  }
+ }
  // Foreground silhouettes carry individual branch/shadow structure, not noise outlines.
  if(snow||night||misty||scene==1||scene==6){for(int i=0;i<15;i++){float n=float(i),x=aspect*n/14.,seed=hash(vec2(n,7.));float h=.09+seed*.16,base=.10+mountain(x,7.,.05)*.12;pine(col,vec2(x,base),h,n,snow);}}
  if(snow)cabin(col,vec2(aspect*.68,.16),.77,false,true);
@@ -259,6 +279,11 @@ void main(){
   col=mix(col,edge,stroke(q,vec2(-.30,.215),vec2(.30,.215),.003)+stroke(q,vec2(-.29,.215),vec2(0,.40),.003)+stroke(q,vec2(0,.40),vec2(.29,.215),.003));
   col=mix(col,frame,rect(q,vec2(-.054,.02),vec2(.054,.18)));col=mix(col,vec3(.86,.67,.34),rect(q,vec2(-.043,.03),vec2(.043,.166)));col=mix(col,frame,stroke(q,vec2(0,.03),vec2(0,.166),.002));
   for(int i=0;i<4;i++){float n=float(i);vec2 a=vec2(-.066-n*.008,-.012-n*.011);col=mix(col,vec3(.40,.46,.40),rect(q,a,a+vec2(.132+n*.016,.009)));}
+  if(!coarse){
+   // Two front-facing propagation trays and a fine ridge vent distinguish the greenhouse.
+   for(int i=0;i<2;i++){float x=i==0?-.20:.20;col=mix(col,vec3(.43,.31,.23),rect(q,vec2(x-.047,.027),vec2(x+.047,.046)));col=mix(col,vec3(.24,.39,.26),stroke(q,vec2(x-.04,.049),vec2(x+.04,.049),.003));}
+   col=mix(col,vec3(.65,.70,.62),stroke(q,vec2(-.047,.374),vec2(.047,.374),.0013));
+  }
  }
  if(night)radioDish(col,vec2(aspect*.29,.32));
  if(scene==5){
@@ -295,7 +320,7 @@ export class InstrumentRenderer{
   this.vao=gl.createVertexArray();this.locations=Object.fromEntries(['screen','grid','clock','cloud','rain','fog','elevation','bearing','moonPhase','scene','coarse'].map(k=>[k,gl.getUniformLocation(this.program,k)]));
  }
  update(view,{pixelStyle,motionEnabled,galleryPlaying=true}){this.view=view;this.pixelStyle=pixelStyle;this.animated=motionEnabled&&galleryPlaying;this.resize();this.sync();}
- resize(){const box=this.canvas.getBoundingClientRect();if(!box.width||!box.height)return;this.canvas.width=Math.round(box.width*(devicePixelRatio||1));this.canvas.height=Math.round(box.height*(devicePixelRatio||1));this.grid=resolvePixelGrid(this.canvas.width,this.canvas.height,this.pixelStyle,this.gl?.getParameter(this.gl.MAX_TEXTURE_SIZE)??4096,192);this.draw();}
+ resize(){const box=this.canvas.getBoundingClientRect();if(!box.width||!box.height)return;const size=instrumentResolution(box.width,box.height,devicePixelRatio||1,this.pixelStyle,this.gl?.getParameter(this.gl.MAX_TEXTURE_SIZE)??4096);this.canvas.width=size.width;this.canvas.height=size.height;this.grid=size.grid;this.draw();}
  draw(){
   if(!this.view||!this.grid)return;
   const m=this.view.m,gl=this.gl;

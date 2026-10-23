@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {WEATHER_PRESETS} from '../dist/weather-art.js';
 import {makeSkyDay,skyAt} from '../dist/sky-model.js';
-import {SKY_PURPOSES,makePlanningView,planningWindow} from '../dist/planning-model.js';
+import {SKY_PURPOSES,makePlanningView,planningWindow,planningAdvice} from '../dist/planning-model.js';
 assert.equal(new Set(SKY_PURPOSES.map(p=>p[0])).size,12);
 let count=0;
 for(const [preset,weather] of Object.entries(WEATHER_PRESETS)){
@@ -11,8 +11,9 @@ for(const [preset,weather] of Object.entries(WEATHER_PRESETS)){
   assert.equal(view.purpose,purpose);assert(view.m.available);
   assert(view.end.epoch>=view.m.epoch);assert.equal(view.samples.length,25);
   assert(view.trend.every(Number.isFinite));assert(view.barValue>=0&&view.barValue<=100);
-  assert(view.suggestions.length<=3);
-  for(const text of view.suggestions)assert([...text].length<=20,`${preset}/${purpose}/${lang}: ${text}`);
+  const advice=planningAdvice(view,lang);
+  assert([...advice].length<=(lang==='en'?100:72),`${preset}/${purpose}/${lang}: interpretation exceeds its reading budget`);
+  assert(advice.length>0&&!advice.includes('\n'),'A short interpretation, not an advice list');
   assert(view.window.end<=1560);assert.equal(view.dayLabel,view.window.nextDay?(lang==='en'?'TOMORROW':'明日'):(lang==='en'?'TODAY':'今日'));
   count++;
  }
@@ -24,6 +25,8 @@ assert.equal(makePlanningView(day,'commute').trendKey,'precipitation');
 assert.equal(makePlanningView(day,'gear').trendKey,'humidity');
 assert.equal(makePlanningView(day,'sunset').trendKey,'glow');
 assert.equal(makePlanningView(day,'horizon').trendKey,'visibility');
+assert.match(planningAdvice(makePlanningView(day,'sunset')),/傍晚/,'The photographic window must use its selected time period');
+assert.match(planningAdvice(makePlanningView(day,'dawn')),/清晨/);
 assert.equal(makePlanningView(day,'stars').primary.label,'月面照明 ≈');
 for(const purpose of ['sunset','dawn','blue']){
  const view=makePlanningView(day,purpose);
@@ -33,11 +36,21 @@ for(const purpose of ['sunset','dawn','blue']){
 assert.equal(makePlanningView(day,'invalid').purpose,'commute');
 const polar={...day,coordinates:{latitude:89,longitude:0},date:'2026-06-21',thresholds:{'-18':[]}};
 assert.equal(planningWindow(polar,'stars').available,false,'No astronomical night must not produce a fabricated crossing');
-assert.equal(makePlanningView(makeSkyDay(WEATHER_PRESETS.storm,'storm'),'gear').suggestions.length,2);
 const afterDusk=makeSkyDay(WEATHER_PRESETS.storm,'storm');
 const tomorrow=makePlanningView(afterDusk,'sunset');
 assert(tomorrow.window.nextDay);
 assert(tomorrow.window.day.thresholds[-.833].every(event=>event.at>afterDusk.thresholds[-.833].at(-1).at),'Tomorrow must use tomorrow’s solar events in every module');
 const missingEnd={...day,thresholds:{...day.thresholds,'-6':[]},initialMinute:0,weather:{...day.weather,validAt:day.thresholds[6].find(x=>!x.rising).at-3600}};
 assert.equal(planningWindow(missingEnd,'sunset').available,false,'A missing end crossing must not become an arbitrary two-hour photographic window');
-console.log(`Verified ${count} purpose/environment/language combinations, objective metric selection, midnight/polar windows and the three-line/20-character advice limit.`);
+const adviceView={preset:'clear',purpose:'commute',m:{temperature:30,humidity:85,dewSpread:5,precipitation:0,rainRate:0,windGust:10,sun:{elevation:30}},end:{temperature:30}};
+assert.match(planningAdvice(adviceView),/潮湿闷热/);
+assert.match(planningAdvice({...adviceView,m:{...adviceView.m,sun:{elevation:-20}}}),/夜间/);
+assert.match(planningAdvice({...adviceView,m:{...adviceView.m,temperature:20,humidity:90,dewSpread:1,sun:{elevation:-20}}}),/冷表面可能结露/);
+assert.match(planningAdvice({...adviceView,m:{...adviceView.m,temperature:5}}),/气温偏低/);
+const warmCooling=planningAdvice({...adviceView,m:{...adviceView.m,temperature:30,humidity:50},end:{temperature:25}});
+assert.match(warmCooling,/降温/);assert(!warmCooling.includes('气温偏低'),'Cooling from warm air must not be described as a cold temperature');
+assert.match(planningAdvice({...adviceView,preset:'storm'}),/雷雨/);
+assert.match(planningAdvice({...adviceView,preset:'snow'}),/降雪/,'Snow must not be interpreted as rain');
+assert.match(planningAdvice({...adviceView,m:{...adviceView.m,temperature:20,humidity:50,sun:{elevation:4}}}),/晨昏低光/);
+assert.match(planningAdvice({...adviceView,m:{...adviceView.m,temperature:20,humidity:50,windGust:50,visibility:3}}),/阵风较强、远景模糊/);
+console.log(`Verified ${count} purpose/environment/language combinations, objective metric selection, midnight/polar windows and bounded plain-language environment interpretations.`);
