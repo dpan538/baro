@@ -155,7 +155,7 @@ class WeatherDashboard(context:Context,model:AppModel):Dashboard(context,model){
         val icon=when(scene){"clear"->"sun";"night"->"moon";"dawn"->"sunrise";"sunset"->"sunset";else->scene}
         svg(icon,m.rect("#condition-icon"),stroke=stroke)
         css("#condition-primary",model.conditionName(wx))
-        val event=wx?.nextSolar();css("#solar-event-label .label-primary",if(event?.first==true)tr("日出时间","SUNRISE")else tr("日落时间","SUNSET"))
+        val event=wx?.nextSolar();css("#solar-event-label .label-primary",if(event==null)tr("暂无事件","NO EVENT")else if(event.first)tr("日出时间","SUNRISE")else tr("日落时间","SUNSET"))
         val solar=event?.second?.let{java.time.Instant.ofEpochSecond(it).atZone(wx!!.zone)}
         val solarClock=if(model.lang=="en")solar?.format(java.time.format.DateTimeFormatter.ofPattern("h:mm",java.util.Locale.US))?:"—"else wx?.clock(event?.second)?:"—"
         css("#solar-event-time",solarClock)
@@ -164,7 +164,7 @@ class WeatherDashboard(context:Context,model:AppModel):Dashboard(context,model){
             val sr=m.rect("#solar-event-time");val heroBounds=m.rect(".weather-hero")
             text(tr("次日","Tomorrow"),sr.left,min(sr.bottom+2,heroBounds.bottom-20),16f,0xff67716a.toInt(),languageFont(tr("次日","Tomorrow")))
         }
-        svg(if(event?.first==true)"solarSunrise"else "solarSunset",m.rect("#solar-icon"),172f,100f,stroke)
+        if(event!=null)svg(if(event.first)"solarSunrise"else "solarSunset",m.rect("#solar-icon"),172f,100f,stroke)
         val hero=m.rect(".weather-hero");line(info.left,hero.bottom-1,info.right,hero.bottom-1,0xffbec6b8.toInt())
         val facts=listOf(tr("体感温度","FEELS LIKE"),tr("风速","WIND SPEED"))
         for(i in 0..1){val r=m.rect(".primary-metric",i);css(".primary-metric .label-primary",facts[i],i)
