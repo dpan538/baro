@@ -1,0 +1,341 @@
+{
+  "brand": {
+    "en": "BARO",
+    "zh": "晴雨"
+  },
+  "version": 7,
+  "source": "Project-native cloud geometry; original A2 surface with restrained front-volume clarification",
+  "imageGenerationUsed": false,
+  "paintedRippleOverlayUsed": false,
+  "nativeRenderResolution": 4096,
+  "upscaledSource": false,
+  "originalLobes": [
+    [
+      0,
+      0,
+      0.34,
+      0.1,
+      0.12
+    ],
+    [
+      -0.2,
+      -0.045,
+      0.12,
+      0.115,
+      0.13
+    ],
+    [
+      -0.07,
+      -0.105,
+      0.16,
+      0.17,
+      0.18
+    ],
+    [
+      0.12,
+      -0.075,
+      0.15,
+      0.145,
+      0.16
+    ],
+    [
+      0.26,
+      -0.02,
+      0.105,
+      0.09,
+      0.11
+    ]
+  ],
+  "frontLobes": [
+    [
+      -0.165,
+      0.031,
+      0.125,
+      0.067,
+      0.112
+    ],
+    [
+      -0.015,
+      0.043,
+      0.142,
+      0.061,
+      0.122
+    ],
+    [
+      0.146,
+      0.031,
+      0.112,
+      0.062,
+      0.108
+    ]
+  ],
+  "framing": {
+    "scale": 1.0856160458452722,
+    "center": [
+      525,
+      508
+    ],
+    "widthPercent": 74,
+    "background": "#151515"
+  },
+  "light": [
+    -0.3391400513665329,
+    -0.5087100770497993,
+    0.79132678652191
+  ],
+  "palette": [
+    [
+      0.26,
+      0.42,
+      0.62
+    ],
+    [
+      0.58,
+      0.74,
+      0.85
+    ],
+    [
+      0.9,
+      0.94,
+      0.96
+    ],
+    [
+      0.99,
+      0.97,
+      0.89
+    ]
+  ],
+  "variants": [
+    {
+      "id": "S1",
+      "name": "subtle",
+      "label": "轻微细化",
+      "note": "最接近 A2，前侧体积稍明确",
+      "frontBlend": 0.03,
+      "frontStrength": 0.34,
+      "volumeMix": 0.46,
+      "underside": 0.003
+    },
+    {
+      "id": "S2",
+      "name": "soft-volume",
+      "label": "柔和体积",
+      "note": "补清前侧云团，保持柔和过渡",
+      "frontBlend": 0.036,
+      "frontStrength": 0.53,
+      "volumeMix": 0.49,
+      "underside": 0.006
+    },
+    {
+      "id": "S3",
+      "name": "clear-volume",
+      "label": "清晰体积",
+      "note": "前后关系更明确，底部略深",
+      "frontBlend": 0.032,
+      "frontStrength": 0.66,
+      "volumeMix": 0.52,
+      "underside": 0.011
+    }
+  ],
+  "references": [
+    {
+      "id": "A2",
+      "source": "../v4/A2-74-soft-black",
+      "files": [
+        {
+          "file": "icon.svg",
+          "sha256": "2a4e9c0a6537b3e3071f3d34691f335209fb4215c585768e487f8c08d1da91bd"
+        },
+        {
+          "file": "icon-1024.png",
+          "sha256": "011775eb05f1d9ee2b9a9579d76d54c474c739d36f3834ef9f0464ab89d4809d"
+        },
+        {
+          "file": "icon-512.png",
+          "sha256": "0e438d01c40639798f9b171626f223617cfe1743da15aeeb9b5de671c87b3f39"
+        },
+        {
+          "file": "icon-48.png",
+          "sha256": "3290d508a5cf322440b5291aee44029e599ffabac093a986a44494d247d381e9"
+        },
+        {
+          "file": "icon-32.png",
+          "sha256": "eb1ddd5553bd2c3310b254cf36ea3caa0a70e0369fb24c867f02710699e31cbf"
+        }
+      ]
+    },
+    {
+      "id": "B1",
+      "source": "../v4/B1-80-black",
+      "files": [
+        {
+          "file": "icon.svg",
+          "sha256": "76fd4ba49cc150a0baeca0cbb61b1ec43bdc8d43acc569dd2c5e796cf32dbbdf"
+        },
+        {
+          "file": "icon-1024.png",
+          "sha256": "af544b1419dc1a3ebb3b99fb49224334253abcb0e8e1412210c126e9fb69cf47"
+        },
+        {
+          "file": "icon-512.png",
+          "sha256": "aacca58500a579f165b2c78f554f0f1b8af231acc3707bebe26f45d76db8ba7a"
+        },
+        {
+          "file": "icon-48.png",
+          "sha256": "bc59d85e28c948339a16dbd4b2ab17af240d28c97909793939299d2f3df4d95c"
+        },
+        {
+          "file": "icon-32.png",
+          "sha256": "0912436ede425fd49617e9afa17886c2739f232bb880fe934215d33d7d2c750e"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "file": "preview.png",
+      "bytes": 299285,
+      "sha256": "eb083bc845b407890799c7bcf6947050e6993dddd702151b892d9176f06674d5"
+    },
+    {
+      "file": "preview.svg",
+      "bytes": 305182,
+      "sha256": "11c397aaf5ab2750d1cef4d9702fe0618a67eaaf90b1b7b305e934b787ac95c5"
+    },
+    {
+      "file": "S1-subtle/foreground-4096.png",
+      "bytes": 512575,
+      "sha256": "da4d6df1f2bfd007da1f0533488770c7239a4c7aa6b1a13ed9a230c85ef5b866"
+    },
+    {
+      "file": "S1-subtle/icon-1024.png",
+      "bytes": 123737,
+      "sha256": "af367fe8c646e1993ae2bc7a4faeef4eebbe554cf80e575193c8157e93c78c8c"
+    },
+    {
+      "file": "S1-subtle/icon-192.png",
+      "bytes": 14778,
+      "sha256": "6d50966218f0d7cabfafa847ba77daaf39ed36d445a8771c83f62dd53d17324c"
+    },
+    {
+      "file": "S1-subtle/icon-2048.png",
+      "bytes": 302648,
+      "sha256": "3f607da7b0a8d7f1a4977dd41ee828ce857dddf2e1d1a20c9b25a9735ee151dc"
+    },
+    {
+      "file": "S1-subtle/icon-32.png",
+      "bytes": 1463,
+      "sha256": "8a0f43638e0bc74024fcd8158663d05949f06fff151267d388957556bc1c4efc"
+    },
+    {
+      "file": "S1-subtle/icon-4096.png",
+      "bytes": 743411,
+      "sha256": "9ae357dc8b9b198e406c4b9c1d491512a3f9972067a49dd66df76c475a845bb5"
+    },
+    {
+      "file": "S1-subtle/icon-48.png",
+      "bytes": 2571,
+      "sha256": "441fc8006786db57ae93b2a5a2e469e631e7fa24d71453334a6f46e021915617"
+    },
+    {
+      "file": "S1-subtle/icon-512.png",
+      "bytes": 52585,
+      "sha256": "c53421704ee730a8e410a6920174179b8075ca1f65ca96841eaab34b157abd18"
+    },
+    {
+      "file": "S1-subtle/icon.svg",
+      "bytes": 683721,
+      "sha256": "fc1d7b6a0cbb5e70b2be2a1447a06ecec9325d71b35be1254c343a028d363be5"
+    },
+    {
+      "file": "S2-soft-volume/foreground-4096.png",
+      "bytes": 522265,
+      "sha256": "b6379e0ccaed56feee0738bb35ed7a75703e5e0f21406901b77999243c45a6b5"
+    },
+    {
+      "file": "S2-soft-volume/icon-1024.png",
+      "bytes": 124873,
+      "sha256": "7f6f42bd9e4360831e2d5f6cd0188f58f1388e2d1f31b1febc5eb9a200f0aea0"
+    },
+    {
+      "file": "S2-soft-volume/icon-192.png",
+      "bytes": 14784,
+      "sha256": "de968a4b7de28144c83a60f810c0a1c1781eeb9a3af9fe10e0659e8f722f8ec6"
+    },
+    {
+      "file": "S2-soft-volume/icon-2048.png",
+      "bytes": 307182,
+      "sha256": "b62dd3b912e83c5e325ec475640e5655417487aed64793e8cc04638022e8e782"
+    },
+    {
+      "file": "S2-soft-volume/icon-32.png",
+      "bytes": 1467,
+      "sha256": "2aaeb9abc6b57e31e11616b69aa6c0639fbae55d8a9c5a1e25a22718c8437621"
+    },
+    {
+      "file": "S2-soft-volume/icon-4096.png",
+      "bytes": 753470,
+      "sha256": "e3c4810aa542ebb10cd0dff4577cdacd42fe1527ad9fde6384d850e1db02a18b"
+    },
+    {
+      "file": "S2-soft-volume/icon-48.png",
+      "bytes": 2572,
+      "sha256": "0ca842254b61539a71bf29a6897fcb759e92ffa283886c8854ec72b588aa124d"
+    },
+    {
+      "file": "S2-soft-volume/icon-512.png",
+      "bytes": 52441,
+      "sha256": "277d66bb3fae43c215b428422531a8adc323046620cabe61b1af02d1a16a1462"
+    },
+    {
+      "file": "S2-soft-volume/icon.svg",
+      "bytes": 696641,
+      "sha256": "95e6936e9b77932a381c37b2dcfa94b0bdec3fc45baa35c4077759c7d764d538"
+    },
+    {
+      "file": "S3-clear-volume/foreground-4096.png",
+      "bytes": 534265,
+      "sha256": "9d151cfd0da2f5afa0fb9d068328fb1a4a565e40c44b81db640ab35d2ee58da4"
+    },
+    {
+      "file": "S3-clear-volume/icon-1024.png",
+      "bytes": 125843,
+      "sha256": "b02757cbbfd7777b2692727abd45d38aa7736280aa7c61c8c08b1e8c0d4723f8"
+    },
+    {
+      "file": "S3-clear-volume/icon-192.png",
+      "bytes": 14936,
+      "sha256": "78b84090f61043b64a1a0fbc67f46edb01ec82a7c6f28afa1f409124c355287b"
+    },
+    {
+      "file": "S3-clear-volume/icon-2048.png",
+      "bytes": 315114,
+      "sha256": "3a12288fb523474e350602205399a18ba37872f2fcb9169b63c1009fb07ae347"
+    },
+    {
+      "file": "S3-clear-volume/icon-32.png",
+      "bytes": 1490,
+      "sha256": "9ef27c484076b469450fcd7422b7809cddbd64ef0b8f5128f79ff35babc98825"
+    },
+    {
+      "file": "S3-clear-volume/icon-4096.png",
+      "bytes": 765626,
+      "sha256": "80085d9894459eea79964bbeac5bad6eec6593b07316c72bd9f1de2fd30c0bec"
+    },
+    {
+      "file": "S3-clear-volume/icon-48.png",
+      "bytes": 2611,
+      "sha256": "5ca1c5539c3386d0aaf3ae43efb33b886e747bff84d3bc22045b14ef8a1d2775"
+    },
+    {
+      "file": "S3-clear-volume/icon-512.png",
+      "bytes": 53029,
+      "sha256": "56a9a2a3e1f9178fd062df32b19e2bd7cde3d42c789e3529d1a18630cb2b2d7e"
+    },
+    {
+      "file": "S3-clear-volume/icon.svg",
+      "bytes": 712641,
+      "sha256": "7af44f9544241f5a029d2ea789149ff21edba2232cb6d403dcfafdf4387f9065"
+    }
+  ]
+}

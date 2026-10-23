@@ -1,0 +1,352 @@
+{
+  "brand": {
+    "en": "BARO",
+    "zh": "晴雨"
+  },
+  "version": 8,
+  "source": "Project-native continuation of v7/S1 and v7/S3; front-cloud thickness, overlap softness and front-mask refinement",
+  "imageGenerationUsed": false,
+  "paintedRippleOverlayUsed": false,
+  "nativeRenderResolution": 4096,
+  "upscaledSource": false,
+  "originalLobes": [
+    [
+      0,
+      0,
+      0.34,
+      0.1,
+      0.12
+    ],
+    [
+      -0.2,
+      -0.045,
+      0.12,
+      0.115,
+      0.13
+    ],
+    [
+      -0.07,
+      -0.105,
+      0.16,
+      0.17,
+      0.18
+    ],
+    [
+      0.12,
+      -0.075,
+      0.15,
+      0.145,
+      0.16
+    ],
+    [
+      0.26,
+      -0.02,
+      0.105,
+      0.09,
+      0.11
+    ]
+  ],
+  "frontLobes": [
+    [
+      -0.165,
+      0.031,
+      0.125,
+      0.067,
+      0.112
+    ],
+    [
+      -0.015,
+      0.043,
+      0.142,
+      0.061,
+      0.122
+    ],
+    [
+      0.146,
+      0.031,
+      0.112,
+      0.062,
+      0.108
+    ]
+  ],
+  "framing": {
+    "scale": 1.0856160458452722,
+    "center": [
+      525,
+      508
+    ],
+    "widthPercent": 74,
+    "background": "#151515"
+  },
+  "light": [
+    -0.3391400513665329,
+    -0.5087100770497993,
+    0.79132678652191
+  ],
+  "palette": [
+    [
+      0.26,
+      0.42,
+      0.62
+    ],
+    [
+      0.58,
+      0.74,
+      0.85
+    ],
+    [
+      0.9,
+      0.94,
+      0.96
+    ],
+    [
+      0.99,
+      0.97,
+      0.89
+    ]
+  ],
+  "variants": [
+    {
+      "id": "S1a",
+      "name": "refined-soft",
+      "label": "柔光细化",
+      "note": "沿 S1 补清前侧小体积，保持轻柔",
+      "frontBlend": 0.033,
+      "frontStrength": 0.46,
+      "volumeMix": 0.475,
+      "underside": 0.004,
+      "frontThickness": 1.035,
+      "maskLow": -0.02,
+      "maskHigh": 0.028
+    },
+    {
+      "id": "S3a",
+      "name": "refined-depth",
+      "label": "体积细化",
+      "note": "沿 S3 加强前后关系，柔化交叠边缘",
+      "frontBlend": 0.036,
+      "frontStrength": 0.78,
+      "volumeMix": 0.54,
+      "underside": 0.012,
+      "frontThickness": 1.055,
+      "maskLow": -0.024,
+      "maskHigh": 0.026
+    }
+  ],
+  "references": [
+    {
+      "id": "A2",
+      "source": "../v4/A2-74-soft-black",
+      "label": "原版保留",
+      "note": "74% 云宽 / 柔黑",
+      "files": [
+        {
+          "file": "icon.svg",
+          "sha256": "2a4e9c0a6537b3e3071f3d34691f335209fb4215c585768e487f8c08d1da91bd"
+        },
+        {
+          "file": "icon-1024.png",
+          "sha256": "011775eb05f1d9ee2b9a9579d76d54c474c739d36f3834ef9f0464ab89d4809d"
+        },
+        {
+          "file": "icon-512.png",
+          "sha256": "0e438d01c40639798f9b171626f223617cfe1743da15aeeb9b5de671c87b3f39"
+        },
+        {
+          "file": "icon-48.png",
+          "sha256": "3290d508a5cf322440b5291aee44029e599ffabac093a986a44494d247d381e9"
+        },
+        {
+          "file": "icon-32.png",
+          "sha256": "eb1ddd5553bd2c3310b254cf36ea3caa0a70e0369fb24c867f02710699e31cbf"
+        }
+      ]
+    },
+    {
+      "id": "B1",
+      "source": "../v4/B1-80-black",
+      "label": "原版保留",
+      "note": "80% 云宽 / 纯黑",
+      "files": [
+        {
+          "file": "icon.svg",
+          "sha256": "76fd4ba49cc150a0baeca0cbb61b1ec43bdc8d43acc569dd2c5e796cf32dbbdf"
+        },
+        {
+          "file": "icon-1024.png",
+          "sha256": "af544b1419dc1a3ebb3b99fb49224334253abcb0e8e1412210c126e9fb69cf47"
+        },
+        {
+          "file": "icon-512.png",
+          "sha256": "aacca58500a579f165b2c78f554f0f1b8af231acc3707bebe26f45d76db8ba7a"
+        },
+        {
+          "file": "icon-48.png",
+          "sha256": "bc59d85e28c948339a16dbd4b2ab17af240d28c97909793939299d2f3df4d95c"
+        },
+        {
+          "file": "icon-32.png",
+          "sha256": "0912436ede425fd49617e9afa17886c2739f232bb880fe934215d33d7d2c750e"
+        }
+      ]
+    },
+    {
+      "id": "S1",
+      "source": "../v7/S1-subtle",
+      "label": "上一轮保留",
+      "note": "轻微细化",
+      "files": [
+        {
+          "file": "icon.svg",
+          "sha256": "fc1d7b6a0cbb5e70b2be2a1447a06ecec9325d71b35be1254c343a028d363be5"
+        },
+        {
+          "file": "icon-1024.png",
+          "sha256": "af367fe8c646e1993ae2bc7a4faeef4eebbe554cf80e575193c8157e93c78c8c"
+        },
+        {
+          "file": "icon-512.png",
+          "sha256": "c53421704ee730a8e410a6920174179b8075ca1f65ca96841eaab34b157abd18"
+        },
+        {
+          "file": "icon-48.png",
+          "sha256": "441fc8006786db57ae93b2a5a2e469e631e7fa24d71453334a6f46e021915617"
+        },
+        {
+          "file": "icon-32.png",
+          "sha256": "8a0f43638e0bc74024fcd8158663d05949f06fff151267d388957556bc1c4efc"
+        }
+      ]
+    },
+    {
+      "id": "S3",
+      "source": "../v7/S3-clear-volume",
+      "label": "上一轮保留",
+      "note": "清晰体积",
+      "files": [
+        {
+          "file": "icon.svg",
+          "sha256": "7af44f9544241f5a029d2ea789149ff21edba2232cb6d403dcfafdf4387f9065"
+        },
+        {
+          "file": "icon-1024.png",
+          "sha256": "b02757cbbfd7777b2692727abd45d38aa7736280aa7c61c8c08b1e8c0d4723f8"
+        },
+        {
+          "file": "icon-512.png",
+          "sha256": "56a9a2a3e1f9178fd062df32b19e2bd7cde3d42c789e3529d1a18630cb2b2d7e"
+        },
+        {
+          "file": "icon-48.png",
+          "sha256": "5ca1c5539c3386d0aaf3ae43efb33b886e747bff84d3bc22045b14ef8a1d2775"
+        },
+        {
+          "file": "icon-32.png",
+          "sha256": "9ef27c484076b469450fcd7422b7809cddbd64ef0b8f5128f79ff35babc98825"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "file": "preview.png",
+      "bytes": 346286,
+      "sha256": "7eca6a7e2d6dd89ed93cae3d4d815977105d9f04a53100e1b4e7271bb760026b"
+    },
+    {
+      "file": "preview.svg",
+      "bytes": 376288,
+      "sha256": "75c415f599debe10346553e681d8f3cf6566e0dc5be40c3a2e706f0fe9c06382"
+    },
+    {
+      "file": "S1a-refined-soft/foreground-4096.png",
+      "bytes": 516676,
+      "sha256": "2f045d9b6d541f27e2b9bca19cae7ed015ebd1eb892b216de16f4d05b1d685d8"
+    },
+    {
+      "file": "S1a-refined-soft/icon-1024.png",
+      "bytes": 124687,
+      "sha256": "37d22aaef846d6b020f5f21674f57e5f46adcbdc0caae590b2586f77a6b6d368"
+    },
+    {
+      "file": "S1a-refined-soft/icon-192.png",
+      "bytes": 14717,
+      "sha256": "7584308e2f32a23045f6d3e0207e23a7bc408761906ba1acfed3f9744e814667"
+    },
+    {
+      "file": "S1a-refined-soft/icon-2048.png",
+      "bytes": 305407,
+      "sha256": "bf7580517072306fa8cbd4b08aed1fd2e5c6cc4e56e35e1aaf5999668e296f6b"
+    },
+    {
+      "file": "S1a-refined-soft/icon-32.png",
+      "bytes": 1461,
+      "sha256": "ab5f87fb693cab74491c31708f035d50611a8b2bb87b5c0f03affdf641968105"
+    },
+    {
+      "file": "S1a-refined-soft/icon-4096.png",
+      "bytes": 747702,
+      "sha256": "26c5da06c5fe6344ff005c409058e7e72d5eb8eb783f9e7c3cfebba044150e3e"
+    },
+    {
+      "file": "S1a-refined-soft/icon-48.png",
+      "bytes": 2572,
+      "sha256": "3f62d127bc64f3dbe1682a6a003350a2e58baeadf68a78bc8f0ba8a82d281ca4"
+    },
+    {
+      "file": "S1a-refined-soft/icon-512.png",
+      "bytes": 52517,
+      "sha256": "7275f3a1a7cf93591d0bec064ce8354f1af1c55410e46ead30034bb1afcd909e"
+    },
+    {
+      "file": "S1a-refined-soft/icon.svg",
+      "bytes": 689190,
+      "sha256": "506f9016924a846bc4829b8019f239988cce6dab3f9acb7e52334d5f140641a0"
+    },
+    {
+      "file": "S3a-refined-depth/foreground-4096.png",
+      "bytes": 541802,
+      "sha256": "406d83940fa7779cce3187c7dfd3b0d435f17e7dabe0ddf6e19f9f8c030210dd"
+    },
+    {
+      "file": "S3a-refined-depth/icon-1024.png",
+      "bytes": 127888,
+      "sha256": "7c4450df311ffed89109e37569204fb4f5ac25c0f4ba65c2899f08e36631e42f"
+    },
+    {
+      "file": "S3a-refined-depth/icon-192.png",
+      "bytes": 14952,
+      "sha256": "a9f55c913243eb4a61faa0c9511b44c37768ebb790e866d86067cbb6fccf0409"
+    },
+    {
+      "file": "S3a-refined-depth/icon-2048.png",
+      "bytes": 317892,
+      "sha256": "92178014b68c73bede77134e0e9a9ba96f69d0a5ded585eb52aa5d59dab2ac27"
+    },
+    {
+      "file": "S3a-refined-depth/icon-32.png",
+      "bytes": 1487,
+      "sha256": "b85a21e80a2fe0d93c6bf9c24cf9ee6ba97bb75546278d6d84c749bd7199ebc8"
+    },
+    {
+      "file": "S3a-refined-depth/icon-4096.png",
+      "bytes": 773320,
+      "sha256": "fa7bcf908d7f81a06b880f597668ef20ece65dc965e0699258b9d86ec40538c3"
+    },
+    {
+      "file": "S3a-refined-depth/icon-48.png",
+      "bytes": 2618,
+      "sha256": "dd285bd9f40b117d4e2582d537ea1530b321acd3a813ce2a2cc061b238086c92"
+    },
+    {
+      "file": "S3a-refined-depth/icon-512.png",
+      "bytes": 53159,
+      "sha256": "088c8d751f9de0ec576a75822262680b97dd361fa2673eb196356366801fa84a"
+    },
+    {
+      "file": "S3a-refined-depth/icon.svg",
+      "bytes": 722690,
+      "sha256": "a527e37c8c5ece62661f0498a9231e004268b5d60ce9d65b7915b407ddc822b2"
+    }
+  ]
+}
