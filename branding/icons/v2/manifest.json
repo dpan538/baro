@@ -1,0 +1,504 @@
+{
+  "brand": {
+    "en": "BARO",
+    "zh": "晴雨"
+  },
+  "version": 2,
+  "status": "Four cloud-only design candidates; no launcher replacement selected",
+  "background": "#000000",
+  "canvas": 1024,
+  "cornerRadius": 224,
+  "source": "Authored cloud bank(), lobe normals, lighting mix, coarse/fine ramp and Bayer pattern from dist/weather-shader.js; framing and two-cloud composition adapted for launcher use.",
+  "containsSun": false,
+  "variants": [
+    {
+      "name": "pixel-cloud",
+      "label": "像素单云",
+      "clouds": 1,
+      "gridStep": 24,
+      "adaptiveExtentRadiusDp": 27.59,
+      "safeZoneRadiusDp": 33
+    },
+    {
+      "name": "fine-cloud",
+      "label": "精细单云",
+      "clouds": 1,
+      "gridStep": 4,
+      "adaptiveExtentRadiusDp": 27.49,
+      "safeZoneRadiusDp": 33
+    },
+    {
+      "name": "pixel-double-cloud",
+      "label": "像素双云",
+      "clouds": 2,
+      "gridStep": 24,
+      "adaptiveExtentRadiusDp": 32.03,
+      "safeZoneRadiusDp": 33
+    },
+    {
+      "name": "fine-double-cloud",
+      "label": "精细双云",
+      "clouds": 2,
+      "gridStep": 4,
+      "adaptiveExtentRadiusDp": 32.97,
+      "safeZoneRadiusDp": 33
+    }
+  ],
+  "adaptive": {
+    "viewport": 108,
+    "visibleReference": 72,
+    "offset": 18
+  },
+  "files": [
+    {
+      "file": "fine-cloud/android/res/drawable-hdpi/baro_icon_foreground.png",
+      "bytes": 1935,
+      "sha256": "04bc10ae754e0e1fcea06d943710a3a688008783b7afc8b4d23707d01f4b2f05"
+    },
+    {
+      "file": "fine-cloud/android/res/drawable-mdpi/baro_icon_foreground.png",
+      "bytes": 1092,
+      "sha256": "dc9303a86aa5178a1d4a267dbaad724aa9bb3b644d3de45a1c92193c51ad15ef"
+    },
+    {
+      "file": "fine-cloud/android/res/drawable-xhdpi/baro_icon_foreground.png",
+      "bytes": 2866,
+      "sha256": "3f403421be3442ac848f48ed1257016676073e3fa6de9b10e743e3c078ed428d"
+    },
+    {
+      "file": "fine-cloud/android/res/drawable-xxhdpi/baro_icon_foreground.png",
+      "bytes": 5684,
+      "sha256": "fc8215406d290880ea216bd90ef415bbfcfc5c8708b68a9f37698c09504557de"
+    },
+    {
+      "file": "fine-cloud/android/res/drawable-xxxhdpi/baro_icon_foreground.png",
+      "bytes": 8241,
+      "sha256": "28a30ac269bb0930b11fc9e58425438362b43626e115625f1a6dc5e619382495"
+    },
+    {
+      "file": "fine-cloud/android/res/drawable/baro_icon_background.xml",
+      "bytes": 133,
+      "sha256": "22e50f98382f8bd4bd1aea470d20ac63456271f202b2ac7c21eaf626ac22d204"
+    },
+    {
+      "file": "fine-cloud/android/res/drawable/baro_icon_monochrome.xml",
+      "bytes": 2123,
+      "sha256": "bb0ad78c167bb1af271c66158194a6a21a0b24c32253c76cc878cfd9c7c4cc14"
+    },
+    {
+      "file": "fine-cloud/android/res/mipmap-anydpi-v26/baro_launcher.xml",
+      "bytes": 217,
+      "sha256": "65927e19086bf344aaee1a7780818bbceac83f30260829a0ae7bf10bed5f0fad"
+    },
+    {
+      "file": "fine-cloud/android/res/mipmap-anydpi-v33/baro_launcher.xml",
+      "bytes": 280,
+      "sha256": "b79ad740b003987abfc722541efa92c8ab0837b20d99bcf70e7b4edc67a64ec0"
+    },
+    {
+      "file": "fine-cloud/android/res/mipmap-hdpi/baro_launcher.png",
+      "bytes": 1409,
+      "sha256": "e7b641617e8e11cd787b3141bc8ae38711a04de62dfba0391d43e937559fa1cc"
+    },
+    {
+      "file": "fine-cloud/android/res/mipmap-mdpi/baro_launcher.png",
+      "bytes": 864,
+      "sha256": "806b7e2ee8663ab9294d70342f725ecad9119ed940f7416fd3d1684dab77dc63"
+    },
+    {
+      "file": "fine-cloud/android/res/mipmap-xhdpi/baro_launcher.png",
+      "bytes": 2114,
+      "sha256": "1318ec997d97c4dd0def40cc1b78640f8d6edf4025269d8482f7e521827a1a84"
+    },
+    {
+      "file": "fine-cloud/android/res/mipmap-xxhdpi/baro_launcher.png",
+      "bytes": 3685,
+      "sha256": "873fe5d92610c3e1ec5ed70d2cff5d55301073b64703add91200867df0cbd94f"
+    },
+    {
+      "file": "fine-cloud/android/res/mipmap-xxxhdpi/baro_launcher.png",
+      "bytes": 5760,
+      "sha256": "26a9cb40c19db28665ef569a3e4fb19a4553686fb0f7f7dc89b8471e7f8298ca"
+    },
+    {
+      "file": "fine-cloud/foreground.svg",
+      "bytes": 132368,
+      "sha256": "7e17952b2cce52423ed9874e8e4925403417e6f573d8fa46c8436fa3f35372f6"
+    },
+    {
+      "file": "fine-cloud/icon-1024.png",
+      "bytes": 39646,
+      "sha256": "5d0a5d0fbf36359cedebf5c30fa3c4fb0eab37bf8722274e1d56a1f7cd34b34d"
+    },
+    {
+      "file": "fine-cloud/icon-192.png",
+      "bytes": 5760,
+      "sha256": "26a9cb40c19db28665ef569a3e4fb19a4553686fb0f7f7dc89b8471e7f8298ca"
+    },
+    {
+      "file": "fine-cloud/icon-32.png",
+      "bytes": 550,
+      "sha256": "4e1e7ba1aa14fcc7ff541038f2167fa07d990b4525f9a681d2523976a4b83f25"
+    },
+    {
+      "file": "fine-cloud/icon-48.png",
+      "bytes": 864,
+      "sha256": "806b7e2ee8663ab9294d70342f725ecad9119ed940f7416fd3d1684dab77dc63"
+    },
+    {
+      "file": "fine-cloud/icon-512.png",
+      "bytes": 15906,
+      "sha256": "5d6c9998a036f1fe4758efbfcf6c9519716c7323f41836c73e8dbce28494a02b"
+    },
+    {
+      "file": "fine-cloud/icon-96.png",
+      "bytes": 2114,
+      "sha256": "1318ec997d97c4dd0def40cc1b78640f8d6edf4025269d8482f7e521827a1a84"
+    },
+    {
+      "file": "fine-cloud/icon.svg",
+      "bytes": 132426,
+      "sha256": "597578d38697d7743ad8b2c8f3a9449eafcdc95d9f11bfe09619e03bfc45d651"
+    },
+    {
+      "file": "fine-double-cloud/android/res/drawable-hdpi/baro_icon_foreground.png",
+      "bytes": 2760,
+      "sha256": "1a78460ce600bc90fcc27644011d4d272c5b12f5b51a802396271f5f613f81b5"
+    },
+    {
+      "file": "fine-double-cloud/android/res/drawable-mdpi/baro_icon_foreground.png",
+      "bytes": 1607,
+      "sha256": "79926aded58c0c92e8a3768cce8d092ab96f00e5283da86b5d1392c77331ce54"
+    },
+    {
+      "file": "fine-double-cloud/android/res/drawable-xhdpi/baro_icon_foreground.png",
+      "bytes": 4110,
+      "sha256": "7902a132c3b2ddceeed20e47e9bfb297f6f03f5261dce2928af83efa69848b04"
+    },
+    {
+      "file": "fine-double-cloud/android/res/drawable-xxhdpi/baro_icon_foreground.png",
+      "bytes": 8155,
+      "sha256": "a901eb4ada64de1566051c5b5e40499c9249e4bbf3942a4b025ad51bf16237eb"
+    },
+    {
+      "file": "fine-double-cloud/android/res/drawable-xxxhdpi/baro_icon_foreground.png",
+      "bytes": 11713,
+      "sha256": "6002dae1fcde8a24bbcf817b7cec317184eca8156aeda4c15ebc34f1e221cce6"
+    },
+    {
+      "file": "fine-double-cloud/android/res/drawable/baro_icon_background.xml",
+      "bytes": 133,
+      "sha256": "22e50f98382f8bd4bd1aea470d20ac63456271f202b2ac7c21eaf626ac22d204"
+    },
+    {
+      "file": "fine-double-cloud/android/res/drawable/baro_icon_monochrome.xml",
+      "bytes": 2979,
+      "sha256": "dda5e4c1d9c1f9fa6de309f1b8e50f4c59e2fc85d11c50587b6ccb6633d02aa3"
+    },
+    {
+      "file": "fine-double-cloud/android/res/mipmap-anydpi-v26/baro_launcher.xml",
+      "bytes": 217,
+      "sha256": "65927e19086bf344aaee1a7780818bbceac83f30260829a0ae7bf10bed5f0fad"
+    },
+    {
+      "file": "fine-double-cloud/android/res/mipmap-anydpi-v33/baro_launcher.xml",
+      "bytes": 280,
+      "sha256": "b79ad740b003987abfc722541efa92c8ab0837b20d99bcf70e7b4edc67a64ec0"
+    },
+    {
+      "file": "fine-double-cloud/android/res/mipmap-hdpi/baro_launcher.png",
+      "bytes": 1844,
+      "sha256": "057c7a1ffcab9969b156fdb32c740ef1756b06e47bc089feb6369821addef0fa"
+    },
+    {
+      "file": "fine-double-cloud/android/res/mipmap-mdpi/baro_launcher.png",
+      "bytes": 1080,
+      "sha256": "e7e1681938ccac5b76d65dc1aa87005a3675299a7823771e31e4cae1beb99b85"
+    },
+    {
+      "file": "fine-double-cloud/android/res/mipmap-xhdpi/baro_launcher.png",
+      "bytes": 2748,
+      "sha256": "e3cb80ac9d3c67c1358b1141f15222f0aee020a62189c05a6b2e75090953c3dc"
+    },
+    {
+      "file": "fine-double-cloud/android/res/mipmap-xxhdpi/baro_launcher.png",
+      "bytes": 4782,
+      "sha256": "9408db43074b53a3d5893d7113b649f691622769db71569e3c9aec716d5bcfc2"
+    },
+    {
+      "file": "fine-double-cloud/android/res/mipmap-xxxhdpi/baro_launcher.png",
+      "bytes": 7355,
+      "sha256": "4232eba586f19b141227e64af9d1d9f0ac710f3bfb5bcc9906b6cd0a710f1542"
+    },
+    {
+      "file": "fine-double-cloud/foreground.svg",
+      "bytes": 196765,
+      "sha256": "ec08f85cff8093f305014e2b304544cf6db5e3e736f8ada18eee6170d302459f"
+    },
+    {
+      "file": "fine-double-cloud/icon-1024.png",
+      "bytes": 44962,
+      "sha256": "c6e8a1be74361ded515ad26736468270b0c1b051c3f9968a9d1c9767a28b7e94"
+    },
+    {
+      "file": "fine-double-cloud/icon-192.png",
+      "bytes": 7355,
+      "sha256": "4232eba586f19b141227e64af9d1d9f0ac710f3bfb5bcc9906b6cd0a710f1542"
+    },
+    {
+      "file": "fine-double-cloud/icon-32.png",
+      "bytes": 674,
+      "sha256": "5324e8ccc300ff23f3e602f0776217ee04875c62ab39c15468dfc81c1fb7c7c1"
+    },
+    {
+      "file": "fine-double-cloud/icon-48.png",
+      "bytes": 1080,
+      "sha256": "e7e1681938ccac5b76d65dc1aa87005a3675299a7823771e31e4cae1beb99b85"
+    },
+    {
+      "file": "fine-double-cloud/icon-512.png",
+      "bytes": 19215,
+      "sha256": "401f387220e2d972ff7033db93fd6b483ef0c62d4ff200739c291aad5426d0a2"
+    },
+    {
+      "file": "fine-double-cloud/icon-96.png",
+      "bytes": 2748,
+      "sha256": "e3cb80ac9d3c67c1358b1141f15222f0aee020a62189c05a6b2e75090953c3dc"
+    },
+    {
+      "file": "fine-double-cloud/icon.svg",
+      "bytes": 196823,
+      "sha256": "05d88eca736d58c2bb239099c371e1d4a595ed1f1d7a8e11663b71367160f9b0"
+    },
+    {
+      "file": "pixel-cloud/android/res/drawable-hdpi/baro_icon_foreground.png",
+      "bytes": 423,
+      "sha256": "1945a1684ca3a1f3a42551a403aa2a15f37900b8b1fe53d9680175ae40fe006b"
+    },
+    {
+      "file": "pixel-cloud/android/res/drawable-mdpi/baro_icon_foreground.png",
+      "bytes": 319,
+      "sha256": "2894a077d7c491ef719c3cdd0a0e1cf846a5557fa4078992cd1a0c22facb767e"
+    },
+    {
+      "file": "pixel-cloud/android/res/drawable-xhdpi/baro_icon_foreground.png",
+      "bytes": 609,
+      "sha256": "7abe26695f0cf73f917013d58d5644d629c2d90e9c1a896a2423f5f306b2f9f7"
+    },
+    {
+      "file": "pixel-cloud/android/res/drawable-xxhdpi/baro_icon_foreground.png",
+      "bytes": 1050,
+      "sha256": "08f39510a87504621600d669ddd9395ad4ce9c1033623f64daa7697e8251307b"
+    },
+    {
+      "file": "pixel-cloud/android/res/drawable-xxxhdpi/baro_icon_foreground.png",
+      "bytes": 1572,
+      "sha256": "b2bb12071b76e3fb9d3d82ee959539de08246dba776ecc971d5d9b899be02668"
+    },
+    {
+      "file": "pixel-cloud/android/res/drawable/baro_icon_background.xml",
+      "bytes": 133,
+      "sha256": "22e50f98382f8bd4bd1aea470d20ac63456271f202b2ac7c21eaf626ac22d204"
+    },
+    {
+      "file": "pixel-cloud/android/res/drawable/baro_icon_monochrome.xml",
+      "bytes": 683,
+      "sha256": "a324f5b444a130d5fff6cce77737ab64d45c8d0a46f8bd53d705d90c276ae877"
+    },
+    {
+      "file": "pixel-cloud/android/res/mipmap-anydpi-v26/baro_launcher.xml",
+      "bytes": 217,
+      "sha256": "65927e19086bf344aaee1a7780818bbceac83f30260829a0ae7bf10bed5f0fad"
+    },
+    {
+      "file": "pixel-cloud/android/res/mipmap-anydpi-v33/baro_launcher.xml",
+      "bytes": 280,
+      "sha256": "b79ad740b003987abfc722541efa92c8ab0837b20d99bcf70e7b4edc67a64ec0"
+    },
+    {
+      "file": "pixel-cloud/android/res/mipmap-hdpi/baro_launcher.png",
+      "bytes": 726,
+      "sha256": "f19c42f57b2a9a9908a8daf94ac4e6f5562b12fb437d2ebe459a4cbf32c919ed"
+    },
+    {
+      "file": "pixel-cloud/android/res/mipmap-mdpi/baro_launcher.png",
+      "bytes": 504,
+      "sha256": "a4e204a1dafafc7d37b40f2b90b470a4811771183202698f9a6537fdec1add31"
+    },
+    {
+      "file": "pixel-cloud/android/res/mipmap-xhdpi/baro_launcher.png",
+      "bytes": 971,
+      "sha256": "49bad653195a165d87d1fa1ddb5d8989db0b80098e49958ff4099058b40901c5"
+    },
+    {
+      "file": "pixel-cloud/android/res/mipmap-xxhdpi/baro_launcher.png",
+      "bytes": 1551,
+      "sha256": "39d77a688dce929590f6477baba23e369da1407d5ceaef680680e3247a5f42b2"
+    },
+    {
+      "file": "pixel-cloud/android/res/mipmap-xxxhdpi/baro_launcher.png",
+      "bytes": 2241,
+      "sha256": "9acab22e0427b6bb3740444a743a2788dd91c270b85cb032eac9eef63d4ecf7b"
+    },
+    {
+      "file": "pixel-cloud/foreground.svg",
+      "bytes": 921,
+      "sha256": "5d4094304429f9e18dc0f44ece326c3feaf723ddb283b4d3954c19fe18569abc"
+    },
+    {
+      "file": "pixel-cloud/icon-1024.png",
+      "bytes": 29824,
+      "sha256": "28e085dfee78fc91e9cb3442bb8a68709f87e92a725d35452f5fd6e03f8c7a2b"
+    },
+    {
+      "file": "pixel-cloud/icon-192.png",
+      "bytes": 2241,
+      "sha256": "9acab22e0427b6bb3740444a743a2788dd91c270b85cb032eac9eef63d4ecf7b"
+    },
+    {
+      "file": "pixel-cloud/icon-32.png",
+      "bytes": 340,
+      "sha256": "1e1ad92becf64e4a5828915b859ed7fab05035181f9f1d915352d34c47ef874a"
+    },
+    {
+      "file": "pixel-cloud/icon-48.png",
+      "bytes": 504,
+      "sha256": "a4e204a1dafafc7d37b40f2b90b470a4811771183202698f9a6537fdec1add31"
+    },
+    {
+      "file": "pixel-cloud/icon-512.png",
+      "bytes": 9682,
+      "sha256": "7afd7d25abfc3de3936e158a436c40ef679eee5bbe87db456928fd661bf6ec97"
+    },
+    {
+      "file": "pixel-cloud/icon-96.png",
+      "bytes": 971,
+      "sha256": "49bad653195a165d87d1fa1ddb5d8989db0b80098e49958ff4099058b40901c5"
+    },
+    {
+      "file": "pixel-cloud/icon.svg",
+      "bytes": 979,
+      "sha256": "95ebfbe9ce4ed2153d2bd442d43d6d8c6994b4828b3f6dd51827a1e0fca785a3"
+    },
+    {
+      "file": "pixel-double-cloud/android/res/drawable-hdpi/baro_icon_foreground.png",
+      "bytes": 542,
+      "sha256": "15dcfefce74067c34369e53aba0257c6fef2cb26d589f84d0f84957ba5953183"
+    },
+    {
+      "file": "pixel-double-cloud/android/res/drawable-mdpi/baro_icon_foreground.png",
+      "bytes": 404,
+      "sha256": "be07b45e5e02b9a2e07af91be0c4c1a62588579f72fc7e9fba491f6246b02c1f"
+    },
+    {
+      "file": "pixel-double-cloud/android/res/drawable-xhdpi/baro_icon_foreground.png",
+      "bytes": 749,
+      "sha256": "7dc484040a1e35d238cdf317e96a07a9bf352b86a0a717e8920f4c756a67cd8d"
+    },
+    {
+      "file": "pixel-double-cloud/android/res/drawable-xxhdpi/baro_icon_foreground.png",
+      "bytes": 1249,
+      "sha256": "752a3b9a0000c04b52f025fc1f34f134e35a1154af206cfe6d8e2b4522351a6f"
+    },
+    {
+      "file": "pixel-double-cloud/android/res/drawable-xxxhdpi/baro_icon_foreground.png",
+      "bytes": 1862,
+      "sha256": "ce1cacc7fafbd1be12b40f3638f977e04507dc0d84945acf023d73792ba39a11"
+    },
+    {
+      "file": "pixel-double-cloud/android/res/drawable/baro_icon_background.xml",
+      "bytes": 133,
+      "sha256": "22e50f98382f8bd4bd1aea470d20ac63456271f202b2ac7c21eaf626ac22d204"
+    },
+    {
+      "file": "pixel-double-cloud/android/res/drawable/baro_icon_monochrome.xml",
+      "bytes": 811,
+      "sha256": "b210e8ef3e872e457b86099a8ab6513e09eb7937f506e4910f41375302cb078a"
+    },
+    {
+      "file": "pixel-double-cloud/android/res/mipmap-anydpi-v26/baro_launcher.xml",
+      "bytes": 217,
+      "sha256": "65927e19086bf344aaee1a7780818bbceac83f30260829a0ae7bf10bed5f0fad"
+    },
+    {
+      "file": "pixel-double-cloud/android/res/mipmap-anydpi-v33/baro_launcher.xml",
+      "bytes": 280,
+      "sha256": "b79ad740b003987abfc722541efa92c8ab0837b20d99bcf70e7b4edc67a64ec0"
+    },
+    {
+      "file": "pixel-double-cloud/android/res/mipmap-hdpi/baro_launcher.png",
+      "bytes": 770,
+      "sha256": "0e8307be149a22b9bb99bf649b2deafeaa6d0d5d6ec2e87da0423cee41a920da"
+    },
+    {
+      "file": "pixel-double-cloud/android/res/mipmap-mdpi/baro_launcher.png",
+      "bytes": 553,
+      "sha256": "ec1ca4215ff43237fd2b9957684422dbc7803e7a7b78cd8ea18a3e4796f6c35c"
+    },
+    {
+      "file": "pixel-double-cloud/android/res/mipmap-xhdpi/baro_launcher.png",
+      "bytes": 1028,
+      "sha256": "8b559d61f9a8dcebe0bea1956176750e7e88635f77d3013eee142ac08e647ffd"
+    },
+    {
+      "file": "pixel-double-cloud/android/res/mipmap-xxhdpi/baro_launcher.png",
+      "bytes": 1618,
+      "sha256": "6e587f9e79044eb7d71f63352ee400edef0c82a0bee6d212dc179606de09d5c3"
+    },
+    {
+      "file": "pixel-double-cloud/android/res/mipmap-xxxhdpi/baro_launcher.png",
+      "bytes": 2359,
+      "sha256": "eef7c45fb87615511d868bf17db46974e751cfcbdf7c8fcfca5ffbedec823fcd"
+    },
+    {
+      "file": "pixel-double-cloud/foreground.svg",
+      "bytes": 1297,
+      "sha256": "b122add1b62acf0a02e8b82c2c0c9105f371fe4b9444c54b0a408237ecd21fb4"
+    },
+    {
+      "file": "pixel-double-cloud/icon-1024.png",
+      "bytes": 30966,
+      "sha256": "5f3d0d2727c701c3fdddb5abb5dab41db8c8171a62bf6a63942a86d3484886dc"
+    },
+    {
+      "file": "pixel-double-cloud/icon-192.png",
+      "bytes": 2359,
+      "sha256": "eef7c45fb87615511d868bf17db46974e751cfcbdf7c8fcfca5ffbedec823fcd"
+    },
+    {
+      "file": "pixel-double-cloud/icon-32.png",
+      "bytes": 382,
+      "sha256": "6868b49e454e736bedf21f3b2432763ecd12d182118a0c4005f267f32a53d241"
+    },
+    {
+      "file": "pixel-double-cloud/icon-48.png",
+      "bytes": 553,
+      "sha256": "ec1ca4215ff43237fd2b9957684422dbc7803e7a7b78cd8ea18a3e4796f6c35c"
+    },
+    {
+      "file": "pixel-double-cloud/icon-512.png",
+      "bytes": 10260,
+      "sha256": "fa64ea02e951555a73501ed9cac8e7f35c6366ef6a295159264213e55eb38709"
+    },
+    {
+      "file": "pixel-double-cloud/icon-96.png",
+      "bytes": 1028,
+      "sha256": "8b559d61f9a8dcebe0bea1956176750e7e88635f77d3013eee142ac08e647ffd"
+    },
+    {
+      "file": "pixel-double-cloud/icon.svg",
+      "bytes": 1355,
+      "sha256": "40a9c6f99b1e0517714f4a575f557705dc00eb0e94001cc045ee844533772c59"
+    },
+    {
+      "file": "preview.png",
+      "bytes": 132803,
+      "sha256": "549eef7dcfe2453916ad1b5e675bee989afa58660347751d5035149422c00535"
+    },
+    {
+      "file": "preview.svg",
+      "bytes": 334061,
+      "sha256": "730afc7a6f18f1c47ec57e20fc165b4eb8a171408c414823a9da787413ae15e0"
+    }
+  ]
+}

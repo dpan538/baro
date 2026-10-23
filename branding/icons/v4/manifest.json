@@ -1,0 +1,356 @@
+{
+  "brand": {
+    "en": "BARO",
+    "zh": "晴雨"
+  },
+  "version": 4,
+  "basedOn": "v3/rounded (02)",
+  "status": "Nine scale/background candidates; no live launcher replacement selected",
+  "containsSun": false,
+  "canvas": 1024,
+  "cornerRadius": 224,
+  "scaleDefinition": "Cloud width at alpha >= 0.5 divided by tile width; optical centring uses the cloud bounds",
+  "backgrounds": [
+    {
+      "name": "black",
+      "label": "纯黑",
+      "color": "#000000"
+    },
+    {
+      "name": "soft-black",
+      "label": "柔黑",
+      "color": "#151515"
+    },
+    {
+      "name": "charcoal",
+      "label": "炭灰",
+      "color": "#292929"
+    }
+  ],
+  "variants": [
+    {
+      "id": "A1",
+      "name": "A1-74-black",
+      "cloudWidthPercent": 74,
+      "background": "#000000",
+      "adaptiveExtentRadiusDp": 28.36,
+      "safeZoneRadiusDp": 33
+    },
+    {
+      "id": "A2",
+      "name": "A2-74-soft-black",
+      "cloudWidthPercent": 74,
+      "background": "#151515",
+      "adaptiveExtentRadiusDp": 28.36,
+      "safeZoneRadiusDp": 33
+    },
+    {
+      "id": "A3",
+      "name": "A3-74-charcoal",
+      "cloudWidthPercent": 74,
+      "background": "#292929",
+      "adaptiveExtentRadiusDp": 28.36,
+      "safeZoneRadiusDp": 33
+    },
+    {
+      "id": "B1",
+      "name": "B1-80-black",
+      "cloudWidthPercent": 80,
+      "background": "#000000",
+      "adaptiveExtentRadiusDp": 30.66,
+      "safeZoneRadiusDp": 33
+    },
+    {
+      "id": "B2",
+      "name": "B2-80-soft-black",
+      "cloudWidthPercent": 80,
+      "background": "#151515",
+      "adaptiveExtentRadiusDp": 30.66,
+      "safeZoneRadiusDp": 33
+    },
+    {
+      "id": "B3",
+      "name": "B3-80-charcoal",
+      "cloudWidthPercent": 80,
+      "background": "#292929",
+      "adaptiveExtentRadiusDp": 30.66,
+      "safeZoneRadiusDp": 33
+    },
+    {
+      "id": "C1",
+      "name": "C1-86-black",
+      "cloudWidthPercent": 86,
+      "background": "#000000",
+      "adaptiveExtentRadiusDp": 32.96,
+      "safeZoneRadiusDp": 33
+    },
+    {
+      "id": "C2",
+      "name": "C2-86-soft-black",
+      "cloudWidthPercent": 86,
+      "background": "#151515",
+      "adaptiveExtentRadiusDp": 32.96,
+      "safeZoneRadiusDp": 33
+    },
+    {
+      "id": "C3",
+      "name": "C3-86-charcoal",
+      "cloudWidthPercent": 86,
+      "background": "#292929",
+      "adaptiveExtentRadiusDp": 32.96,
+      "safeZoneRadiusDp": 33
+    }
+  ],
+  "files": [
+    {
+      "file": "A1-74-black/icon-1024.png",
+      "bytes": 63716,
+      "sha256": "02fedd1fcaf07711479428ab1f57fde21e8ab73f48d79b2ff94da74b5e26e5a1"
+    },
+    {
+      "file": "A1-74-black/icon-32.png",
+      "bytes": 797,
+      "sha256": "92a5bde1b67446e30e9d2a461121428633a7cf46097178d343dd8faac3482841"
+    },
+    {
+      "file": "A1-74-black/icon-48.png",
+      "bytes": 1292,
+      "sha256": "0794ab075a03907b174070b447b43b2dd9e2c48ee676469950650e9f8ade937c"
+    },
+    {
+      "file": "A1-74-black/icon-512.png",
+      "bytes": 33678,
+      "sha256": "a5c5b0db495ab9daec6958dcad1c39a6e56ba0c564c81954904455c9e95a41bc"
+    },
+    {
+      "file": "A1-74-black/icon.svg",
+      "bytes": 510245,
+      "sha256": "6ee248e2cb4c4c9d919bdc73f1ff978dfa8601338909328ecf2969f63b94b8cf"
+    },
+    {
+      "file": "A2-74-soft-black/icon-1024.png",
+      "bytes": 65586,
+      "sha256": "011775eb05f1d9ee2b9a9579d76d54c474c739d36f3834ef9f0464ab89d4809d"
+    },
+    {
+      "file": "A2-74-soft-black/icon-32.png",
+      "bytes": 814,
+      "sha256": "eb1ddd5553bd2c3310b254cf36ea3caa0a70e0369fb24c867f02710699e31cbf"
+    },
+    {
+      "file": "A2-74-soft-black/icon-48.png",
+      "bytes": 1322,
+      "sha256": "3290d508a5cf322440b5291aee44029e599ffabac093a986a44494d247d381e9"
+    },
+    {
+      "file": "A2-74-soft-black/icon-512.png",
+      "bytes": 34309,
+      "sha256": "0e438d01c40639798f9b171626f223617cfe1743da15aeeb9b5de671c87b3f39"
+    },
+    {
+      "file": "A2-74-soft-black/icon.svg",
+      "bytes": 510245,
+      "sha256": "2a4e9c0a6537b3e3071f3d34691f335209fb4215c585768e487f8c08d1da91bd"
+    },
+    {
+      "file": "A3-74-charcoal/icon-1024.png",
+      "bytes": 65646,
+      "sha256": "1fdfeaec917022173b76b2a6bb86f698ce423f9582142c51586ebbfc93717570"
+    },
+    {
+      "file": "A3-74-charcoal/icon-32.png",
+      "bytes": 823,
+      "sha256": "ce8efc33ce1771164c9c3bbc9bcb35dac12dd21db938cde424fc949fd7d22470"
+    },
+    {
+      "file": "A3-74-charcoal/icon-48.png",
+      "bytes": 1335,
+      "sha256": "bc656cd2677113aa3057727dda9dcad6ac74dee45f0738d18e8749f19072f147"
+    },
+    {
+      "file": "A3-74-charcoal/icon-512.png",
+      "bytes": 34272,
+      "sha256": "803469b98206e7c9825ec26b9ae3b1ab8494f693f5ea17366025a541cfeacff5"
+    },
+    {
+      "file": "A3-74-charcoal/icon.svg",
+      "bytes": 510245,
+      "sha256": "619bfe18a7e7a6da80cc2513f44804879cd3ce7c5edff3bb77c024dc66cd0b90"
+    },
+    {
+      "file": "B1-80-black/icon-1024.png",
+      "bytes": 65117,
+      "sha256": "af544b1419dc1a3ebb3b99fb49224334253abcb0e8e1412210c126e9fb69cf47"
+    },
+    {
+      "file": "B1-80-black/icon-32.png",
+      "bytes": 838,
+      "sha256": "0912436ede425fd49617e9afa17886c2739f232bb880fe934215d33d7d2c750e"
+    },
+    {
+      "file": "B1-80-black/icon-48.png",
+      "bytes": 1391,
+      "sha256": "bc59d85e28c948339a16dbd4b2ab17af240d28c97909793939299d2f3df4d95c"
+    },
+    {
+      "file": "B1-80-black/icon-512.png",
+      "bytes": 35129,
+      "sha256": "aacca58500a579f165b2c78f554f0f1b8af231acc3707bebe26f45d76db8ba7a"
+    },
+    {
+      "file": "B1-80-black/icon.svg",
+      "bytes": 510245,
+      "sha256": "76fd4ba49cc150a0baeca0cbb61b1ec43bdc8d43acc569dd2c5e796cf32dbbdf"
+    },
+    {
+      "file": "B2-80-soft-black/icon-1024.png",
+      "bytes": 66936,
+      "sha256": "0e4e8b31ae3dc4b0b53ca510633ae6fe6689bf21bf7c3421e0f7c3ebfef711ce"
+    },
+    {
+      "file": "B2-80-soft-black/icon-32.png",
+      "bytes": 859,
+      "sha256": "28e76082826b4f50777134db300f717d75c8eb34ad3e50527bb476cc04d83c03"
+    },
+    {
+      "file": "B2-80-soft-black/icon-48.png",
+      "bytes": 1421,
+      "sha256": "0153dc66d50f6e92ac5eafa8696c09fa9c484896def65757b1f063ef5e3fbd48"
+    },
+    {
+      "file": "B2-80-soft-black/icon-512.png",
+      "bytes": 35832,
+      "sha256": "39bd03f3f1d71ba506a4c3e8ad8f3a2526d9eae3b205ce60ea40128e12b4c7b3"
+    },
+    {
+      "file": "B2-80-soft-black/icon.svg",
+      "bytes": 510245,
+      "sha256": "f98d987f79142947e1ba899b60f2b93b8f5c4b374fa594bd24be7877086fb33c"
+    },
+    {
+      "file": "B3-80-charcoal/icon-1024.png",
+      "bytes": 67022,
+      "sha256": "ca4522f7db6f8ec967a923d3bff4322eb7de052e9877a968cc27ba15812fde79"
+    },
+    {
+      "file": "B3-80-charcoal/icon-32.png",
+      "bytes": 868,
+      "sha256": "ce93ebe16b0b4984db4d4146a2cddb71fbce541c10164e308b62bd5d7a867be5"
+    },
+    {
+      "file": "B3-80-charcoal/icon-48.png",
+      "bytes": 1431,
+      "sha256": "7974c43e6685396025fc260b3a332e732e39181f8677b9eeddfdac5f4174e738"
+    },
+    {
+      "file": "B3-80-charcoal/icon-512.png",
+      "bytes": 35820,
+      "sha256": "938f713a244abb0cea2be701a15d13bde39506d8ccfa379115f6f408d3b2385c"
+    },
+    {
+      "file": "B3-80-charcoal/icon.svg",
+      "bytes": 510245,
+      "sha256": "7b4c896f633870358d4540830accf82a7b250726470ed5efae4e6b1d3c983587"
+    },
+    {
+      "file": "C1-86-black/icon-1024.png",
+      "bytes": 64151,
+      "sha256": "ecd3d13285b01c8ba4d13bf882a88b3f831a4c9f3ac12000e74913872bb13883"
+    },
+    {
+      "file": "C1-86-black/icon-32.png",
+      "bytes": 884,
+      "sha256": "4790531926815b40f78e4c729bd99e28234363b2f7cf8074f3d653d715aa1c35"
+    },
+    {
+      "file": "C1-86-black/icon-48.png",
+      "bytes": 1468,
+      "sha256": "94823799a02c53dc86d0d591d98bb507dd1d35b32e0447b5494971b473ad30af"
+    },
+    {
+      "file": "C1-86-black/icon-512.png",
+      "bytes": 35321,
+      "sha256": "cda35f17d8208c5e19046b0b80f7d2ffeaef10cf55f16372f2bef29cfa3f6c08"
+    },
+    {
+      "file": "C1-86-black/icon.svg",
+      "bytes": 510245,
+      "sha256": "6c6abba6e2a9e94dc85e79ee442dda33a6dcfdc1577d33a2900a01ff0c7e1523"
+    },
+    {
+      "file": "C2-86-soft-black/icon-1024.png",
+      "bytes": 65789,
+      "sha256": "75214bc270de4d4685f426a85d14a7aa23bf987af8c56fa6f3fbd022aab1115b"
+    },
+    {
+      "file": "C2-86-soft-black/icon-32.png",
+      "bytes": 908,
+      "sha256": "848d92bc80329b6abd02f740e445af8ce66145e0fc00bf552b5b3a6a818c969e"
+    },
+    {
+      "file": "C2-86-soft-black/icon-48.png",
+      "bytes": 1499,
+      "sha256": "3fe96c7be91bb088c2efeb94ba792fa1ced199b18cbf8aeb3943df5d6aecd6ce"
+    },
+    {
+      "file": "C2-86-soft-black/icon-512.png",
+      "bytes": 36032,
+      "sha256": "ffdf532911fdd210b0a7ebbb0701cf535fc11aaa2c36564149fdca073dea9cd9"
+    },
+    {
+      "file": "C2-86-soft-black/icon.svg",
+      "bytes": 510245,
+      "sha256": "96e90618365160947f0a7bb10481127d57bffdc6c26555bd3a685ddff1a5e5da"
+    },
+    {
+      "file": "C3-86-charcoal/icon-1024.png",
+      "bytes": 65852,
+      "sha256": "bd1216a6290c4e430091d7073f3bc9f2e2aadbee42169b85656e613c4042c823"
+    },
+    {
+      "file": "C3-86-charcoal/icon-32.png",
+      "bytes": 919,
+      "sha256": "c99f53d92b0856ccadf04ab3b44f693e96d32f8022b44bbc463120636f10622a"
+    },
+    {
+      "file": "C3-86-charcoal/icon-48.png",
+      "bytes": 1507,
+      "sha256": "67002d3b777fb703025314de6092ae8ad062dcc4b5c5bee1f3bc7eef5a18186e"
+    },
+    {
+      "file": "C3-86-charcoal/icon-512.png",
+      "bytes": 36022,
+      "sha256": "e1e1d8813c2907e727c77948b5754548c18e13c31dd15b3e75110b25ce69994b"
+    },
+    {
+      "file": "C3-86-charcoal/icon.svg",
+      "bytes": 510245,
+      "sha256": "00f15cf9dbd57a77057d36dda5f1d5d76deb8823447cf65861bd381ba3612acd"
+    },
+    {
+      "file": "foreground-74.svg",
+      "bytes": 510187,
+      "sha256": "15da9e1292d7735d9a2a2564b8f5b5c90604a2c892f862383398808485f7d6c4"
+    },
+    {
+      "file": "foreground-80.svg",
+      "bytes": 510187,
+      "sha256": "f4d5dcf9881858ac67891cf3dee42009deba1cae66a028dec7d645e6adccf71d"
+    },
+    {
+      "file": "foreground-86.svg",
+      "bytes": 510187,
+      "sha256": "a3745c5262b59611e8429b60e32245addbeecc7871ea31086edd2cc16ae968d6"
+    },
+    {
+      "file": "preview.png",
+      "bytes": 248226,
+      "sha256": "12d8afe4c9e3b7e0243febbd20f7de247b8340fe85ad33391c59bc10c4a69a49"
+    },
+    {
+      "file": "preview.svg",
+      "bytes": 513709,
+      "sha256": "e997de8560b0cf03c6cbfd0dfd08012a75c62ea88ee5c19cee4f7aaf384167e3"
+    }
+  ]
+}
