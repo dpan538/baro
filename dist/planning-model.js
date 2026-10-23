@@ -1,4 +1,5 @@
 import { skyAt, skyClock, skyLocalParts, skyLocalEpoch, solarCrossings } from './sky-model.js';
+import {instrumentEnvironment,instrumentLightStage} from './instrument-physics.js';
 
 // A purpose selects an information set, never a widget or a weather condition.
 export const SKY_PURPOSES=Object.freeze([
@@ -39,7 +40,8 @@ export function planningWindow(day,purpose){
 export function makePlanningView(day,purpose,language='zh'){
   if(!SKY_PURPOSES.some(p=>p[0]===purpose))purpose='commute';
   const en=language==='en',photo=['sunset','dawn','blue'].includes(purpose),night=['stars','camp'].includes(purpose),air=['drying','gear'].includes(purpose);
-  const window=planningWindow(day,purpose),m=skyAt(window.day,window.start),end=skyAt(window.day,window.end),samples=Array.from({length:25},(_,i)=>skyAt(window.day,window.start+(window.end-window.start)*i/24));
+  const window=planningWindow(day,purpose),at=minute=>({...skyAt(window.day,minute),...instrumentEnvironment(window.day,minute)}),m=at(window.start),end=at(window.end),samples=Array.from({length:25},(_,i)=>at(window.start+(window.end-window.start)*i/24));
+  const lightStage=instrumentLightStage(day,purpose,window),rainSamples=Array.from({length:9},(_,i)=>instrumentEnvironment(window.day,window.start+i*15).rainRate);
   const c=(zh,english)=>en?english:zh;
   const time=at=>skyClock(at,day.weather.timezone),round=(v,n=0)=>Number.isFinite(v)?v.toFixed(n):'—';
   let primary,secondary;
@@ -59,7 +61,7 @@ export function makePlanningView(day,purpose,language='zh'){
   const metrics={photo,night,air};
   const trendKey=photo?'glow':purpose==='horizon'?'visibility':air?'humidity':purpose==='camp'||purpose==='outing'?'temperature':'precipitation';
   const barKey=photo?'low':purpose==='stars'?'high':air?'humidity':'precipitation';
-  return {purpose,m,end,samples,window,primary,secondary,suggestions:suggestions.slice(0,3),metrics,trendKey,barKey,
+  return {purpose,m,end,samples,window,lightStage,rainSamples,primary,secondary,suggestions:suggestions.slice(0,3),metrics,trendKey,barKey,
     interval:time(m.epoch)+'–'+time(end.epoch),dayLabel:window.nextDay?c('明日','TOMORROW'):c('今日','TODAY'),
     trend:samples.map(v=>v[trendKey]),barValue:planningClamp(m[barKey],0,100),
     preset:day.preset,location:en?day.weather.cityEn:day.weather.cityZh};

@@ -2,6 +2,10 @@
 
 ## Browser prototype — 2026-10-23
 
+- Expand observation to 27 modules in four columns, narrow the dial and primary, compact cloud/visibility, and pair top energy readings.
+- Add illustrative atmospheric/surface physics, light countdown and approximate lunar crossings with explicit data limits.
+- Enlarge wind metadata and physical diagrams, group related instruments, and replace broad priority colours with restrained accents.
+
 - Rebuild observation around a nested instrument chassis with a smaller independent transect, narrower primary readout, stacked wind/pressure/dew groups, larger labels and separated tabular digits.
 - Assign each metric one owner, merge dew-point spread with its trend, retain one time-window entry and remove repeated cloud/humidity summaries, clocks and decorative physics graphics.
 - Add quantitative graphic-mapping checks and a persistent user-design requirement/acceptance record.

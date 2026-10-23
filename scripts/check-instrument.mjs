@@ -1,13 +1,14 @@
 import assert from 'node:assert/strict';
 import {WEATHER_PRESETS} from '../dist/weather-art.js';
-import {makeSkyDay} from '../dist/sky-model.js';
+import {makeSkyDay,skyLocalEpoch} from '../dist/sky-model.js';
 import {SKY_PURPOSES,makePlanningView} from '../dist/planning-model.js';
-import {composeInstrumentContent,instrumentGraphicData,instrumentPrimaryKind} from '../dist/instrument-content.js';
+import {composeInstrumentContent,instrumentGraphicData,instrumentPrimaryKind,instrumentPriority} from '../dist/instrument-content.js';
+import {horizontalRadiation,vectorWindDifference,instrumentMoonAltitude,instrumentMoonEvents,instrumentEnvironment,surfaceOptics} from '../dist/instrument-physics.js';
 let cases=0;
 for(const [preset,weather] of Object.entries(WEATHER_PRESETS))for(const [purpose] of SKY_PURPOSES)for(const language of ['zh','en']){
  const view=makePlanningView(makeSkyDay(weather,preset),purpose,language),content=composeInstrumentContent(view);
- assert.equal(content.modules.length,10);const cards=[content.primary,...content.modules];
- assert.equal(new Set(cards.map(m=>m.kind)).size,11,'Each metric family must have one owner');
+ assert.equal(content.modules.length,23);const cards=[content.primary,...content.modules];
+ assert.equal(new Set(cards.map(m=>m.kind)).size,24,'Each metric family must have one owner');
  const fields=cards.flatMap(m=>m.fields);assert.equal(new Set(fields).size,fields.length,'Do not repeat a field in another component');
  assert.equal(content.owners.dewSpread,'dew');assert.equal(content.owners.dewPoint,'dew');
  assert.equal(content.owners.humidity,['drying','gear'].includes(purpose)?'primary':'moisture');
@@ -16,8 +17,19 @@ for(const [preset,weather] of Object.entries(WEATHER_PRESETS))for(const [purpose
  const pressure=instrumentGraphicData('pressure',view);assert(Math.abs(pressure.end-pressure.start-pressure.delta)<1e-9);
  const wind=instrumentGraphicData('wind',view);assert(wind.gust>=wind.mean);assert.equal(wind.angle,view.m.windFrom*Math.PI/180);
  const cloud=instrumentGraphicData('clouds',view);for(const p of cloud.layers)assert.equal(p.ratio,p.value/100);
- const visibility=instrumentGraphicData('visibility',view);for(const marker of visibility.markers)assert.equal(marker.visible,view.m.visibility>=marker.km);
+ assert.equal(instrumentGraphicData('visibility',view).value,view.m.visibility);
+ assert(view.m.pwv>0);assert(view.m.cape>=0);assert(view.m.soil>=0&&view.m.soil<=1);assert(view.m.freezing>=0);
+ assert.equal(view.rainSamples.length,9);assert(view.rainSamples.every(x=>x>=0));
+ assert.equal(view.m.bortle,null,'Weather is not a sky-brightness measurement');
+ assert(Math.abs(view.m.surfaceTemperature-view.m.temperature-view.m.surfaceDelta)<1e-9);
+ assert(Math.abs(view.m.radiation.total-view.m.radiation.direct-view.m.radiation.diffuse)<1e-9);
+ if(view.lightStage.at!==null)assert(Math.abs(view.lightStage.seconds-Math.round(view.lightStage.at-view.window.day.weather.validAt))<1);
+ for(const field of ['pwv','cape','soil','freezing','rainRate','surfaceDelta','upperWind','lightStage'])assert(content.owners[field],field+' must be available');
  const bearing=instrumentGraphicData('bearing',view);assert(Math.abs(bearing.referenceOffset)<=45);
+ assert.equal(content.modules.find(x=>x.slot==='signal').kind,preset==='storm'?'cin':'lcl');
+ assert.equal(content.modules.find(x=>x.slot==='micro').kind,view.metrics.air?'vpd':view.metrics.night?'cooling':'wetBulb');
+ if(view.m.wetBulb!==null)assert(view.m.wetBulb<=view.m.temperature&&view.m.wetBulb>=view.m.dewPoint);else assert(view.m.humidity>99&&view.m.humidity<100||view.m.temperature< -20||view.m.temperature>50||view.m.humidity<5);assert(view.m.vpd>=0);
+ assert(['core','secondary','support'].includes(instrumentPriority(view,'dew')));
  cases++;
 }
 const day=makeSkyDay(WEATHER_PRESETS.clear,'clear'),v=makePlanningView(day,'commute');
@@ -31,4 +43,18 @@ assert.equal(instrumentGraphicData('temperature',changed).value,instrumentGraphi
 assert.equal(instrumentPrimaryKind('cycling'),'wind');
 assert.equal(composeInstrumentContent(makePlanningView(day,'gear')).modules.find(m=>m.slot==='moisture').kind,'precipitation');
 assert.equal(composeInstrumentContent(makePlanningView(day,'camp')).modules.find(m=>m.slot==='thermal').kind,'apparent');
-console.log(`Verified ${cases} unique information compositions, one owner per metric, merged dew-point data, and quantitative mappings for wind, pressure, cloud, visibility, humidity, light and compass graphics.`);
+assert.equal(vectorWindDifference(10,0,10,0),0);
+assert(Math.abs(vectorWindDifference(10,0,10,180)-20)<1e-9);
+assert(Math.abs(horizontalRadiation(600,100,30).ratio-3)<1e-9,'Use horizontal beam radiation, not DNI divided by DHI');
+assert.equal(horizontalRadiation(600,0,-10).total,0);
+assert.equal(horizontalRadiation(0,0,0).ratio,null);
+const independent=makeSkyDay({...WEATHER_PRESETS.clear,humidity:99},'clear');
+assert.equal(instrumentEnvironment(independent,independent.initialMinute).pwv,instrumentEnvironment(day,day.initialMinute).pwv,'PWV is an independent column sounding, never VPD or ground RH');
+for(const preset of ['storm','night','dawn']){const d=makeSkyDay(WEATHER_PRESETS[preset],preset),events=instrumentMoonEvents(d),start=skyLocalEpoch(d.date,0,d.weather.timezone),end=skyLocalEpoch(d.date,1440,d.weather.timezone);for(const at of [events.rise,events.set])if(at!==null){assert(at>=start&&at<end);assert(Math.abs(instrumentMoonAltitude(at,d.coordinates.latitude,d.coordinates.longitude)-.133)<.001);}}
+const future=makePlanningView(makeSkyDay(WEATHER_PRESETS.storm,'storm'),'sunset');
+assert(future.lightStage.seconds>3600,'A future photo window must count from the scenario clock, not from itself');
+assert.equal(surfaceOptics(60,50,40).wetBulb,null);assert.equal(surfaceOptics(20,99.5,19.9).wetBulb,null);assert.equal(surfaceOptics(20,100,20).wetBulb,20);assert.equal(surfaceOptics(20,100,20).lcl,0);assert.equal(surfaceOptics(20,100,20).vpd,0);
+assert(Math.abs(surfaceOptics(20,50,9.3).wetBulb-13.7)<.1);
+assert.equal(instrumentPriority(makePlanningView(day,'gear'),'dew'),'core');
+assert.equal(instrumentPriority(makePlanningView(day,'sunset'),'clouds'),'secondary');
+console.log(`Verified ${cases} unique information compositions, one owner per metric, merged dew-point data, and quantitative mappings for wind, pressure, cloud, humidity, light, compass, independent soundings, horizontal radiation, vector wind difference and lunar horizon crossings.`);
