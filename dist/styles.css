@@ -353,11 +353,17 @@ h1 .label-primary,.metric-label .label-primary{line-height:1.2;letter-spacing:va
 /* Portrait has its own density: half the screen for information, half for the living sky. */
 @media(orientation:portrait){
  .weather-page{grid-template-rows:minmax(0,1fr) minmax(0,1fr)}
- .left-panel{--header-top-inset:2.2cqw;--portrait-control:max(56px,5.2cqw)}
+ .left-panel{--header-top-inset:2.8cqw;--portrait-control:max(56px,5.2cqw)}
  .information-panel{grid-template-rows:auto minmax(0,1fr) auto auto}
- .panel-heading{padding:var(--header-top-inset) 4.4cqw 1.6cqw}
- h1 .label-primary,:root[data-language='en'] h1 .label-primary{font-size:max(20px,2.8cqw)}
- .heading-bottom{font-size:max(16px,2.15cqw);line-height:1.25}
+ .panel-heading{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;gap:1cqw 2cqw;padding:var(--header-top-inset) 4.4cqw 2cqw}
+ .heading-top,.heading-bottom{display:contents}
+ .panel-heading .title-group{grid-column:1;grid-row:1;justify-self:start}
+ .panel-heading .settings-open{grid-column:2;grid-row:1;justify-self:end}
+ .panel-heading .location-group{grid-column:1;grid-row:2;justify-self:start}
+ .panel-heading .local-datetime{grid-column:2;grid-row:2;justify-self:end}
+ h1 .label-primary,:root[data-language='en'] h1 .label-primary{font-size:max(22px,3.4cqw)}
+ .heading-bottom{font-size:max(18px,2.35cqw);line-height:1.3}
+ .palette-button .palette-dots i{width:1.35cqw;height:1.35cqw}
  .settings-open,#settings-close,#scenes-close{width:var(--portrait-control);height:var(--portrait-control)}
  .settings-open svg,#settings-close svg,#scenes-close svg{width:3.8cqw;height:3.8cqw}
  .settings-heading-row{min-height:var(--portrait-control)}
@@ -367,14 +373,15 @@ h1 .label-primary,.metric-label .label-primary{line-height:1.2;letter-spacing:va
  #solar-icon,.cloud-cover{display:none}
  .time-summary{display:grid;grid-column:2 / 4;grid-row:1 / 3;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto auto auto;align-self:center;justify-items:center;align-content:center;gap:.8cqw 1cqw}
  .weather-hero:has(.solar-caption[hidden]) .time-summary{grid-template-rows:auto auto}
- .time-summary .metric-label,.clock-value,.solar-caption{grid-column:2;grid-row:auto;align-self:center}
+ .time-summary .metric-label,.clock-value,.solar-caption{grid-column:2;align-self:center}
+ .time-summary .metric-label{grid-row:1}
  .temperature-range{font-size:max(16px,2.15cqw)}
  .time-summary .metric-label .label-primary,:root[data-language='en'] .time-summary .metric-label .label-primary{font-size:max(18px,2.7cqw)}
- .condition-heading{display:flex;flex-direction:column;align-items:center;gap:1.2cqw;grid-column:1;grid-row:1 / -1;justify-self:center;align-self:center;min-height:0;max-width:100%;margin:0;padding:0;text-align:center}
- #condition-icon{position:static;transform:none;width:7cqw;height:7cqw}
- .weather-description,:root[data-language='en'] .weather-description{font-size:max(20px,3.35cqw);margin:0;max-width:100%;overflow-wrap:break-word}
- .clock-value{font-size:5.2cqw}
- .solar-caption{font-size:max(16px,1.8cqw)}
+ .condition-heading{display:contents}
+ #condition-icon{position:static;transform:none;grid-column:1;grid-row:1;justify-self:center;align-self:center;width:7cqw;height:7cqw}
+ .weather-description,:root[data-language='en'] .weather-description{grid-column:1;grid-row:2;align-self:baseline;font-size:max(20px,3.35cqw);margin:0;max-width:100%;text-align:center;overflow-wrap:break-word}
+ .clock-value{grid-row:2;align-self:baseline;font-size:5.2cqw}
+ .solar-caption{grid-row:3;font-size:max(16px,1.8cqw)}
  .primary-metric{padding-block:1.6cqw}
  .primary-metric .metric-label .label-primary,:root[data-language='en'] .primary-metric .metric-label .label-primary{font-size:max(16px,2.35cqw)}
  .primary-metric p{font-size:4.8cqw;margin-top:.6cqw}

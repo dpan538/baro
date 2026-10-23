@@ -4,6 +4,7 @@
 
 - Recompose portrait weather into equal information/artwork regions with smaller shared type roles, no cloud-cover row and no solar-event illustration. Keep the event time beside the temperature and leave landscape content intact.
 - Arrange portrait temperature, weather and solar-event time as three adjacent information columns; enlarge the weather icon/description and event label/time while preserving vertical gutters.
+- Align portrait header content on two shared columns and rows, enlarge its title/metadata and spacing, and share baseline tracks between the weather description and solar time.
 - Rework settings around the shared paper/type/three-colour identity, align header controls with the gear, enlarge touch targets, and add linear view, selector, switch and shortcut motion. Preserve one continuous list with redundant scrolling/shortcut/keyboard navigation.
 - Add a larger branded update card over the artwork, real GitHub release checks, retry/empty/current/available states, safe repository links and cancellation when settings closes. Keep the update cross visually smaller than the settings cross.
 - Repair coarse sky/solar banding by giving atmosphere and sunlight independent colour depth while retaining the 96-column grid and established coarse cloud treatment.
