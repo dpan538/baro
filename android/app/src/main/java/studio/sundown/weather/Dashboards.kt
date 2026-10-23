@@ -56,7 +56,10 @@ abstract class Dashboard(context:Context,val model:AppModel):View(context){
         val value=((index%12)+12)%12
         if(model.purpose==value)return
         model.purpose=value
-        if(tick){detentFeedbackCount++;val now=SystemClock.uptimeMillis();if(now-lastTick>=35){performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);lastTick=now}}
+        if(tick){detentFeedbackCount++;val now=SystemClock.uptimeMillis();if(now-lastTick>=35){
+            val effect=if(android.os.Build.VERSION.SDK_INT>=34){if(now-lastTick<90)HapticFeedbackConstants.SEGMENT_FREQUENT_TICK else HapticFeedbackConstants.SEGMENT_TICK}else HapticFeedbackConstants.CLOCK_TICK
+            performHapticFeedback(effect);lastTick=now
+        }}
         onPurpose?.invoke();invalidate()
     }
     private fun settleDial(){
@@ -76,9 +79,9 @@ abstract class Dashboard(context:Context,val model:AppModel):View(context){
     }
     protected fun fit(s:String,x:Float,y:Float,maxWidth:Float,size:Float,color:Int=INK,font:Typeface=chinese){
         p.reset();p.typeface=if(font==chinese)languageFont(s)else font;p.textSize=size
-        var value=s
-        if(p.measureText(value)>maxWidth){while(value.isNotEmpty()&&p.measureText(value+"…")>maxWidth)value=value.dropLast(1);value+="…"}
-        text(value,x,y,size,color,font)
+        val width=p.measureText(s)
+        val fitted=if(width>maxWidth&&width>0)size*maxWidth.coerceAtLeast(1f)/width else size
+        text(s,x,y,fitted,color,font)
     }
     protected fun paragraph(s:String,b:RectF,size:Float,color:Int=INK,maxLines:Int=4){
         val tp=TextPaint(Paint.ANTI_ALIAS_FLAG).apply{this.color=color;textSize=size;typeface=languageFont(s)}
@@ -138,7 +141,7 @@ class WeatherDashboard(context:Context,model:AppModel):Dashboard(context,model){
         p.reset();p.isAntiAlias=true;p.color=nativeInk;p.typeface=Typeface.create(font,m.weight(key,index),false);p.textSize=baseSize*sizeFactor
         p.letterSpacing=m.spacing(key,index)/baseSize
         val measured=p.measureText(value)
-        val factor=if(maxRight!=null&&measured>maxRight-r.left)max(16f/baseSize,sizeFactor*(maxRight-r.left)/max(1f,measured))else sizeFactor
+        val factor=if(maxRight!=null&&measured>maxRight-r.left)sizeFactor*(maxRight-r.left).coerceAtLeast(1f)/max(1f,measured)else sizeFactor
         val size=baseSize*factor;p.textSize=size
         val fm=p.fontMetrics;val line=m.line(key,index)*(if(maxRight==null)factor else 1f)
         val baseline=r.top+(line-(fm.descent-fm.ascent))/2-fm.ascent
@@ -175,7 +178,7 @@ class WeatherDashboard(context:Context,model:AppModel):Dashboard(context,model){
         val dotColors=listOf(ORANGE,YELLOW,BLUE)
         for(i in 0..2){val r=m.rect(".palette-dots i",i);circle(r.centerX(),r.centerY(),r.width()/2,dotColors[i])}
         svg("gear",m.rect("#settings-open svg"),stroke=stroke)
-        css("#location-label",model.placeName())
+        css("#location-label",model.placeName(),maxRight=m.rect("#scene-date").left-24)
         val stamp=wx?.let{java.time.Instant.ofEpochSecond(it.validAt).atZone(it.zone)}
         val date=stamp?.let{if(model.lang=="zh")"${it.monthValue}月${it.dayOfMonth}日" else String.format(java.util.Locale.US,"%02d/%02d/%d",it.dayOfMonth,it.monthValue,it.year)}?:"—"
         css("#scene-date",date);css("#scene-clock",wx?.clock(wx.validAt)?:"—")

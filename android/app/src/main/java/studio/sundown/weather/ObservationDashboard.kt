@@ -18,9 +18,10 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
     private var contentAnimator:ValueAnimator?=null
     val contentAnimating get()=contentAnimator?.isRunning==true
     fun animatePurposeChange(){
+        val from=if(contentAnimating)max(.45f,contentProgress)else .45f
         contentAnimator?.cancel()
         if(!ValueAnimator.areAnimatorsEnabled()){contentProgress=1f;invalidate();return}
-        contentAnimator=ValueAnimator.ofFloat(0f,1f).apply{duration=150;interpolator=LinearInterpolator();addUpdateListener{contentProgress=it.animatedValue as Float;invalidate()};start()}
+        contentAnimator=ValueAnimator.ofFloat(from,1f).apply{duration=150;interpolator=LinearInterpolator();addUpdateListener{contentProgress=it.animatedValue as Float;invalidate()};start()}
     }
     override fun onDetachedFromWindow(){contentAnimator?.cancel();super.onDetachedFromWindow()}
     private fun v(k:String)=wx?.value(k,at)

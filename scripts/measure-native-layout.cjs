@@ -1,7 +1,7 @@
 /** Development-only DOM measurements of the frozen design, never an Android runtime. */
 const http=require('http'),fs=require('fs'),path=require('path');
 const {chromium}=require(process.env.BARO_PLAYWRIGHT_MODULE||'playwright');
-(async()=>{const root=path.resolve(__dirname,'../dist');const out=path.resolve(__dirname,'../android/app/src/main/assets/layouts');fs.mkdirSync(out,{recursive:true});
+(async()=>{const root=path.resolve(__dirname,'../dist');const out=process.env.BARO_LAYOUT_OUTPUT?path.resolve(process.env.BARO_LAYOUT_OUTPUT):path.resolve(__dirname,'../android/app/src/main/assets/layouts');fs.mkdirSync(out,{recursive:true});
 const server=http.createServer((req,res)=>{let file=path.join(root,new URL(req.url,'http://localhost').pathname);if(file===root+'/')file+='index.html';if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return}res.setHeader('Content-Type',({'.js':'application/javascript','.html':'text/html','.css':'text/css','.ttf':'font/ttf','.woff2':'font/woff2'})[path.extname(file)]||'application/octet-stream');fs.createReadStream(file).on('error',()=>res.end()).pipe(res)});await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const browser=await chromium.launch({headless:true,...(process.env.BARO_CHROME?{executablePath:process.env.BARO_CHROME}:{}),args:['--no-sandbox']});
 for(const [orientation,width,height] of [['landscape',1704,1136],['portrait',1136,1704]])for(const lang of ['zh','en']){

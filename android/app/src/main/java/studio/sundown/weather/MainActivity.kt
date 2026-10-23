@@ -132,13 +132,13 @@ class MainActivity:Activity(){
         val box=LinearLayout(this).apply{orientation=LinearLayout.VERTICAL;setPadding(dp(24),dp(12),dp(24),dp(12))}
         val search=EditText(this).apply{hint=model.tr("城市名称","City name");setSingleLine(true);maxLines=1;filters=arrayOf(android.text.InputFilter.LengthFilter(80))}
         val status=TextView(this);val list=LinearLayout(this).apply{orientation=LinearLayout.VERTICAL};val scroll=ScrollView(this).apply{addView(list)}
-        val button=Button(this).apply{text=model.tr("搜索","Search");minHeight=dp(56)}
+        val button=Button(this).apply{text=model.tr("搜索","Search");minHeight=dp(56);PressFeedback.install(this)}
         box.addView(search);box.addView(button);box.addView(status);box.addView(scroll,LinearLayout.LayoutParams(-1,dp(330)))
         val dialog=AlertDialog.Builder(this).setTitle(model.tr("选择地点","Choose place")).setView(box).setNeutralButton(model.tr("重新获取天气","Refresh weather")){_,_->refresh(true)}.setNegativeButton(model.tr("取消","Cancel"),null).create()
         dialog.setOnDismissListener{placeSearch?.cancel()}
-        button.setOnClickListener{val q=search.text.toString().trim();if(q.length<2)return@setOnClickListener;placeSearch?.cancel();button.isEnabled=false;status.text=model.tr("搜索中…","Searching…");list.removeAllViews()
+        button.setOnClickListener{PressFeedback.click(button);val q=search.text.toString().trim();if(q.length<2)return@setOnClickListener;placeSearch?.cancel();button.isEnabled=false;status.text=model.tr("搜索中…","Searching…");list.removeAllViews()
             placeSearch=repository.search(q,model.lang){places,error->button.isEnabled=true;status.text=if(error!=null)model.tr("搜索失败，请重试","Search failed. Retry.")else if(places.isNullOrEmpty())model.tr("没有匹配地点","No matching places")else ""
-                places?.forEach{place->list.addView(Button(this).apply{text=place.name;minHeight=dp(56);setOnClickListener{selectPlace(place);dialog.dismiss()}})}}}
+                places?.forEach{place->list.addView(Button(this).apply{text=place.name;minHeight=dp(56);PressFeedback.install(this);setOnClickListener{PressFeedback.click(this);selectPlace(place);dialog.dismiss()}})}}}
         dialog.show()
     }
     fun external(url:String){val u=android.net.Uri.parse(url);if(u.scheme!="https")return;runCatching{startActivity(Intent(Intent.ACTION_VIEW,u))}}

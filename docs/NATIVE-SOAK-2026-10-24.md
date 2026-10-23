@@ -1,0 +1,23 @@
+# Native visual and 300-cycle audit
+
+The renewed request permits darker neutral colours, refined component graphics and internal whitespace/font fitting; fixed layout must retain the frozen design. Animation and tactile feedback must adapt without changing the resting composition.
+
+## Independent visual checks
+
+A separate Chrome extraction of the untouched frozen `dist` produced 53 layout/icon JSON files identical to the native design assets. The backup tag remains unchanged. The original screenshot manifest has malformed dimension metadata; audit dimensions must come from decoding the original image bytes, without rewriting the frozen backup. Live weather, astronomy and scene pixels naturally differ from historical example data; whole-image pixel equality is not a truthful acceptance claim.
+
+The first expanded glyph audit found nine truncated English missing-air captions. Width fitting now scales the entire string instead of removing characters. Long location labels are constrained before the date, and long WMO conditions fit before the solar column. A second actual Canvas audit passed all 104 combinations: 96 observation combinations (12 purposes, two languages, two orientations, data/missing) plus eight normal/stress weather combinations. It checks glyph ink against active clipping and meaningful text intersections, including StaticLayout runs. Intentionally entering/leaving rotated dial labels are excluded from the whole-glyph rule, preserving the original scrolling wheel. Focused heading/chart/gust stroke audits remain separate. This is bounded coverage, not proof for every possible input.
+
+Fast dial changes retain a visible content layer instead of repeatedly fading from zero; settle remains linear. API 34+ uses discrete segment ticks and softer frequent ticks for fast turns, with CLOCK_TICK fallback on older Android. System haptic/animation settings remain authoritative. Search/result buttons share native press/release feedback. Actual vibration intensity requires hardware testing.
+
+About now links directly to Sources & licenses while retaining seven settings in three groups and the existing footer tools. It names weather/air/geocoding APIs, GitHub update/feedback services, system location, fonts and SunCalc. Twenty-four resolved runtime dependency artifacts were checked against their original Maven POM licenses, including inherited Guava metadata; versions and Apache 2.0 text are bundled. Both-language About navigation/content checks pass.
+
+## Repeat-test contract
+
+`scripts/run-native-soak.py` drives only the dedicated BARO emulator and isolated ADB server. Each of 300 rows represents a real Activity launch, live/cached Open-Meteo weather, actual GLES frame, both-direction page changes, one dial detent, a real canvas gear press, a language button click, settings close and Activity close. Every third row also cancels a page gesture; every fifth backgrounds/resumes; every tenth recreates. Rendering threads must return to zero after every close. The matrix has 150 Chinese/150 English starts, 150 landscape/150 portrait, 25 starts per purpose, 60 Fine/240 Block and 150 motion-on/150 motion-off. Twenty 15-cycle batches provide fresh instrumentation processes; separately, each batch has a production-only force-stop/cold launch measured by Android `am start -W` and `dumpsys meminfo`.
+
+Logs record every row's source, PID, launch-to-first-art interval, actual provider fetchedAt, cache bytes, post-interaction one-second CPU time, PSS/RSS/private-dirty/Java/native/graphics memory, descriptor count and rendering-thread count. Instrumentation memory includes the test runner; production-only samples are recorded separately. CPU percentages may exceed 100% because process CPU sums multiple threads/cores. First-art intervals are software-emulator measurements, not hardware latency promises. Periodic screenshots and raw battery/gfx/logcat records are preserved. Full functional, cache/error, location, update and visual suites remain necessary; repeating one loop does not cover every API failure path.
+
+The emulator reports unsupported CPU/GPU power counters and a simulated charging battery. Battery dumps are evidence of this limitation, not valid watts, mAh consumption or real-device battery life. Frame activity, CPU and background-quiescence checks are measurable resource/power proxies only.
+
+The three-cycle pilot passed before the full run, with zero rendering threads after all three closes. The final 300-cycle outcome and exact APK identity will be recorded only after the run completes. No public feedback, production deployment or stable Release is authorized by this test request.
