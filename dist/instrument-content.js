@@ -6,7 +6,7 @@ const INSTRUMENT_FIELDS=Object.freeze({
  visibility:['visibility'],clouds:['high','mid','low'],solar:['solarElevation'],bearing:['solarAzimuth'],
  light:['colorTemperature'],airQuality:['pm25'],moon:['moonIllumination','moonAge'],glow:['glow'],
  stage:['lightStage'],lunar:['moonIllumination','moonAge','moonRise','moonSet','bortle'],darkness:['bortle','moonRise','moonSet'],
- drift:['upperWind','windDifference'],column:['pwv'],freezing:['freezing'],cape:['cape'],soil:['soil'],radiation:['directHorizontal','diffuseHorizontal'],seeing:['surfaceDelta','surfaceTemperature'],rain:['rainRate'],cin:['cin'],lcl:['lcl'],vpd:['vpd'],wetBulb:['wetBulb'],cooling:['coolingRate']
+ drift:['upperWind','windDifference'],column:['pwv'],freezing:['freezing'],cape:['cape'],soil:['soil'],radiation:['directHorizontal','diffuseHorizontal'],seeing:['surfaceDelta','surfaceTemperature'],rain:['rainRate'],rainTotal:['rainAccumulation'],cin:['cin'],lcl:['lcl'],vpd:['vpd'],wetBulb:['wetBulb'],cooling:['coolingRate']
 });
 export function instrumentPrimaryKind(purpose){
  if(['sunset','dawn','blue'].includes(purpose))return 'glow';
@@ -21,7 +21,7 @@ export function composeInstrumentContent(view){
   ['moisture',primary==='humidity'?'precipitation':'humidity'],
   ['distance',primary==='visibility'?'apparent':'visibility'],['clouds','clouds'],['solar','solar'],['bearing','bearing'],
   ['stage','stage'],['lunar',primary==='moon'?'darkness':'lunar'],['drift','drift'],['column','column'],['freezing','freezing'],['cape','cape'],['soil','soil'],['radiation','radiation'],['seeing','seeing'],['rain','rain'],
-  ['signal',view.preset==='storm'?'cin':'lcl'],['stability',view.preset==='storm'?'lcl':'cin'],['micro',view.metrics.air?'vpd':view.metrics.night?'cooling':'wetBulb']
+  ['signal',view.preset==='storm'?'cin':'lcl'],['stability',view.preset==='storm'?'lcl':'cin'],['micro',view.metrics.air?'vpd':view.metrics.night?'cooling':'wetBulb'],['rain-total','rainTotal']
  ].map(([slot,kind])=>({slot,kind,fields:INSTRUMENT_FIELDS[kind]}));
  const owners=new Map();
  for(const card of [{slot:'primary',kind:primary,fields:INSTRUMENT_FIELDS[primary]},...modules])for(const field of card.fields){
@@ -46,7 +46,7 @@ export function instrumentGraphicData(kind,view){
  const m=view.m,samples=view.samples,limit=(v,a,b)=>Math.max(a,Math.min(b,v));
  switch(kind){
   case 'wind':return {mean:m.windSpeed,gust:m.windGust,from:m.windFrom,angle:m.windFrom*Math.PI/180};
-  case 'pressure':return {start:m.pressure-m.pressureTrend,end:m.pressure,delta:m.pressureTrend};
+  case 'pressure':return {start:m.pressure-m.pressureTrend,end:m.pressure,delta:m.pressureTrend,minimum:960,maximum:1040,ratio:limit((m.pressure-960)/80,0,1)};
   case 'dew':return {value:m.dewSpread,dewPoint:m.dewPoint,series:samples.map(p=>p.dewSpread),threshold:2,maximum:Math.max(3,Math.ceil(Math.max(...samples.map(p=>p.dewSpread))))};
   case 'temperature':return {value:m.temperature,low:Math.min(...samples.map(p=>p.temperature)),high:Math.max(...samples.map(p=>p.temperature))};
   case 'apparent':return {value:m.feelsLike};
@@ -58,7 +58,7 @@ export function instrumentGraphicData(kind,view){
   case 'bearing':{const value=m.sun?.azimuth??0,reference=(Math.round(value/90)*90)%360;return {value,reference,referenceOffset:((reference-value+540)%360)-180};}
   case 'moon':return {...m.moon,value:m.moon.illumination*100};
   case 'light':return {value:m.colorTemperature,ratio:limit((m.colorTemperature-2000)/8000,0,1)};
-  case 'airQuality':return {value:m.pm25};
+  case 'airQuality':return {value:m.pm25,ratio:limit(m.pm25/100,0,1)};
   case 'glow':return {value:m.glow,ratio:limit(m.glow/100,0,1)};
   case 'stage':return view.lightStage;
   case 'lunar':case 'darkness':return {...m.moon,value:m.moon.illumination*100,...m.moonEvents,bortle:m.bortle};
@@ -70,6 +70,7 @@ export function instrumentGraphicData(kind,view){
   case 'radiation':return m.radiation;
   case 'seeing':return {value:m.surfaceDelta,surface:m.surfaceTemperature};
   case 'rain':return {value:m.rainRate,series:view.rainSamples,maximum:Math.max(1,...view.rainSamples)};
+  case 'rainTotal':return {value:view.rainSamples.slice(1).reduce((sum,value,index)=>sum+(value+view.rainSamples[index])/2*.25,0)};
   case 'cin':return {value:m.cin};
   case 'lcl':return {value:m.lcl};
   case 'vpd':return {value:m.vpd};

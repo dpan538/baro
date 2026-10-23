@@ -2,10 +2,10 @@ import { PixelWeatherRenderer, resolveWeatherScene, PIXEL_TONE } from './weather
 
 export const FINE_MOTION = Object.freeze({ columns: 1536, coarseColumns: 96, fps: 24 });
 
-export function resolvePixelGrid(width, height, pixelStyle = 'fine', maxTextureSize = 4096) {
+export function resolvePixelGrid(width, height, pixelStyle = 'fine', maxTextureSize = 4096, coarseColumns = FINE_MOTION.coarseColumns) {
   width = Math.max(1, Math.round(width)); height = Math.max(1, Math.round(height));
   const limit = Math.max(1, Math.floor(maxTextureSize));
-  let columns = Math.min(pixelStyle === 'block' ? FINE_MOTION.coarseColumns : Math.min(FINE_MOTION.columns, width), limit);
+  let columns = Math.min(pixelStyle === 'block' ? Math.max(1, Math.round(coarseColumns)) : Math.min(FINE_MOTION.columns, width), limit);
   let rows = Math.max(1, Math.round(columns * height / width));
   if (rows > limit) { rows = limit; columns = Math.max(1, Math.round(rows * width / height)); }
   return { columns, rows };

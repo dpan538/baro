@@ -1,6 +1,9 @@
 # Changelog
 
 ## Browser prototype — 2026-10-23
+- Rebuild observation density around independently sized lanes, short scalar strips, stronger humidity contrast, a larger Moon and a new integrated two-hour rain amount.
+- Replace priority sidebars with restrained heading ink and add distinct pressure, humidity, altitude, radiation and soil graphics.
+- Redraw eleven observation scenes in native WebGL with distinct frontal buildings; refine basic observation art to 192 columns while preserving the weather page's 96-column default.
 
 - Expand observation to 27 modules in four columns, narrow the dial and primary, compact cloud/visibility, and pair top energy readings.
 - Add illustrative atmospheric/surface physics, light countdown and approximate lunar crossings with explicit data limits.

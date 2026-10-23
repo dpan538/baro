@@ -7,8 +7,8 @@ import {horizontalRadiation,vectorWindDifference,instrumentMoonAltitude,instrume
 let cases=0;
 for(const [preset,weather] of Object.entries(WEATHER_PRESETS))for(const [purpose] of SKY_PURPOSES)for(const language of ['zh','en']){
  const view=makePlanningView(makeSkyDay(weather,preset),purpose,language),content=composeInstrumentContent(view);
- assert.equal(content.modules.length,23);const cards=[content.primary,...content.modules];
- assert.equal(new Set(cards.map(m=>m.kind)).size,24,'Each metric family must have one owner');
+ assert.equal(content.modules.length,24);const cards=[content.primary,...content.modules];
+ assert.equal(new Set(cards.map(m=>m.kind)).size,25,'Each metric family must have one owner');
  const fields=cards.flatMap(m=>m.fields);assert.equal(new Set(fields).size,fields.length,'Do not repeat a field in another component');
  assert.equal(content.owners.dewSpread,'dew');assert.equal(content.owners.dewPoint,'dew');
  assert.equal(content.owners.humidity,['drying','gear'].includes(purpose)?'primary':'moisture');
@@ -19,6 +19,7 @@ for(const [preset,weather] of Object.entries(WEATHER_PRESETS))for(const [purpose
  const cloud=instrumentGraphicData('clouds',view);for(const p of cloud.layers)assert.equal(p.ratio,p.value/100);
  assert.equal(instrumentGraphicData('visibility',view).value,view.m.visibility);
  assert(view.m.pwv>0);assert(view.m.cape>=0);assert(view.m.soil>=0&&view.m.soil<=1);assert(view.m.freezing>=0);
+ const accumulation=instrumentGraphicData('rainTotal',view);assert(accumulation.value>=0);
  assert.equal(view.rainSamples.length,9);assert(view.rainSamples.every(x=>x>=0));
  assert.equal(view.m.bortle,null,'Weather is not a sky-brightness measurement');
  assert(Math.abs(view.m.surfaceTemperature-view.m.temperature-view.m.surfaceDelta)<1e-9);
@@ -43,6 +44,7 @@ assert.equal(instrumentGraphicData('temperature',changed).value,instrumentGraphi
 assert.equal(instrumentPrimaryKind('cycling'),'wind');
 assert.equal(composeInstrumentContent(makePlanningView(day,'gear')).modules.find(m=>m.slot==='moisture').kind,'precipitation');
 assert.equal(composeInstrumentContent(makePlanningView(day,'camp')).modules.find(m=>m.slot==='thermal').kind,'apparent');
+assert.equal(instrumentGraphicData('rainTotal',{...v,rainSamples:Array(9).fill(4)}).value,8,'Integrate rates over two hours, not nine rate values');
 assert.equal(vectorWindDifference(10,0,10,0),0);
 assert(Math.abs(vectorWindDifference(10,0,10,180)-20)<1e-9);
 assert(Math.abs(horizontalRadiation(600,100,30).ratio-3)<1e-9,'Use horizontal beam radiation, not DNI divided by DHI');

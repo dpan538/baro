@@ -30,6 +30,8 @@ assert.equal(resolveWeatherScene({...WEATHER_PRESETS.overcast,windSpeed:40,perio
 assert.deepEqual(resolvePixelGrid(1728,2304),{columns:1536,rows:2048},'3.4K split panel uses the denser fine grid');
 assert.deepEqual(resolvePixelGrid(800,1200),{columns:800,rows:1200},'smaller panels render one logical cell per native pixel');
 assert.deepEqual(resolvePixelGrid(1728,2304,'block'),{columns:96,rows:128},'block mode keeps its established grid');
+assert.deepEqual(resolvePixelGrid(800,400,'block',4096,192),{columns:192,rows:96},'observation can refine its basic grid without changing weather defaults');
+assert.deepEqual(resolvePixelGrid(800,400,'block',128,192),{columns:128,rows:64},'observation grid still respects GPU limits');
 for(const [width,height,limit] of [[320,480,4096],[1440,960,4096],[3456,2304,4096],[3840,2160,4096],[300,6000,1024],[6000,300,1024],[1,1,4096]]){
   for(const style of ['fine','block']){
     const {columns,rows}=resolvePixelGrid(width,height,style,limit);

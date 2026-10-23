@@ -18,7 +18,7 @@ Bilingual, built for the big screen. Data by Open-Meteo.
 
 ## What is included
 
-- A purpose-driven second instrument page with twenty-seven coupled modules, a lower-right touch dial, its own typography and panoramic pixel scene. [Panel behavior and data limits](docs/INSTRUMENT-PANEL.md) · [User requirements and acceptance record](docs/USER-DESIGN-REQUIREMENTS.md). Each metric has one owner; dew-point values/trend stay together, and one window replaces duplicate clocks.
+- A purpose-driven second instrument page with twenty-eight coupled modules, a lower-right touch dial, its own typography and panoramic pixel scene. [Panel behavior and data limits](docs/INSTRUMENT-PANEL.md) · [User requirements and acceptance record](docs/USER-DESIGN-REQUIREMENTS.md). Each metric has one owner; dew-point values/trend stay together, and one window replaces duplicate clocks.
 - A nearly fullscreen tablet layout: weather information on the left, animated pixel sky on the right.
 - Eleven sample scenarios with distinct cities, local times, temperatures and conditions. The three coloured dots open the scene library.
 - A shared weather system with native-density fine artwork up to 1536 columns and 96-column block artwork, ordered dithering, and continuous animation targeting 24 fps. Cloud layers cross the sky over minutes; lighting, precipitation and occasional events follow independent rhythms.
@@ -66,7 +66,7 @@ See [preview instructions](PREVIEW.md), [privacy](docs/PRIVACY.md), [implementat
 
 左边是今日天气，右边是流动的像素天空。中文或英文界面，为大屏而生；气象数据路线采用 Open-Meteo。
 
-第二页是独立的环境观测仪器面板：二十七个模块、右下目的拨轮与专用横向像素视窗。拨轮选择用户目的和关注点，联动信息组合；建议最多三条，每条不超过二十字。首页右滑进入，左滑返回；气象趋势仍为示例，非实时预测。
+第二页是独立的环境观测仪器面板：二十八个模块、右下目的拨轮与专用横向像素视窗。拨轮选择用户目的和关注点，联动信息组合；建议最多三条，每条不超过二十字。首页右滑进入，左滑返回；气象趋势仍为示例，非实时预测。
 
 当前先完成最重要的天气首页：十一种示例天气、精细／方块动画、日出日落切换、大字信息网格与完整设置。界面一次只显示一种语言，不提供中英并排模式。项目统一使用 BARO 名称。当前先迭代网页原型，不构建或发布新的 APK；原有 Android 壳层保留供后续接入。
 
