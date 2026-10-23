@@ -114,7 +114,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         value(body,n("pressure_msl",1),"hPa",40f,true)
         val delta=wx?.difference("pressure_msl",at,3);val label=(if(delta!=null&&delta>0)"+"else "")+Units.number(delta,1)+" hPa / 3h"
         if(measuredText("detail",label)==null)text(label,body.left,body.bottom-20,16f,PAPER,mono)
-        text("960",gr.left,gr.bottom-4,14f,PAPER,mono);text("1040",gr.right,gr.bottom-4,14f,PAPER,mono,Paint.Align.RIGHT)
+        text("960",gr.left,gr.bottom-4,16f,PAPER,mono);text("1040",gr.right,gr.bottom-4,16f,PAPER,mono,Paint.Align.RIGHT)
     }
     private fun svgPlot(rect:RectF,vx:Float,vy:Float,vw:Float,vh:Float,stretch:Boolean=false,draw:()->Unit){
         val sx=rect.width()/vw;val sy=rect.height()/vh;val scale=min(sx,sy);c!!.save()
@@ -164,7 +164,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
     private fun pwv(b:RectF){
         val body=base(b,heading("整层水汽 PWV","Column water"));value(RectF(body.left,body.top,body.right-65,body.bottom),n("total_column_integrated_water_vapour",1),"mm",42f)
         val r=RectF(body.right-44,body.top,body.right-14,body.bottom-14);rect(r,0xffeeeee6.toInt());v("total_column_integrated_water_vapour")?.let{n->rect(RectF(r.left,r.bottom-r.height()*(n/70).toFloat().coerceIn(0f,1f),r.right,r.bottom),CORAL)}
-        repeat(15){i->val y=r.top+r.height()*i/14;line(r.left-4,y,r.right,y,0xff76766d.toInt(),.5f)};text("70",r.right+1,r.top-6,14f);text("0",r.right+1,r.bottom-14,14f)
+        repeat(15){i->val y=r.top+r.height()*i/14;line(r.left-4,y,r.right,y,0xff76766d.toInt(),.5f)};text("70",r.right+1,r.top-6,16f);text("0",r.right+1,r.bottom-14,16f)
     }
     private fun soil(b:RectF){
         val body=base(b,heading("表层土壤水分","Surface soil water"));value(RectF(body.left,body.top,body.right*.01f+body.centerX(),body.bottom-25),n("soil_moisture_0_to_1cm",2),"m³/m³",38f)
@@ -181,11 +181,11 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
             for(deg in -90..90 step 10){val a=Math.toRadians(deg.toDouble());val r=if(deg%30==0)51 else 55;line((110+r*cos(a)).toFloat(),(70-r*sin(a)).toFloat(),(110+60*cos(a)).toFloat(),(70-60*sin(a)).toFloat(),INK,.8f)}
             sun?.let{val angle=Math.toRadians(it.elevation);val x=(110+59*cos(angle)).toFloat();val y=(70-59*sin(angle)).toFloat();line(110f,70f,x,y,0xff924b35.toInt(),2f);circle(x,y,5f,0xff924b35.toInt());circle(110f,70f,2f,INK)}
         }
-        text("90°",gr.right-25,gr.top,16f);text("0°",gr.right-25,gr.centerY()-8,16f);text("−90°",gr.right-25,gr.bottom-20,16f)
+        text("90°",gr.right-2,gr.top,16f,INK,inter,Paint.Align.RIGHT);text("0°",gr.right-2,gr.centerY()-8,16f,INK,inter,Paint.Align.RIGHT);text("−90°",gr.right-2,gr.bottom-20,16f,INK,inter,Paint.Align.RIGHT)
         if(wx!=null){val elevations=(0..12).map{Astronomy.sun(at+it*600,wx!!.place).elevation};val lo=elevations.min()-2;val hi=elevations.max()+2
             val rr=RectF(body.left,body.bottom-48,body.right,body.bottom-26)
             svgPlot(rr,0f,0f,300f,32f){vector("M4 29H296",0x26201f1b);val points=elevations.mapIndexed{i,v->(if(i==0)"M"else "L")+(4+i*292/12.0)+" "+(27-(v-lo)/(hi-lo)*22)}.joinToString("");vector(points,INK,1.5f)}
-            text(Units.number(elevations.first(),1)+"° → "+Units.number(elevations.last(),1)+"°",body.right,body.bottom-18,14f,INK,inter,Paint.Align.RIGHT)
+            text(Units.number(elevations.first(),1)+"° → "+Units.number(elevations.last(),1)+"°",body.right,body.bottom-18,16f,INK,inter,Paint.Align.RIGHT)
         }
     }
     private fun bearing(b:RectF){
@@ -208,8 +208,8 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         val gr=RectF(body.left,b.top+84,body.right,body.bottom-22)
         if(total!=null){val day=total>0;val f=if(day)diffuse!!/total else 0.0;val horizon=if(day)77f else 38f
             svgPlot(gr,0f,0f,320f,105f){
-                c!!.save();c!!.clipRect(14f,horizon,306f,horizon+10);for(x in -100..400 step 8)line(x.toFloat(),horizon+10,x+10f,horizon,0x4dfcfcf8,1f);c!!.restore();line(14f,horizon,306f,horizon,PAPER,1.5f)
-                if(day){circle(55f,13f,7f,0xffd99975.toInt());for(i in 0..6){val x=30+i*11f;val angle=Math.toRadians(25+i*22.0);if(direct!!>0)vector("M$x 22l32 47",0xffd99975.toInt(),(1+(1-f)*2.5).toFloat(),alpha=((.25+(1-f)*.75)*255).toInt());if(diffuse!!>0)vector("M${240+60*cos(angle)} ${75-58*sin(angle)}Q240 35 240 73",0xffd9d3bb.toInt(),(.7+f*2.2).toFloat(),alpha=((.25+f*.75)*255).toInt())};rect(RectF(14f,94f,(14+292*(1-f)).toFloat(),99f),0xffd99975.toInt());rect(RectF((14+292*(1-f)).toFloat(),94f,306f,99f),0xffd9d3bb.toInt())}
+                c!!.save();c!!.clipRect(16f,horizon,306f,horizon+10);for(x in -100..400 step 8)line(x.toFloat(),horizon+10,x+10f,horizon,0x4dfcfcf8,1f);c!!.restore();line(16f,horizon,306f,horizon,PAPER,1.5f)
+                if(day){circle(55f,13f,7f,0xffd99975.toInt());for(i in 0..6){val x=30+i*11f;val angle=Math.toRadians(25+i*22.0);if(direct!!>0)vector("M$x 22l32 47",0xffd99975.toInt(),(1+(1-f)*2.5).toFloat(),alpha=((.25+(1-f)*.75)*255).toInt());if(diffuse!!>0)vector("M${240+60*cos(angle)} ${75-58*sin(angle)}Q240 35 240 73",0xffd9d3bb.toInt(),(.7+f*2.2).toFloat(),alpha=((.25+f*.75)*255).toInt())};rect(RectF(16f,94f,(14+292*(1-f)).toFloat(),99f),0xffd99975.toInt());rect(RectF((14+292*(1-f)).toFloat(),94f,306f,99f),0xffd9d3bb.toInt())}
                 else{vector("M24 53H132M188 53H296",0x40fcfcf8);circle(160f,65f,12f,0xffd99975.toInt());vector("M160 42V47M138 65H143M177 65H182",0xffd99975.toInt())}
             }
             val caption=if(day)heading("漫射占比 ","Diffuse share ")+Units.number(f*100)+"%"else heading("夜间 · 无太阳短波辐射","Night · no solar flux")
@@ -245,7 +245,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         arrow(body.right-55,body.top+20,(upper?.div(largest)?.times(45)?:0.0).toFloat(),v("wind_direction_300hPa")?.plus(180),CORAL)
         arrow(body.right-55,body.top+55,(surface?.div(largest)?.times(45)?:0.0).toFloat(),v("wind_direction_10m")?.plus(180),PAPER)
         val delta=Physics.windDelta(surface,v("wind_direction_10m"),upper,v("wind_direction_300hPa"))
-        text("300 hPa · "+n("wind_direction_300hPa")+"° · Δv "+model.speed(delta),body.left,body.bottom-18,14f,PAPER,mono)
+        text("300 hPa · "+n("wind_direction_300hPa")+"° · Δv "+model.speed(delta),body.left,body.bottom-18,16f,PAPER,mono)
     }
     private fun light(b:RectF){
         rect(b,PAPER)
@@ -269,7 +269,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         val values=samples.map{wx?.hourly?.at("precipitation",it)}
         val last=values.firstOrNull();text(Units.number(last,1)+" mm/h",body.right,body.top-7,30f,PAPER,inter,Paint.Align.RIGHT)
         val chart=RectF(body.left,body.top+38,body.right,body.bottom-40);series(chart,"precipitation",0.0,max(1.0,values.filterNotNull().maxOrNull()?:1.0),true)
-        text(heading("每小时模型 · 非雷达","Hourly model · not radar"),body.left,body.bottom-20,14f,PAPER)
+        text(heading("每小时模型 · 非雷达","Hourly model · not radar"),body.left,body.bottom-20,16f,PAPER)
         val total=if(values.size==2&&values.all{it!=null})values.sumOf{it!!} else null
         activeId="ins-rain-total";scalar(totalB,heading("2h 累计降水","2h rain total"),Units.number(total,1),"mm",true)
     }
@@ -302,7 +302,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         for(offset in -6..6){val index=((model.purpose+offset)%12+12)%12;val angle=offset*8.5f;val a=Math.toRadians(angle.toDouble());val x=centerX+cos(a).toFloat()*radius;val y=centerY+sin(a).toFloat()*radius
             c!!.save();c!!.rotate(angle,x,y);text(model.purposeName(index),x,y-font*.55f,font*(if(offset==0)1.05f else 1f),if(offset==0)PAPER else 0xffb8b8af.toInt(),Typeface.create(chinese,450,false));c!!.restore()}
         circle(b.left+b.width()*.12f,centerY,max(10f,min(16f,b.width()*.043f)),0xff2459ff.toInt());c!!.restore()
-        text(heading("拖动选择","DRAG"),b.left+16,b.bottom-28,14f,0xffb8b8af.toInt());text(String.format(java.util.Locale.US,"%02d / 12",model.purpose+1),b.right-16,b.bottom-28,14f,0xffb8b8af.toInt(),mono,Paint.Align.RIGHT)
+        text(heading("拖动选择","DRAG"),b.left+16,b.bottom-28,16f,0xffb8b8af.toInt());text(String.format(java.util.Locale.US,"%02d / 12",model.purpose+1),b.right-16,b.bottom-28,16f,0xffb8b8af.toInt(),mono,Paint.Align.RIGHT)
     }
     private var metricsKey=""
     private var metrics:DesignMetrics?=null
@@ -321,9 +321,20 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         val ctx=r("ins-context");val wxx=wx
         val date=wxx?.let{Instant.ofEpochSecond(at).atZone(it.zone).toLocalDate()}
         val name=model.placeName()
-        fit(name+(date?.let{" · ${it.monthValue}/${it.dayOfMonth}"}?:""),ctx.left+8,ctx.top+3,ctx.width()*.58f,if(portrait)25f else 22f,PAPER)
-        text(if(win?.available==true)wxx!!.clock(win.start)+"–"+wxx.clock(win.end)+(if(Instant.ofEpochSecond(win.start).atZone(wxx.zone).toLocalDate()!=Instant.ofEpochSecond(win.end).atZone(wxx.zone).toLocalDate())" +1"else "")else "—",ctx.right-8,ctx.top+3,if(portrait)25f else 22f,PAPER,inter,Paint.Align.RIGHT)
-        fit(model.source(),ctx.left+8,ctx.bottom-22,ctx.width()-16,16f,PAPER)
+        val location=name+(date?.let{" · ${it.monthValue}/${it.dayOfMonth}"}?:"")
+        val window=if(win?.available==true)wxx!!.clock(win.start)+"–"+wxx.clock(win.end)+(if(Instant.ofEpochSecond(win.start).atZone(wxx.zone).toLocalDate()!=Instant.ofEpochSecond(win.end).atZone(wxx.zone).toLocalDate())" +1"else "")else "—"
+        val contextSize=if(portrait)25f else 22f
+        p.reset();p.typeface=languageFont(location);p.textSize=contextSize;val locationWidth=p.measureText(location)
+        p.typeface=inter;val windowWidth=p.measureText(window)
+        if(locationWidth+windowWidth+24>ctx.width()){
+            val size=if(ctx.height()>=72)20f else 16f
+            fit(location,ctx.left+8,ctx.top,ctx.width()-16,size,PAPER)
+            text(window,ctx.left+8,ctx.top+size*1.2f,size,PAPER,inter)
+        }else{
+            fit(location,ctx.left+8,ctx.top+3,ctx.width()-windowWidth-32,contextSize,PAPER)
+            text(window,ctx.right-8,ctx.top+3,contextSize,PAPER,inter,Paint.Align.RIGHT)
+        }
+        fit(model.source(),ctx.left+8,ctx.bottom-20,ctx.width()-16,16f,PAPER)
         val thermal=if(model.purpose in listOf(3,9))"apparent_temperature"else "temperature_2m"
         draw("ins-thermal"){
             val label=if(thermal=="temperature_2m")heading("气温","Temp.")else heading("体感","Feels like")
@@ -333,7 +344,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
             val lo=points.minOrNull();val hi=points.maxOrNull()
             val rail=RectF(it.left+12,it.bottom-42,it.right-12,it.bottom-33)
             rect(rail,CHARCOAL);v(thermal)?.let{temp->if(lo!=null&&hi!=null){val x=rail.left+rail.width()*(if(hi>lo)((temp-lo)/(hi-lo)).coerceIn(0.0,1.0)else .5).toFloat();line(x,rail.top-2,x,rail.bottom+2,PAPER,2f)}}
-            text("L "+model.temp(lo,1)+"°",rail.left,it.bottom-29,16f);text("H "+model.temp(hi,1)+"°",rail.right,it.bottom-29,16f,INK,inter,Paint.Align.RIGHT)
+            text((if(rail.width()<150)""else "L ")+model.temp(lo,1)+"°",rail.left,it.bottom-29,16f);text((if(rail.width()<150)""else "H ")+model.temp(hi,1)+"°",rail.right,it.bottom-29,16f,INK,inter,Paint.Align.RIGHT)
             }
         }
         draw("ins-optical"){
@@ -361,7 +372,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
             value(RectF(body.left,body.top,body.right,body.bottom-26),if(isVpd)Units.number(mv,2)else model.temp(mv,1,isTrend),if(isVpd)"kPa"else model.tempUnit+if(isTrend)"/h"else "",38f)
             note(if(isTrend)heading("2h 温变均值","2h mean change")else if(isVpd)heading("由气温、湿度计算","From air temp. + RH")else heading("Stull 近似","Stull approximation"),body)
         }
-        draw("ins-advice"){val body=base(it,heading("环境解读","Conditions summary"),color=0xfff0f0e8.toInt());val content=interpretation(model,wx,at);val textRect=m.rect("ins-advice:advice").takeUnless{it.isEmpty}?:body;paragraph(content,textRect,if(w>=1500)22f else 20f,INK,4)}
+        draw("ins-advice"){val body=base(it,heading("环境解读","Conditions summary"),color=0xfff0f0e8.toInt());val content=interpretation(model,wx,at);val textRect=(m.rect("ins-advice:advice").takeUnless{it.isEmpty}?:body).apply{right=body.right;bottom=body.bottom};paragraph(content,textRect,if(w>=1500)22f else 20f,INK,4)}
         wheel(r("ins-wheel"))
         // The approved paper groups use short inset rules rather than card outlines.
         for(name in listOf("ins-clouds","ins-column","ins-soil","ins-stage","ins-lunar")){val b=r(name);val half=min(168f,b.width()*.66f)/2;line(b.centerX()-half,b.top-3,b.centerX()+half,b.top-3,0xffb8b8ad.toInt(),.7f)}

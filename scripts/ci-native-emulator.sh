@@ -15,19 +15,27 @@ fields=dict(line.split('=',1) for line in config.read_text().splitlines() if '='
 fields.update({'hw.lcd.width':'1704','hw.lcd.height':'1136','hw.lcd.density':'160','hw.ramSize':'3072','showDeviceFrame':'no'})
 config.write_text('\n'.join(f'{key}={value}' for key,value in fields.items())+'\n')
 PYCONFIG
-emulator @baro_ci_api36 -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader > /tmp/baro-emulator.log 2>&1 &
-adb wait-for-device
-for i in $(seq 1 60); do
-  if [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = 1 ]; then break; fi
+mkdir -p output/native-ci
+BARO_CI_SERIAL=emulator-5566
+"$ANDROID_HOME/emulator/emulator" @baro_ci_api36 -port 5566 -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader > output/native-ci/emulator.log 2>&1 &
+BARO_CI_EMULATOR_PID=$!
+trap 'timeout 5 adb -s "$BARO_CI_SERIAL" emu kill >/dev/null 2>&1 || true; kill "$BARO_CI_EMULATOR_PID" 2>/dev/null || true' EXIT
+BARO_CI_BOOTED=false
+BARO_CI_BOOT_DEADLINE=$((SECONDS+300))
+while [ "$SECONDS" -lt "$BARO_CI_BOOT_DEADLINE" ]; do
+  if ! kill -0 "$BARO_CI_EMULATOR_PID" 2>/dev/null; then tail -100 output/native-ci/emulator.log; exit 1; fi
+  if [ "$(timeout 5 adb -s "$BARO_CI_SERIAL" shell getprop sys.boot_completed 2>/dev/null | tr -d '\r' || true)" = 1 ]; then BARO_CI_BOOTED=true; break; fi
   sleep 2
 done
-adb shell settings put secure immersive_mode_confirmations confirmed
-adb install -r android/app/build/outputs/apk/debug/app-debug.apk
-adb install -r android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
-adb shell am instrument -w -e class studio.sundown.weather.NativeFlowTest studio.sundown.weather.test/androidx.test.runner.AndroidJUnitRunner | tee /tmp/baro-instrumentation.txt
+if [ "$BARO_CI_BOOTED" != true ]; then tail -100 output/native-ci/emulator.log; exit 1; fi
+adb -s "$BARO_CI_SERIAL" shell settings put secure immersive_mode_confirmations confirmed
+adb -s "$BARO_CI_SERIAL" install -r android/app/build/outputs/apk/debug/app-debug.apk
+adb -s "$BARO_CI_SERIAL" install -r android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+timeout 900 adb -s "$BARO_CI_SERIAL" shell am instrument -w -e class studio.sundown.weather.NativeFlowTest studio.sundown.weather.test/androidx.test.runner.AndroidJUnitRunner | tee output/native-ci/instrumentation.txt
 # adb returns zero even for a failing instrumentation runner; inspect its real result.
-grep -Eq '^OK \([0-9]+ tests?\)' /tmp/baro-instrumentation.txt
-mkdir -p output/native-ci
-cp /tmp/baro-instrumentation.txt /tmp/baro-emulator.log output/native-ci/
-adb pull /sdcard/Android/data/studio.sundown.weather/files output/native-ci/
-adb emu kill
+grep -Eq '^OK \([0-9]+ tests?\)' output/native-ci/instrumentation.txt
+adb -s "$BARO_CI_SERIAL" shell wm density 200
+adb -s "$BARO_CI_SERIAL" shell wm user-rotation lock 1
+timeout 180 adb -s "$BARO_CI_SERIAL" shell am instrument -w -e class studio.sundown.weather.NativeSmallViewportTest studio.sundown.weather.test/androidx.test.runner.AndroidJUnitRunner | tee output/native-ci/small-viewport.txt
+grep -Eq '^OK \([0-9]+ tests?\)' output/native-ci/small-viewport.txt
+adb -s "$BARO_CI_SERIAL" pull /sdcard/Android/data/studio.sundown.weather/files output/native-ci/

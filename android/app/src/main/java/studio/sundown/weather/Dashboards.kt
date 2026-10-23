@@ -202,9 +202,26 @@ class WeatherDashboard(context:Context,model:AppModel):Dashboard(context,model){
     }
 }
 
-class NativePage(context:Context,val dashboard:Dashboard,val art:PixelArt):FrameLayout(context){
+class NativePage(context:Context,val dashboard:Dashboard,val art:PixelArt):android.widget.ScrollView(context){
+    private val layer=FrameLayout(context)
+    private var contentHeight=0
+    private var dialTouch=false
+    override fun onMeasure(widthSpec:Int,heightSpec:Int){
+        val d=resources.displayMetrics.density;val width=MeasureSpec.getSize(widthSpec);val height=MeasureSpec.getSize(heightSpec)
+        val widthDp=width/d;val heightDp=height/d
+        val fallback=dashboard is ObservationDashboard&&height>width&&widthDp>700&&heightDp<=1550
+        contentHeight=if(fallback)max(height,(1704f*max(1f,1136f/widthDp)*d).roundToInt())else height
+        layer.layoutParams.height=contentHeight
+        layer.minimumHeight=contentHeight
+        super.onMeasure(widthSpec,heightSpec)
+    }
+    override fun onInterceptTouchEvent(e:MotionEvent):Boolean {
+        if(e.actionMasked==MotionEvent.ACTION_DOWN)dialTouch=dashboard.dialRect.contains(e.x/resources.displayMetrics.density,(e.y+scrollY)/resources.displayMetrics.density)
+        if(dialTouch||contentHeight<=height)return false
+        return super.onInterceptTouchEvent(e)
+    }
     private val caption=android.widget.TextView(context).apply{setTextColor(PAPER);textSize=16f;setPadding(12,4,12,4);setBackgroundColor(0x80000000.toInt())}
-    init {setBackgroundColor(if(dashboard is WeatherDashboard)0xff191e1d.toInt()else FRAME);addView(dashboard,LayoutParams(-1,-1));addView(art);addView(caption);clipChildren=true;art.clipToOutline=true;art.outlineProvider=object:android.view.ViewOutlineProvider(){override fun getOutline(v:View,outline:android.graphics.Outline){outline.setRoundRect(0,0,v.width,v.height,if(dashboard is ObservationDashboard)24*resources.displayMetrics.density else 0f)}}}
+    init {isFillViewport=true;overScrollMode=OVER_SCROLL_NEVER;setBackgroundColor(if(dashboard is WeatherDashboard)0xff191e1d.toInt()else FRAME);addView(layer,LayoutParams(-1,-1));layer.addView(dashboard,FrameLayout.LayoutParams(-1,-1));layer.addView(art);layer.addView(caption);clipChildren=true;art.clipToOutline=true;art.outlineProvider=object:android.view.ViewOutlineProvider(){override fun getOutline(v:View,outline:android.graphics.Outline){outline.setRoundRect(0,0,v.width,v.height,if(dashboard is ObservationDashboard)24*resources.displayMetrics.density else 0f)}}}
     fun updateState(){
         val m=dashboard.model;val wx=m.weather
         val known=wx!=null&&(dashboard !is ObservationDashboard||wx.scene(observationWindow(wx,m.purpose).start)!="unknown")
@@ -223,7 +240,8 @@ class NativePage(context:Context,val dashboard:Dashboard,val art:PixelArt):Frame
         }else super.dispatchDraw(canvas)
     }
     override fun onLayout(changed:Boolean,l:Int,t:Int,r:Int,b:Int){
-        dashboard.layout(0,0,width,height)
+        super.onLayout(changed,l,t,r,b)
+        dashboard.layout(0,0,width,contentHeight)
         // Geometry is derived from the actual dp viewport, then converted once to pixels.
         val bitmap=Bitmap.createBitmap(1,1,Bitmap.Config.ARGB_8888);dashboard.draw(Canvas(bitmap));bitmap.recycle()
         val d=resources.displayMetrics.density;val a=dashboard.artRect
