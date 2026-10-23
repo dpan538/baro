@@ -2,10 +2,15 @@
 # Disposable CI device only; never target user hardware.
 set -euo pipefail
 sdkmanager 'platform-tools' 'emulator' 'platforms;android-36' 'build-tools;36.0.0' 'system-images;android-36;google_apis;x86_64'
-printf 'no\n' | avdmanager create avd -n baro_ci_api36 -k 'system-images;android-36;google_apis;x86_64' --device pixel_tablet
+BARO_CI_DEVICE_ROOT="${RUNNER_TEMP:-/tmp}/baro-ci-device"
+export ANDROID_USER_HOME="$BARO_CI_DEVICE_ROOT/user"
+export ANDROID_AVD_HOME="$BARO_CI_DEVICE_ROOT/avd"
+mkdir -p "$ANDROID_USER_HOME" "$ANDROID_AVD_HOME"
+printf 'no\n' | avdmanager create avd -n baro_ci_api36 -k 'system-images;android-36;google_apis;x86_64' --device pixel_tablet --path "$ANDROID_AVD_HOME/baro_ci_api36.avd"
 python3 - <<'PYCONFIG'
 from pathlib import Path
-config=Path.home()/'.android/avd/baro_ci_api36.avd/config.ini'
+import os
+config=Path(os.environ['ANDROID_AVD_HOME'])/'baro_ci_api36.avd/config.ini'
 fields=dict(line.split('=',1) for line in config.read_text().splitlines() if '=' in line)
 fields.update({'hw.lcd.width':'1704','hw.lcd.height':'1136','hw.lcd.density':'160','hw.ramSize':'3072','showDeviceFrame':'no'})
 config.write_text('\n'.join(f'{key}={value}' for key,value in fields.items())+'\n')
