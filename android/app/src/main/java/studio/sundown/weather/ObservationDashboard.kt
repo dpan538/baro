@@ -33,7 +33,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         // Unicode symbols do not select a different family. Shape the whole string in one run.
         p.letterSpacing=if(part=="reading")0f else m.spacing(key)/size
         if(part in listOf("heading","detail","note")&&p.measureText(content)>b.width()) {
-            paragraph(content,RectF(b.left,b.top,right,min(module.bottom-8,b.top+m.line(key)*2)),size,fg,2)
+            paragraph(content,RectF(b.left,b.top,right,module.bottom-8),size,fg,2)
         } else {
             val baseline=b.top+(m.line(key)-(p.fontMetrics.descent-p.fontMetrics.ascent))/2-p.fontMetrics.ascent
             c!!.drawText(content,b.left,baseline,p)
