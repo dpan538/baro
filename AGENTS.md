@@ -1,6 +1,7 @@
 # BARO project instructions
 
-- Current delivery is the browser weather-screen prototype. Do not build, package or publish APKs unless the user explicitly resumes Android work. Preserve the existing Android scaffold and historical local output.
+- On 2026-10-23 the user explicitly resumed Android development: implement the Kotlin app, backend and live API integration using the current browser UI as the visual baseline. Android building and packaging are now in scope. Read `docs/ANDROID-KOTLIN-HANDOFF.md`; preserve the `ui-baseline-2026-10-23` backup and historical local output. The existing Java/WebView scaffold and earlier paused-work notes describe the starting point, not the final target.
+- The app has exactly two main pages. Either a completed left swipe or a completed right swipe toggles to the other page; no page-switch button or third page. Keep vertical settings scrolling, purpose-dial dragging and system gestures independent. Native touch feedback and short linear transitions are required.
 - Interface language is Chinese OR English. Do not restore simultaneous bilingual labels or a third language option.
 - Keep seven primary settings in three groups. Marketing copy belongs in GitHub description/README, not inside settings. Secondary cache/source/feedback tools live in the footer menu.
 - Keep typography in the shared CSS roles/tokens and weather icons in the monoline SVG system. Prefer shared grid tracks and explicit centering over per-item offsets. Preserve the compact, baseline-aligned temperature unit and the title-sized gear without a circular focus ring.

@@ -1,6 +1,6 @@
 # BARO architecture
 
-The organization follows the useful boundaries in the author's Annota project: platform integration, UI/rendering source, repeatable scripts, documentation and generated distribution artifacts have separate roles. BARO keeps its existing Java/WebView/WebGL implementation; this is not a Kotlin/native-Canvas migration.
+The organization follows the useful boundaries in the author's Annota project: platform integration, UI/rendering source, repeatable scripts, documentation and generated distribution artifacts have separate roles. The browser UI and historical Java/WebView/WebGL host described below are the migration starting point. The user has now requested a Kotlin Android app, backend and live APIs; the current target is recorded in [the Android handoff](ANDROID-KOTLIN-HANDOFF.md), superseding the former no-migration scope.
 
 | Path | Responsibility |
 | --- | --- |

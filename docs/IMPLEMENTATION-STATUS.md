@@ -1,6 +1,6 @@
 # Implementation status
 
-BARO is currently a browser weather-screen design prototype. Android metadata remains 0.9.2 (11), but APK packaging and publication are paused. There is no public BARO APK release.
+The user resumed Kotlin Android, backend and live API development on 2026-10-23. The current implementation remains a browser weather-screen prototype with the historical Java/WebView host and Android metadata 0.9.2 (11); the new app is not yet implemented. The UI is frozen at `ui-baseline-2026-10-23`. See [handoff and acceptance requirements](ANDROID-KOTLIN-HANDOFF.md). There is no public BARO APK release. Earlier paused-work statements below are historical.
 
 Implemented: eleven distinct sample scenarios; weather and time-aware icons; local sunrise/sunset selection; high/low and feels-like temperatures; AQI display rules; separate CN/EN UI; unit conversion; fine/block pixel animation; grouped left-panel settings and scene selection; optional Android foreground location; owned-data cache accounting/clearing; app metadata, GitHub links and copy-feedback.
 

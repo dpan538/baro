@@ -12,7 +12,7 @@ Bilingual, built for the big screen. Data by Open-Meteo.
 
 [**Run the web preview**](PREVIEW.md) · [Project status](docs/IMPLEMENTATION-STATUS.md) · [中文说明](#中文说明) · [Architecture](docs/ARCHITECTURE.md) · [UI system](docs/DESIGN-SYSTEM.md) · [Daytime](docs/images/weather-english.jpg) · [Sunrise](docs/images/weather-dawn.jpg) · [Sunset](docs/images/weather-sunset.jpg)
 
-> **Current status:** this is a weather-screen design prototype with clearly labelled sample data. We are refining the browser layout first; APK packaging and publishing are paused. Open-Meteo adapters are tested against recorded responses, but live forecast fetching is not connected yet.
+> **Current status:** the browser UI is frozen at [`ui-baseline-2026-10-23`](https://github.com/dpan538/baro/tree/ui-baseline-2026-10-23). The user has resumed Kotlin Android, backend and live API development; see the [Android handoff](docs/ANDROID-KOTLIN-HANDOFF.md). The current implementation is still a sample-data browser prototype with a historical Java/WebView scaffold; the new native/live implementation is not yet delivered.
 
 ![BARO weather screen with pixel storm clouds](docs/images/weather-storm.jpg)
 
@@ -70,7 +70,7 @@ The current Xiaomi Pad 9 Pro Max target and Android inset contract are documente
 
 第二页是独立的环境观测仪器面板：二十九个模块、右下目的拨轮与专用横向像素视窗。拨轮选择用户目的和关注点，联动信息组合；底部环境解读把与当前目的有关的温湿、风雨、光线或器材结露条件汇成更大字的圆角段落，并补充闷热、结露、水汽或光线等相关解释。首页右滑进入，左滑返回；气象趋势仍为示例，非实时预测。
 
-当前先完成最重要的天气首页：十一种示例天气、精细／方块动画、日出日落切换、大字信息网格与完整设置。界面一次只显示一种语言，不提供中英并排模式。项目统一使用 BARO 名称。当前先迭代网页原型，不构建或发布新的 APK；原有 Android 壳层保留供后续接入。
+当前网页 UI 已备份冻结，用户已恢复 Kotlin 安卓、后端和真实 API 开发，具体要求见[开发交接](docs/ANDROID-KOTLIN-HANDOFF.md)。现有实现仍为示例数据网页与历史 Java/WebView 壳层，不能冒称已完成原生与实时接入。界面一次只显示一种语言，不提供中英并排模式；项目统一使用 BARO 名称。
 
 源码、文档、构建与分发分开组织，参考同作者的 Annota 工程。BARO 当前使用 Java/WebView/WebGL2；它不是 Annota 的原生阅读器，也不包含其 PDF、笔迹或反馈服务。
 

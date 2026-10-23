@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-23",
+  "tag": "ui-baseline-2026-10-23",
+  "visualSourceCommit": "fddf954403fd97a82a96bc55080fb236d5532866",
+  "kind": "Scaled browser device-preview screenshots; not native acceptance",
+  "physicalTarget": {
+    "landscape": [
+      3408,
+      2272
+    ],
+    "portrait": [
+      2272,
+      3408
+    ]
+  },
+  "referenceCSS": {
+    "landscape": [
+      1704,
+      1136
+    ],
+    "portrait": [
+      1136,
+      1704
+    ]
+  },
+  "referenceDensityNote": "2x acceptance reference only, not measured device DPR",
+  "scene": "clear",
+  "language": "zh",
+  "files": [
+    {
+      "file": "observation-landscape-zh.png",
+      "sha256": "145bdb05ef00957246bbbbee32b85e47e8fbc26fe40c24da81ccf48d6887739d",
+      "bytes": 142973,
+      "width": 65536,
+      "height": 4292542531
+    },
+    {
+      "file": "observation-portrait-zh.png",
+      "sha256": "12f58bd6f445844753d2a6bf203a22e3a012e5c2edd4120c538daab8ab7ec87b",
+      "bytes": 74911,
+      "width": 65536,
+      "height": 4292542531
+    },
+    {
+      "file": "weather-landscape-zh.png",
+      "sha256": "3f516d3a1a144ba9b29911577775cdaa6d2c889cd3e4397f7c860fe089f5b82c",
+      "bytes": 80374,
+      "width": 65536,
+      "height": 4292542531
+    },
+    {
+      "file": "weather-portrait-zh.png",
+      "sha256": "2a3809d6baab89dfd80f6775ac7b57d6447a37cf755bfbe6357a7e31d1ea6b65",
+      "bytes": 35906,
+      "width": 65536,
+      "height": 4292542531
+    }
+  ]
+}
