@@ -19,9 +19,11 @@ class NativePresentationTest {
         val i=InstrumentationRegistry.getInstrumentation();val ctx=i.targetContext
         ctx.getSharedPreferences("baro-native",Context.MODE_PRIVATE).edit().clear().putInt("page",0).putString("language","zh").putBoolean("motion",false).commit()
         ActivityScenario.launch(MainActivity::class.java).use{s->
+            val diagnostic=NativeReadinessDiagnostics("presentation-${SystemClock.uptimeMillis()}");s.onActivity{diagnostic.observe(it)}
             val deadline=SystemClock.uptimeMillis()+30000;var ready=false
             while(!ready&&SystemClock.uptimeMillis()<deadline){s.onActivity{a->ready=a.model.weather!=null&&a.pager.weatherPage.art.renderedFrames>0};SystemClock.sleep(100)}
-            assertTrue(ready);i.waitForIdleSync();SystemClock.sleep(1000)
+            var outcome="";s.onActivity{outcome=diagnostic.save(it)}
+            assertTrue("Live/compositor readiness: $outcome",ready);i.waitForIdleSync();SystemClock.sleep(1000)
             var x=0f;var y=0f;var width=0f
             s.onActivity{a->assertTrue(a.pager.width>a.pager.height);val loc=IntArray(2);a.pager.getLocationOnScreen(loc);x=loc[0]+a.pager.width*.5f;y=loc[1]+a.pager.height*.82f;width=a.pager.width.toFloat()}
             val start=SystemClock.uptimeMillis()

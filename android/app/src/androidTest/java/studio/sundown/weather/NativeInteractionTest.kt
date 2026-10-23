@@ -27,10 +27,12 @@ class NativeInteractionTest {
         File(i.targetContext.getExternalFilesDir(null),"interaction-$round-$name.png").outputStream().use{image.compress(Bitmap.CompressFormat.PNG,100,it)};image.recycle()
     }
     private fun live(s:ActivityScenario<MainActivity>){
-        s.onActivity{it.repository.clear();it.model.weather=null;it.refresh(true)}
+        val diagnostic=NativeReadinessDiagnostics("interaction-$round-${SystemClock.uptimeMillis()}")
+        s.onActivity{it.repository.clear();it.model.weather=null;it.refresh(true);diagnostic.observe(it)}
         val deadline=SystemClock.uptimeMillis()+30000;var ready=false
         while(!ready&&SystemClock.uptimeMillis()<deadline){s.onActivity{ready=it.model.weather!=null&&it.model.status=="ready"};SystemClock.sleep(100)}
-        assertTrue("Real provider response required for interaction captures",ready)
+        var outcome="";s.onActivity{outcome=diagnostic.save(it)}
+        assertTrue("Real provider response required for interaction captures: $outcome",ready)
         s.onActivity{a->File(i.targetContext.getExternalFilesDir(null),"interaction-$round-live.json").writeText(a.repository.rawFor(a.model.place)!!)}
         pause(1000)
     }
