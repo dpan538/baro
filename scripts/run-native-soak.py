@@ -60,6 +60,7 @@ for start in range(a.start,a.end+1,a.batch):
     target=out/'batches'/f'{start:03}-{start+count-1:03}.jsonl';pull(f'soak-{start}.jsonl',target)
     batch=[json.loads(x) for x in target.read_text().splitlines() if x.strip()]
     rows.extend(batch);write('rounds.jsonl',''.join(json.dumps(row)+'\n'for row in rows))
+    for name in {row['providerResponseFile'] for row in batch}: pull(name,out/name)
     write(f'samples/batterystats-after-{start+count-1}.txt',shell('dumpsys batterystats '+package))
     for n in range(start,start+count):
         if n%25==0:

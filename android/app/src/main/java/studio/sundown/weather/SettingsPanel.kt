@@ -50,7 +50,7 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
     fun open(){
         animate().cancel();detail="";visibility=VISIBLE;activity.pager.overlayOpen=true;build();alpha=0f
         if(ValueAnimator.areAnimatorsEnabled())animate().alpha(1f).setDuration(220).setInterpolator(LinearInterpolator()).start()else alpha=1f
-        requestFocus()
+        requestFocus();activity.redraw()
     }
     fun close(){
         uiGeneration++;closeUpdate();activity.feedback.cancel();scrollAnimator?.cancel();animate().cancel();visibility=GONE;activity.pager.overlayOpen=false;detail="";feedbackInput=null;activity.redraw()

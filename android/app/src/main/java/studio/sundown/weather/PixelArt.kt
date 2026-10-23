@@ -25,6 +25,7 @@ class PixelArt(context: Context, private val instrument: Boolean): TextureView(c
     private var gw=0;private var gh=0;private var sw=1;private var sh=1
     @Volatile var active=false;set(value){if(field==value)return;field=value;worker.removeCallbacks(frame);worker.post(frame)}
     @Volatile var motion=true
+    @Volatile private var interactionPaused=false
     @Volatile var block=false
     @Volatile var weather: Weather?=null
     @Volatile var sampleTime:Long?=null
@@ -38,6 +39,11 @@ class PixelArt(context: Context, private val instrument: Boolean): TextureView(c
         val changed=weather!==next||sampleTime!=at||block!=coarse||motion!=animated
         weather=next;sampleTime=at;block=coarse;motion=animated
         if(changed)refresh()
+    }
+    /** Keep full-resolution artwork stable while the compositor moves both pages. */
+    fun pauseForInteraction(paused:Boolean){
+        if(interactionPaused==paused)return
+        interactionPaused=paused;worker.removeCallbacks(frame);worker.post{last=0;if(!paused)frame.run()}
     }
     init{surfaceTextureListener=this;isOpaque=true;importantForAccessibility=IMPORTANT_FOR_ACCESSIBILITY_NO}
     private fun shader(type: Int, path: String): Int {
@@ -67,7 +73,7 @@ class PixelArt(context: Context, private val instrument: Boolean): TextureView(c
     private fun vec(name:String,x:Int,y:Int){GL.glUniform2f(GL.glGetUniformLocation(program,name),x.toFloat(),y.toFloat())}
     private fun draw(){
         val now=SystemClock.elapsedRealtime()
-        if(motion&&last!=0L)elapsed+=(now-last).coerceAtLeast(0)/1000.0
+        if(motion&&!interactionPaused&&last!=0L)elapsed+=(now-last).coerceAtLeast(0)/1000.0
         last=now
         val limit=IntArray(1);GL.glGetIntegerv(GL.GL_MAX_TEXTURE_SIZE,limit,0)
         var w=if(block)if(instrument)192 else 96 else min(1536,sw*(if(instrument)2 else 1))
@@ -102,9 +108,11 @@ class PixelArt(context: Context, private val instrument: Boolean): TextureView(c
         check(EGL14.eglSwapBuffers(display,surface));renderedFrames++
     }
     private val frame=object:Runnable{override fun run(){
+        // refresh/activation can arrive during a slow draw. Coalesce their queued callbacks.
+        worker.removeCallbacks(this)
         if(!active||surface==EGL14.EGL_NO_SURFACE){last=0;return}
         try{draw()}catch(e:Exception){error=e.message;active=false;return}
-        if(motion)worker.postDelayed(this,if(instrument)83 else 42)
+        if(active&&motion&&!interactionPaused)worker.postDelayed(this,if(instrument)83 else 42)
     }}
     fun refresh(){worker.removeCallbacks(frame);worker.post(frame)}
     override fun onSurfaceTextureAvailable(st:SurfaceTexture,w:Int,h:Int){sw=w;sh=h;worker.post{try{initEgl(st);frame.run()}catch(e:Exception){error=e.message}}}

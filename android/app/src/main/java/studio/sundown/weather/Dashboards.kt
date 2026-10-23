@@ -270,7 +270,8 @@ class NativePage(context:Context,val dashboard:Dashboard,val art:PixelArt):andro
         val m=dashboard.model;val wx=m.weather
         val known=wx!=null&&(dashboard !is ObservationDashboard||wx.scene(m.window(wx).start)!="unknown")
         art.visibility=if(known)View.VISIBLE else View.INVISIBLE
-        caption.text=if(dashboard is ObservationDashboard&&!known)m.tr("该时段无天气数据","No weather data for this window")else m.source()
+        val source=if(dashboard is ObservationDashboard&&!known)m.tr("该时段无天气数据","No weather data for this window")else m.source()
+        if(caption.text.toString()!=source)caption.text=source
         caption.visibility=if(dashboard is ObservationDashboard&&known)View.GONE else View.VISIBLE
     }
 
