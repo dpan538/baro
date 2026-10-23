@@ -57,9 +57,9 @@ assert.match(planningAdvice({...adviceView,preset:'snow'}),/降雪/,'Snow must n
 assert.match(planningAdvice({...adviceView,m:{...adviceView.m,temperature:20,humidity:50,sun:{elevation:4}}}),/晨昏低光/);
 assert.match(planningAdvice({...adviceView,m:{...adviceView.m,temperature:20,humidity:50,windGust:50,visibility:3}}),/阵风较强、远景模糊/);
 const gearView=makePlanningView(makeSkyDay(WEATHER_PRESETS.storm,'storm'),'gear');
-assert.match(planningAdvice(gearView),/镜片|器材/);
+assert.match(planningAdvice(gearView),/物品|金属/);
 assert.match(planningAdvice({...gearView,purpose:'stars',window:{...gearView.window,available:false}}),/没有对应的暗夜窗口/);
 assert.match(planningAdvice(gearView),/结露|水汽/);
 const dryGear={...gearView,m:{...gearView.m,humidity:40,dewSpread:12,rainRate:0},end:{...gearView.end,humidity:40,dewSpread:12}};
-assert.match(planningAdvice(dryGear),/明显冷却/,'Dry equipment conditions must not imply that condensation is easy');
+assert.match(planningAdvice(dryGear),/明显冷却/,'Dry storage conditions must not imply that condensation is easy');
 console.log(`Verified ${count} purpose/environment/language combinations, objective metric selection, midnight/polar windows and bounded plain-language environment interpretations.`);

@@ -1,5 +1,5 @@
 .observatory-open{position:absolute;right:20px;bottom:18px;z-index:4;border:1px solid #e4eee750;border-radius:5px;background:#13253945;color:#ffffef;padding:0 14px;min-height:44px;font:400 12px/1 var(--mono);cursor:pointer;backdrop-filter:blur(8px)}
-.sky-page{--ins-black:var(--frame);--ins-paper:var(--paper);--ins-muted:#d8ddd2;--ins-coral:#cb8870;--ins-yellow:#ceae6d;--ins-display:var(--sans);--ins-heading:var(--chinese);--ins-body:var(--mono);--ins-digit:var(--sans);position:fixed;inset:0;padding:6px;background:var(--frame);color:var(--ins-paper);font-family:var(--ins-display);font-variant-numeric:tabular-nums;container-type:size;overflow:hidden}
+.sky-page{--frame:#1e1e1c;--ink:#201f1b;--ins-black:var(--frame);--ins-paper:var(--paper);--ins-muted:#e8e8df;--ins-coral:#cb8870;--ins-yellow:#ceae6d;--ins-display:var(--sans);--ins-heading:var(--chinese);--ins-body:var(--mono);--ins-digit:var(--sans);position:fixed;inset:0;padding:6px;background:var(--frame);color:var(--ins-paper);font-family:var(--ins-display);font-variant-numeric:tabular-nums;container-type:size;overflow:hidden}
 .instrument-console{height:100%;width:100%;display:grid;grid-template-columns:repeat(18,minmax(0,1fr));grid-template-rows:clamp(204px,22cqh,270px) minmax(0,1fr);gap:10px;padding:12px;background:var(--ins-black);border-radius:28px;overflow:hidden}
 .ins-module{min-width:0;min-height:0;position:relative;overflow:hidden;margin:0;isolation:isolate}
 .ins-module h2{margin:0;font:450 var(--ins-label)/1.1 var(--ins-heading);letter-spacing:0;color:inherit}
@@ -28,11 +28,11 @@
 .ins-assembly{grid-column:1/15;grid-row:2;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:minmax(0,1fr) 124px;gap:6px;padding:9px;background:var(--ins-paper);border-radius:28px 28px 28px 7px;overflow:hidden}
 .ins-lane:nth-child(1){grid-column:1}.ins-lane:nth-child(2){grid-column:2}.ins-lane:nth-child(3){grid-column:3}.ins-lane:nth-child(4){grid-column:4}.ins-lane:nth-child(n+3){grid-row:1}
 .ins-environment-pair{grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;min-height:0;min-width:0}
-.ins-slot-advice{grid-column:2/5;--ins-group-bg:#ecf0e7;justify-content:center;gap:5px;border-radius:18px}
+.ins-slot-advice{grid-column:2/5;--ins-group-bg:#f0f0e8;justify-content:center;gap:5px;border-radius:18px}
 .ins-slot-advice h2{color:#655442}
 .ins-slot-advice p{margin:0;max-height:2.7em;font:400 clamp(18px,1.1cqw,20px)/1.35 var(--ins-display);text-wrap:balance}
 .ins-cell{--ins-group-bg:var(--ins-muted);--ins-group-fg:var(--ink);--ins-core-ink:#864731;--ins-secondary-ink:#65542d;display:flex;flex-direction:column;gap:6px;padding:12px;min-height:0;min-width:0;background:var(--ins-group-bg);color:var(--ins-group-fg);border:0;border-radius:0}
-.ins-slot-wind,.ins-slot-pressure,.ins-slot-dew,.ins-slot-drift,.ins-slot-radiation,.ins-slot-seeing,.ins-slot-stability,.ins-rain-top,.ins-rain-total{--ins-group-bg:#202724;--ins-group-fg:var(--ins-paper);--ins-core-ink:#d9a18c;--ins-secondary-ink:#d5bc88}
+.ins-slot-wind,.ins-slot-pressure,.ins-slot-dew,.ins-slot-drift,.ins-slot-radiation,.ins-slot-seeing,.ins-slot-stability,.ins-rain-top,.ins-rain-total{--ins-group-bg:#30302d;--ins-group-fg:var(--ins-paper);--ins-core-ink:#d9a18c;--ins-secondary-ink:#d5bc88}
 .ins-slot-moisture,.ins-slot-clouds,.ins-slot-micro,.ins-slot-column,.ins-slot-soil,.ins-slot-stage,.ins-slot-lunar,.ins-slot-solar,.ins-signal-top,.ins-cape-top{--ins-group-bg:var(--ins-paper);--ins-group-fg:var(--ink)}
 .ins-cell[data-priority='core'] h2{color:var(--ins-core-ink)}.ins-cell[data-priority='secondary'] h2{color:var(--ins-secondary-ink)}
 .ins-lane{display:flex;flex-direction:column;gap:6px;min-width:0;min-height:0;overflow:hidden}.ins-lane>.ins-cell{flex-shrink:0}.ins-lane>.ins-slot-stability{padding:6px 8px}
@@ -137,7 +137,7 @@
 /* Shared footer tracks and a flat circular lunar instrument. */
 .ins-environment-pair>.ins-cell{padding:12px;gap:8px;border-radius:18px;align-content:start}
 .ins-environment-pair h2{line-height:22px}
-.ins-environment-pair>.ins-slot-advice{display:grid;grid-template-rows:22px minmax(0,1fr);background:#ecf0e7}
+.ins-environment-pair>.ins-slot-advice{display:grid;grid-template-rows:22px minmax(0,1fr);background:#f0f0e8}
 .ins-slot-advice p{align-self:start;max-height:none;font:400 clamp(20px,1.3cqw,22px)/1.3 var(--ins-display);text-wrap:pretty}
 .ins-slot-micro{grid-template-columns:minmax(0,1fr);grid-template-rows:22px auto auto}
 .ins-slot-micro h2{grid-column:1}.ins-slot-micro .ins-reading{align-self:start}.ins-slot-micro .ins-reading strong{font-size:36px}.ins-slot-micro .ins-detail{align-self:start;font-size:13px}
@@ -342,7 +342,7 @@
 .ins-focus[data-kind='temperature']{grid-template-rows:auto minmax(0,1fr) 34px;row-gap:12px}
 .ins-focus-stack:has(.ins-focus[data-kind='temperature']){grid-template-rows:174px 60px}
 .ins-focus[data-kind='temperature']>.ins-graphic{height:34px;max-height:none;padding-inline:4px}
-.ins-thermal-bar{height:10px;background:linear-gradient(90deg,#1b2c29,#30483d);margin:2px 3px 4px;border-radius:3px}
+.ins-thermal-bar{height:10px;background:linear-gradient(90deg,#282723,#454239);margin:2px 3px 4px;border-radius:3px}
 .ins-thermal-bar i{top:-2px;bottom:-2px;width:5px;background:#fcfcf8;border:1px solid #19211d;box-shadow:0 0 0 1px #fcfcf8;transform:translateX(-50%)}
 .ins-slot-thermal[data-kind='temperature'] .ins-graphic{padding-inline:3px}
 .ins-slot-pressure{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto auto;gap:12px;padding:12px}
@@ -387,8 +387,8 @@
 .ins-wind-meta{display:flex;flex-direction:column;gap:6px;min-width:0}.ins-wind-meta small{font:400 16px/1.1 var(--ins-heading)}.ins-wind-meta b{display:flex;align-items:baseline;gap:6px;font:400 24px/1 var(--ins-display)}.ins-wind-meta em{font:400 16px/1 var(--ins-display)}
 .ins-focus[data-kind='wind'] .ins-detail{justify-content:space-between;gap:16px}
 .ins-slot-advice p{font-size:22px}
-.ins-wheel{background:#101613;border:0;border-radius:28px}
-.ins-wheel>svg{fill:var(--ins-paper)}.ins-dial-label{font-family:var(--ins-heading);font-weight:450}.ins-wheel-foot{left:16px;right:16px;bottom:14px;color:#bbc6b5}
+.ins-wheel{background:#20201e;border:0;border-radius:28px}
+.ins-wheel>svg{fill:var(--ins-paper)}.ins-dial-label{font-family:var(--ins-heading);font-weight:450}.ins-wheel-foot{left:16px;right:16px;bottom:14px;color:#c3c2b7}
 @media(min-width:701px) and (min-aspect-ratio:4/5) and (max-height:1000px){
  .ins-slot-wind{padding:8px 12px;gap:8px}.ins-wind-meta small,.ins-wind-meta em{font-size:14px}.ins-wind-meta b{font-size:22px}.ins-wind-meta{gap:5px}.ins-slot-advice p{font-size:20px}
 }
@@ -403,3 +403,29 @@
 @media(min-width:701px) and (max-aspect-ratio:4/5) and (max-height:1550px){.ins-slot-wind .ins-reading strong{font-size:36px}}
 
 @media(min-width:701px) and (max-aspect-ratio:4/5){.ins-slot-bearing{padding-block:10px}}
+
+/* A small English-only fit adjustment; all other peer titles retain their shared role. */
+.sky-page:lang(en) .instrument-console .ins-cell[data-kind='lcl'] h2{font-size:calc(var(--ins-label)*.95)}
+/* Inset rules distinguish consecutive paper cells without adding full card borders. */
+.sky-page{--ins-divider:#94938b}
+@media(min-width:701px){
+ .ins-slot-clouds,.ins-slot-column,.ins-slot-soil{overflow:visible;clip-path:inset(-3px 0 0)}
+ .ins-slot-clouds::before,.ins-slot-column::before,.ins-slot-soil::before{content:'';position:absolute;left:12px;top:-3px;width:min(168px,66%);height:1px;background:var(--ins-divider);pointer-events:none}
+}
+@media(min-width:701px) and (min-aspect-ratio:4/5){
+ .ins-slot-lunar{overflow:visible;clip-path:inset(-3px 0 0)}
+ .ins-slot-lunar::before{content:'';position:absolute;left:12px;top:-3px;width:min(168px,66%);height:1px;background:var(--ins-divider);pointer-events:none}
+}
+
+/* Primary wind and Moon diagrams use the available right-hand tracks, not a caption-sized middle row. */
+@media(min-width:701px){
+ .ins-focus[data-kind='wind'] h2{grid-column:1;grid-row:1}
+ .ins-focus[data-kind='wind']>.ins-graphic{grid-column:2;grid-row:1/4;align-self:stretch;max-height:none}
+ .ins-focus[data-kind='wind']>.ins-detail{grid-column:1;grid-row:3;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+ .ins-focus[data-kind='wind'] .ins-wind-meta{gap:6px}
+ .ins-focus[data-kind='moon']>.ins-graphic{grid-column:2;grid-row:2/4;align-self:stretch;max-height:none}
+ .ins-focus[data-kind='moon']>.ins-note{grid-column:1;grid-row:3}
+}
+@media(min-width:701px) and (min-aspect-ratio:4/5) and (min-height:1001px){
+ .instrument-console:has(.ins-focus[data-kind='wind']),.instrument-console:has(.ins-focus[data-kind='moon']){grid-template-rows:clamp(280px,25cqh,320px) minmax(0,1fr)}
+}

@@ -1,9 +1,20 @@
 import {XIAOMI_PAD_9_PRO_MAX,tabletReferenceViewport} from '../dist/tablet-profile.js';
 import assert from 'node:assert/strict';
-import { createWeatherFrame, resolveWeatherScene, WEATHER_PRESETS, WEATHER_CODE_GROUPS, MOTION } from '../dist/weather-art.js';
+import { createWeatherFrame, resolveWeatherScene, WEATHER_PRESETS, WEATHER_CODE_GROUPS, MOTION, WEATHER_LOOP, weatherLoopPhase } from '../dist/weather-art.js';
 import { resolvePixelGrid, FINE_MOTION } from '../dist/weather-shader.js';
 import { instrumentResolution } from '../dist/instrument-art.js';
 
+assert.equal(WEATHER_LOOP.seconds,45);
+assert.equal(MOTION.frames/MOTION.fps,WEATHER_LOOP.seconds);
+for(const time of [-4,0,.5,20,41,43,44.9,45,90]){
+  const phase=weatherLoopPhase(time);
+  assert(phase.time>=0&&phase.time<45&&phase.blend>=0&&phase.blend<=1);
+  assert(Math.abs(phase.time-weatherLoopPhase(time+45).time)<1e-10);
+  assert(Math.abs(phase.blend-weatherLoopPhase(time+45).blend)<1e-10);
+}
+assert.equal(weatherLoopPhase(41).blend,0);
+assert.equal(weatherLoopPhase(43).blend,.5);
+assert(weatherLoopPhase(45-1e-6).blend>1-1e-10,'The blend reaches the next cycle before wrapping');
 const names=Object.keys(WEATHER_PRESETS);
 for(const name of names) {
   const weather=WEATHER_PRESETS[name];
@@ -14,6 +25,12 @@ for(const name of names) {
     assert(first.pixels.every(color=>/^#[0-9a-f]{6}$/i.test(color)),`${name}: invalid pixel colour`);
     assert.deepEqual(first.pixels,createWeatherFrame(weather,rows,MOTION.frames).pixels,`${name}: loop is not periodic`);
     assert.notDeepEqual(first.pixels,createWeatherFrame(weather,rows,24).pixels,`${name}: scene does not animate`);
+  }
+  // Exercise negative pre-roll and the entire seam, including snowfall's phase indices.
+  for(const tick of [1,180,492,510,528,539]){
+    const current=createWeatherFrame(weather,24,tick);
+    assert(current.pixels.every(color=>/^#[0-9a-f]{6}$/i.test(color)),`${name}: seam has invalid pixels`);
+    assert.deepEqual(current.pixels,createWeatherFrame(weather,24,tick+MOTION.frames).pixels,`${name}: interior loop phase differs`);
   }
 }
 assert.equal(resolveWeatherScene({...WEATHER_PRESETS.rain,isDay:false}),'rain','precipitation must take priority over the clear-night scene');
@@ -48,7 +65,7 @@ for(const [width,height,limit] of [[320,480,4096],[1440,960,4096],[3408,2272,409
     if(style==='fine')assert(columns<=Math.min(width,FINE_MOTION.columns)&&rows<=height,'fine mode must not oversample the native canvas');
   }
 }
-console.log(`Verified ${names.length} Canvas fallback states at three panel shapes: weather mapping, valid pixels, motion and eight-second fallback loops.`);
+console.log(`Verified ${names.length} Canvas fallback states at three panel shapes: weather mapping, valid pixels, motion and 45-second fallback loops and pre-roll blending.`);
 console.log('Verified native-density fine grids, the 3.4K tablet split, block-mode sizing, aspect preservation and GPU texture limits.');
 const observationFine=instrumentResolution(420,240,1.6,'fine');
 assert.deepEqual(observationFine,{width:1344,height:768,grid:{columns:1344,rows:768}},'Fine observation art doubles native samples in both axes');

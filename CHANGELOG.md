@@ -1,6 +1,11 @@
 # Changelog
 
 ## Browser prototype — 2026-10-23
+
+- Clarify English Conditions summary, HOME TIPS / STORAGE TIPS and the matching Chinese purposes; broaden storage interpretations and reduce only the English LCL title by 5%.
+- Brighten observation neutrals without green tint, lift the flat Moon, enlarge primary gust/lunar diagrams, and lengthen paper separators threefold with a 3px upward offset.
+- Match sunset to sunrise with three inner solar rings and an ordered broken outer ring.
+- Restore default playback in the tablet preview and use a 45-second native weather loop with a four-second pre-roll blend in both pixel modes and the Canvas fallback. Add manual actual-GPU boundary verification.
 - Correct the Pad 9 Pro Max profile to 3408×2272, add an exact-ratio device preview, fill the usable viewport and share an overridable landscape Android status-bar allowance across both pages.
 - Enlarge peer titles and caption floors, restore fixed left origins and chart gutters, increase interpretation text, strengthen temperature-track contrast, rebalance wind content and redesign the purpose dial with larger type, a fine arc and sparse ticks.
 - Match observation type/paper roles to page one, unify peer title sizes, shorten the footer, make interpretations activity-specific and flatten the Moon into two-dimensional phase fills.

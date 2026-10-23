@@ -22,10 +22,14 @@ export function solarIconMarkup(event) {
       body+=line('M'+point(29)+'L'+point(65)+'M'+point(73)+'L'+point(80));
     }
   }else if(event==='sunset'){
-    // Three continuous semicircles replace the rising fan. The outer arc uses
-    // the same centre/radius as sunrise, without a horizon extending its width.
-    for(const radius of [80,54,28]){
+    // Three inner solar rings and a regular broken outer ring share sunrise's centre.
+    for(const radius of [54,41,28]){
       body+=line(`M${86-radius} 98A${radius} ${radius} 0 0 1 ${86+radius} 98`);
+    }
+    for(let i=0;i<=12;i++){
+      const angle=Math.PI+i*Math.PI/12;
+      const point=r=>[86+Math.cos(angle)*r,98+Math.sin(angle)*r].join(' ');
+      body+=line('M'+point(73)+'L'+point(80));
     }
   }else body=line('M36 86H136M74 64H98');
   return `<g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="butt" stroke-linejoin="round">${body}</g>`;

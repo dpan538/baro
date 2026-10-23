@@ -1,6 +1,14 @@
-// Shared weather vocabulary and the legacy Canvas fallback's eight-second timeline.
+// Shared weather vocabulary and the common weather-scene loop.
 // Weather fixtures are deliberately illustrative; no network observations are used.
-export const MOTION = Object.freeze({ fps: 12, frames: 96, columns: 24 });
+export const WEATHER_LOOP = Object.freeze({ seconds: 45, blendSeconds: 4 });
+export function weatherLoopPhase(seconds) {
+  const duration=WEATHER_LOOP.seconds;
+  const time=((seconds%duration)+duration)%duration;
+  const edge=Math.max(0,(time-(duration-WEATHER_LOOP.blendSeconds))/WEATHER_LOOP.blendSeconds);
+  return {time, blend:edge*edge*(3-2*edge)};
+}
+export const MOTION = Object.freeze({ fps: 12, frames: WEATHER_LOOP.seconds*12, columns: 24 });
+const positiveMod=(value,period)=>((value%period)+period)%period;
 // Lift light skies while giving shadows a deeper black point. Shared by GPU and fallback.
 export const PIXEL_TONE = Object.freeze({ saturation: 1.01, peak: .97, shadowGain: .74, highlightRemainder: .74, lowKnee: .16, highKnee: .76 });
 const toneCache = new Map();
@@ -141,10 +149,18 @@ const mix = (a, b, amount) => {
 };
 
 export function createWeatherFrame(weather, visibleRows, tick = 0) {
+  const phase=weatherLoopPhase(tick/MOTION.fps);
+  const current=paintWeatherFrame(weather,visibleRows,Math.round(phase.time*MOTION.fps));
+  if(phase.blend>0){
+    const previous=paintWeatherFrame(weather,visibleRows,Math.round((phase.time-WEATHER_LOOP.seconds)*MOTION.fps));
+    current.pixels=current.pixels.map((color,i)=>mix(color,previous.pixels[i],phase.blend));
+  }
+  return current;
+}
+function paintWeatherFrame(weather, visibleRows, frame) {
   const scene = resolveWeatherScene(weather);
   const columns = MOTION.columns;
   const rows = Math.ceil(visibleRows);
-  const frame = ((tick % MOTION.frames) + MOTION.frames) % MOTION.frames;
   const nocturnal = weather.isDay === false && !['unknown', 'dawn', 'sunset'].includes(scene);
   const palette = nocturnal ? PALETTES.night : PALETTES[scene];
   const pixels = new Array(columns * rows);
@@ -156,7 +172,7 @@ export function createWeatherFrame(weather, visibleRows, tick = 0) {
     x = Math.round(x); y = Math.round(y);
     if (x >= 0 && x < columns && y >= 0 && y < rows) pixels[y * columns + x] = color;
   };
-  const drift = (offset = 0) => [0, 1, 2, 1][Math.floor((frame + offset) % 96 / 24)];
+  const drift = (offset = 0) => [0, 1, 2, 1][Math.floor(positiveMod(frame + offset,96) / 24)];
   const cloud = (left, top, mask = CLOUD, dark = false, offset = 0) => {
     const shades = scene==='sunset'?['#f8db7a','#edab66','#974b83']:scene==='dawn'?['#f8e8ba','#eeb987','#8a73bd']:nocturnal?['#9aafff','#5067c9','#1b307b']:dark?['#9eaaff','#4b59b8','#1b2866']:['#f8f8ed','#d9eaf2','#80b4db'];
     const x0 = Math.round(left + drift(offset));
@@ -185,7 +201,7 @@ export function createWeatherFrame(weather, visibleRows, tick = 0) {
     }
     if (scene === 'wind') {
       for (let line = 0; line < 3; line++) {
-        const x0 = ((Math.floor(frame / 4) + line * 8) % 32) - 8;
+        const x0 = positiveMod(Math.floor(frame / 4) + line * 8,32) - 8;
         const y = Math.round(visibleRows * (.57 + line * .12));
         for (let x = 0; x < 5; x++) put(x0 + x, y, '#f5f4e7');
       }
@@ -205,9 +221,9 @@ export function createWeatherFrame(weather, visibleRows, tick = 0) {
     for (let index = 0; index < (scene === 'snow' ? 10 : 16); index++) {
       const column = columnsForDrops[index];
       const slow = scene === 'snow' ? Math.floor(frame / 4) : frame;
-      const y = top + ((phasesForDrops[index] + slow) % depth);
+      const y = top + positiveMod(phasesForDrops[index] + slow,depth);
       if (scene === 'snow') {
-        const x = column + [0, 1, 0, -1][Math.floor(frame / 24)];
+        const x = column + [0, 1, 0, -1][positiveMod(Math.floor(frame / 24),4)];
         put(x, y, '#ffffff');
         if (index % 3 === 0) for (const [dx,dy] of [[-1,0],[1,0],[0,-1],[0,1]]) put(x+dx, y+dy, '#edf5f4');
       } else {
@@ -235,7 +251,7 @@ export function createWeatherFrame(weather, visibleRows, tick = 0) {
     }
     [[3,.12],[8,.21],[21,.13],[4,.48],[12,.43],[20,.54],[7,.74],[17,.83]].forEach(([x,f],index)=>{
       const y=Math.round(visibleRows*f);
-      const light=(Math.floor(frame/12)+index)%4;
+      const light=positiveMod(Math.floor(frame/12)+index,4);
       put(x,y,light===0?'#fff1a0':light===1?'#96e8ff':'#5480dd');
       if(index%3===0 && light===0) for(const [dx,dy] of [[-1,0],[1,0],[0,-1],[0,1]]) put(x+dx,y+dy,'#75cfff');
     });
@@ -249,7 +265,7 @@ export function createWeatherFrame(weather, visibleRows, tick = 0) {
       const depth=(y-horizon)/Math.max(1,rows-horizon-1);
       let water=mix(far,near,Math.sqrt(depth));
       if(y%2===0&&(x+y*5)%9<2)water=mix(water,'#758fa6',.18);
-      const shimmer=.55+.2*Math.sin(frame/MOTION.frames*Math.PI*2+(x+y)*1.7);
+      const shimmer=.55+.2*Math.sin(frame/96*Math.PI*2+(x+y)*1.7);
       if(y%2===0&&Math.abs(x-center)<1+depth*5&&(x*7+y*3)%5<3)water=mix(water,'#ffd07a',shimmer);
       put(x,y,water);
     }
@@ -305,7 +321,7 @@ export class PixelWeatherRenderer {
       this.ctx.fillRect(x0,y0,x1-x0,y1-y0);
       this.ctx.fillStyle=color;this.ctx.fillRect(x0+inset,y0+inset,Math.max(0,x1-x0-inset*2),Math.max(0,y1-y0-inset*2));
     }
-    this.previous=data.pixels;this.canvas.dataset.scene=data.scene;this.canvas.dataset.frame=String(frame);
+    this.previous=data.pixels;this.canvas.dataset.scene=data.scene;this.canvas.dataset.frame=String(frame);this.canvas.dataset.loopSeconds=String(WEATHER_LOOP.seconds);this.canvas.dataset.loopTime=weatherLoopPhase(frame/MOTION.fps).time.toFixed(2);
   }
   sync() {
     cancelAnimationFrame(this.raf);

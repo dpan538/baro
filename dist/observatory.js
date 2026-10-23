@@ -21,7 +21,7 @@ function insMoonGraphic(g){
  const r=46,k=-Math.cos(g.fraction*2*Math.PI),waxing=g.fraction<.5;
  const terminator=Math.abs(k)<.0001?'L50 4':`A${Math.abs(k)*r} ${r} 0 0 ${waxing?(k>=0?1:0):(k>=0?0:1)} 50 4`;
  const lit=`M50 4A${r} ${r} 0 0 ${waxing?1:0} 50 96${terminator}Z`;
- return insSvg(`<circle cx="50" cy="50" r="46" fill="#28312e"/><path d="${lit}" fill="#e5d8ac"/><circle cx="50" cy="50" r="46" fill="none" stroke="#28312e" stroke-width=".7"/>`,'0 0 100 100');
+ return insSvg(`<circle cx="50" cy="50" r="46" fill="#30302d"/><path d="${lit}" fill="#fff4c9"/><circle cx="50" cy="50" r="46" fill="none" stroke="#30302d" stroke-width=".7"/>`,'0 0 100 100');
 }
 function insMetric(kind,v,s,primary=false){
  const en=s.language==='en',c=(zh,english)=>en?english:zh,g=instrumentGraphicData(kind,v),n=insN;
@@ -191,7 +191,7 @@ export class ObservatoryController{
   this.page.setAttribute('aria-label',c('环境观测仪器面板，示例数据','Environmental instrument panel, demo data'));
   const primary=this.el('focus');primary.dataset.kind=content.primary.kind;primary.dataset.priority='core';primary.dataset.fields=content.primary.fields.join(' ');
   primary.innerHTML=insMetric(content.primary.kind,v,s,true);
-  this.el('advice').innerHTML=`<h2>${c('环境解读','Conditions, simply')}</h2><p>${insEscape(planningAdvice(v,s.language))}</p>`;
+  this.el('advice').innerHTML=`<h2>${c('环境解读','Conditions summary')}</h2><p>${insEscape(planningAdvice(v,s.language))}</p>`;
   this.el('context').innerHTML=`<span class="ins-context-place">${insEscape(v.location)} · ${v.window.day.date.slice(5).replace('-','/')}</span><h2>${c('观测时段','Observation window')}</h2><strong data-field="window">${v.window.available?v.interval:c('无对应交点','No crossing')}${v.window.available&&v.window.end>=1440?'<small>+1</small>':''}</strong><span class="ins-source">${c('示例 · 气象趋势为示意','Demo · illustrative weather trend')}</span>`;
   this.el('panorama-caption').textContent=(insScenes[s.presetKey]??insScenes.partly)[en?1:0]+c(' · 像素示意',' · pixel study');
   for(const module of content.modules){const el=this.el(module.slot);el.dataset.kind=module.kind;el.dataset.priority=instrumentPriority(v,module.kind);el.dataset.fields=module.fields.join(' ');el.innerHTML=insMetric(module.kind,v,s);}

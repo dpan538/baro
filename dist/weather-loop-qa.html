@@ -1,0 +1,36 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BARO · Weather loop QA</title>
+<style>body{margin:24px;background:#fcfcf8;color:#17231c;font:16px/1.5 system-ui}button{font:inherit;padding:10px 18px}canvas{display:block;width:360px;height:240px;margin:18px 0;image-rendering:pixelated}pre{white-space:pre-wrap}</style>
+<h1>45-second native weather loop</h1><button id="verify">Check all 11 scenes × both pixel styles</button><p role="status">Ready</p><canvas></canvas><pre id="results"></pre>
+<script type="module">
+import {FineWeatherRenderer,FINE_MOTION} from './weather-shader.js';
+import {WEATHER_PRESETS,WEATHER_LOOP} from './weather-art.js';
+const canvas=document.querySelector('canvas'),status=document.querySelector('[role=status]'),results=document.querySelector('#results');
+const renderer=new FineWeatherRenderer(canvas,WEATHER_PRESETS.sunset);renderer.setAnimated(false);
+const frameAt=time=>{
+ renderer.elapsed=time;renderer.draw(Math.round(time*FINE_MOTION.fps));
+ const gl=renderer.gl,pixels=new Uint8Array(renderer.columns*renderer.rows*4);
+ gl.bindFramebuffer(gl.FRAMEBUFFER,renderer.fbo);gl.readPixels(0,0,renderer.columns,renderer.rows,gl.RGBA,gl.UNSIGNED_BYTE,pixels);gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+ if(gl.getError()!==gl.NO_ERROR)throw new Error('GPU error while reading the rendered frame');
+ return pixels;
+};
+const difference=(a,b)=>{let total=0;for(let i=0;i<a.length;i++)total+=Math.abs(a[i]-b[i]);return total/a.length;};
+document.querySelector('button').addEventListener('click',async()=>{
+ status.textContent='Checking actual GPU pixels…';results.textContent='';
+ try{
+  if(!renderer.gl)throw new Error('WebGL2 is required for GPU verification');
+  const rows=[],step=1/FINE_MOTION.fps;
+  for(const style of ['fine','block'])for(const [name,weather] of Object.entries(WEATHER_PRESETS)){
+   renderer.setPixelStyle(style);renderer.setWeather(weather);
+   const first=frameAt(0),next=frameAt(step),last=frameAt(WEATHER_LOOP.seconds-step),wrap=frameAt(WEATHER_LOOP.seconds),after=frameAt(WEATHER_LOOP.seconds+step),middle=frameAt(20);
+   const exact=difference(first,wrap),repeat=difference(next,after),seam=difference(last,first),normal=difference(first,next),motion=difference(first,middle);
+   if(exact||repeat||!motion)throw new Error(`${style}/${name}: periodicity or animation failed`);
+   if(seam>Math.max(.75,normal*3))throw new Error(`${style}/${name}: seam discontinuity ${seam}`);
+   rows.push({style,name,exact,repeat,seam:+seam.toFixed(4),normal:+normal.toFixed(4),motion:+motion.toFixed(4)});
+   results.textContent=JSON.stringify(rows,null,2);
+   await new Promise(requestAnimationFrame);
+  }
+  status.textContent=`PASS · ${rows.length} GPU scene/style checks · 45-second loop · zero pixel difference at the wrap`;
+  renderer.setPixelStyle('fine');renderer.setWeather(WEATHER_PRESETS.sunset);renderer.elapsed=0;renderer.origin=performance.now();renderer.setAnimated(true);
+ }catch(error){status.textContent='FAIL · '+error.message;}
+});
+</script></html>

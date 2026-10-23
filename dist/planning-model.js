@@ -6,7 +6,7 @@ export const SKY_PURPOSES=Object.freeze([
   ['commute','通勤','COMMUTE'],['walking','步行','WALKING'],['cycling','骑行','CYCLING'],
   ['outing','户外停留','OUTDOORS'],['sunset','晚霞拍摄','SUNSET PHOTO'],['dawn','晨光拍摄','DAWN PHOTO'],
   ['blue','蓝调拍摄','BLUE HOUR'],['stars','夜空观测','STARGAZING'],['horizon','远眺','DISTANT VIEW'],
-  ['camp','露营','CAMPING'],['drying','晾晒通风','AIR & DRYING'],['gear','器材防潮','EQUIPMENT']
+  ['camp','露营','CAMPING'],['drying','居家建议','HOME TIPS'],['gear','储存建议','STORAGE TIPS']
 ]);
 const planningClamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 // Plain-language interpretation of the selected window, not a second forecast.
@@ -49,19 +49,19 @@ function planningPurposeInterpretation({purpose,preset,window,m,end},language){
  const lowCloud=m.low>80,cloud=Math.max(m.low??0,m.mid??0,m.high??0),details=[];
  let lead;
  if(purpose==='gear'){
-  lead=dew?c('空气接近饱和，冷镜片和金属表面容易结露。','Near-saturated air can leave dew on cool optics and metal.'):
-   m.humidity>=80?c('空气偏湿，器材表面冷却后更容易凝结水汽。','Humid air can condense on equipment as its surfaces cool.'):
-   m.dewSpread>=8?c('空气离饱和较远，器材需明显冷却才会结露。','Air is farther from saturation; equipment needs more cooling before dew forms.'):
-   c('空气尚未饱和，器材是否结露取决于表面温度。','Air is below saturation; condensation depends on equipment surface temperature.');
-  if(preset==='snow')details.push(c('积雪融化也会让镜片和接缝受潮。','Melting snow can wet lenses and seams.'));
-  else if(rain)details.push(c('雨滴会直接打湿暴露的镜片和接缝。','Rain can directly wet exposed optics and seams.'));
+  lead=dew?c('空气接近饱和，冷金属和玻璃表面容易结露。','Near-saturated air can leave dew on cool metal and glass.'):
+   m.humidity>=80?c('空气偏湿，纸张、织物和金属物品需留意防潮。','Humid weather calls for moisture protection for paper, fabric and metal.'):
+   m.dewSpread>=8?c('空气离饱和较远，物品表面需明显冷却才会结露。','Air is farther from saturation; stored items need more cooling before dew forms.'):
+   c('空气尚未饱和，物品是否结露取决于表面温度。','Air is below saturation; condensation depends on the surface temperature of stored items.');
+  if(preset==='snow')details.push(c('积雪融化后的水分会增加储存前的干燥需求。','Meltwater adds moisture that needs to dry before storage.'));
+  else if(rain)details.push(c('淋雨后的物品会把表面水分带入储存空间。','Rain-exposed items can carry surface moisture into storage.'));
   if(end.dewSpread<m.dewSpread-.5&&end.humidity>=80)details.push(c('后段空气更接近饱和，结露条件会增强。','Air nears saturation later, increasing the chance of dew.'));
-  if(dew)details.push(c('从低温环境带出的器材，表面可能比空气更冷。','Equipment moved from a cold space may be colder than the air.'));
-  else details.push(c('气象读数不代表器材表面已经潮湿。','Weather readings do not establish that equipment is already wet.'));
+  if(dew)details.push(c('从低温环境移出的物品，表面可能比空气更冷。','Items moved from a cold space may be colder than the air.'));
+  else details.push(c('室外气象读数不代表储物柜内已经潮湿。','Outdoor readings do not establish humidity inside a cupboard.'));
  }else if(purpose==='drying'){
-  lead=rain?c('雨水会重新打湿露天织物，干燥容易中断。','Rain can rewet exposed fabric and interrupt drying.'):
-   m.humidity>=80||m.vpd<.5?c('空气偏湿，容纳水汽的余量小，织物不易干透。','Humid air has little drying capacity; fabric dries slowly.'):
-   c('空气仍有蒸发余量，流动的风有助带走水汽。','Air has room for evaporation; moving air carries moisture away.');
+  lead=rain?c('雨水会重新打湿露天衣物，晾晒容易中断。','Rain can rewet outdoor laundry and interrupt drying.'):
+   m.humidity>=80||m.vpd<.5?c('空气偏湿，衣物和潮湿物品不易干透。','Humid air slows the drying of laundry and damp household items.'):
+   c('空气仍有蒸发余量，流动的风有助带走织物表面的水汽。','Air has room for evaporation; moving air carries moisture away from fabric.');
   if(night)details.push(c('夜间没有日照加热，干燥主要依靠空气流动。','There is no solar heating at night; drying relies on airflow.'));
   else if(m.radiation?.total>0)details.push(c('日照可提供热量，但干燥速度也受湿度影响。','Sunlight adds heat, but humidity still affects drying.'));
   if(gust)details.push(c('阵风会让轻薄织物明显摆动。','Gusts can strongly move light fabric.'));

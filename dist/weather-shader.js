@@ -1,4 +1,4 @@
-import { PixelWeatherRenderer, resolveWeatherScene, PIXEL_TONE } from './weather-art.js';
+import { PixelWeatherRenderer, resolveWeatherScene, PIXEL_TONE, WEATHER_LOOP, weatherLoopPhase } from './weather-art.js';
 
 export const FINE_MOTION = Object.freeze({ columns: 1536, coarseColumns: 96, fps: 24 });
 
@@ -20,7 +20,8 @@ void main(){ outputColor=texture(image,texCoord); }`;
 const ART = `#version 300 es
 precision highp float;
 uniform vec2 resolution;
-uniform float elapsed;
+uniform float loopTime;
+float elapsed;
 uniform int scene;
 uniform bool night;
 uniform bool coarse;
@@ -269,7 +270,8 @@ vec3 fogCoast(vec3 color,vec2 uv){
   float glow=exp(-dot((uv-lamp)*vec2(1.,aspect),(uv-lamp)*vec2(1.,aspect))/.00065);
   return light(color,vec3(1.,.75,.30)*glow*.25);
 }
-void main(){
+vec3 paint(float sceneTime){
+  elapsed=sceneTime;
   vec2 cell=floor(vec2(gl_FragCoord.x,resolution.y-gl_FragCoord.y));
   vec2 uv=(cell+.5)/resolution;
   aspect=resolution.y/resolution.x; p=vec2(uv.x,uv.y*aspect);
@@ -496,6 +498,15 @@ void main(){
   float lift=smoothstep(${PIXEL_TONE.lowKnee},${PIXEL_TONE.highKnee},luminance);
   float graded=mix(luminance*${PIXEL_TONE.shadowGain},1.-(1.-luminance)*${PIXEL_TONE.highlightRemainder},lift);
   color=clamp(color*graded/max(luminance,.001),0.,1.)*${PIXEL_TONE.peak};
+  return color;
+}
+void main(){
+  vec3 color=paint(loopTime);
+  // Advance both timelines forward; blend into a short pre-roll so the wrap is continuous.
+  if(loopTime>${WEATHER_LOOP.seconds-WEATHER_LOOP.blendSeconds}.){
+    float blend=smoothstep(${WEATHER_LOOP.seconds-WEATHER_LOOP.blendSeconds}.,${WEATHER_LOOP.seconds}.,loopTime);
+    color=mix(color,paint(loopTime-${WEATHER_LOOP.seconds}.),blend);
+  }
   outputColor=vec4(color,1.);
 }`;
 const SCENES = ['clear','partly','overcast','rain','storm','snow','fog','wind','night','sunset','dawn','unknown'];
@@ -531,7 +542,7 @@ export class FineWeatherRenderer {
     const shader=(type,source)=>{const s=gl.createShader(type);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)){const error=gl.getShaderInfoLog(s);gl.deleteShader(s);throw new Error(error);}return s;};
     const program=fragment=>{const v=shader(gl.VERTEX_SHADER,VERTEX),f=shader(gl.FRAGMENT_SHADER,fragment),p=gl.createProgram();gl.attachShader(p,v);gl.attachShader(p,f);gl.linkProgram(p);gl.deleteShader(v);gl.deleteShader(f);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(p));return p;};
     this.art=program(ART);this.copy=program(COPY);this.vao=gl.createVertexArray();gl.bindVertexArray(this.vao);
-    this.locations=Object.fromEntries(['resolution','elapsed','scene','night','coarse'].map(key=>[key,gl.getUniformLocation(this.art,key)]));
+    this.locations=Object.fromEntries(['resolution','loopTime','scene','night','coarse'].map(key=>[key,gl.getUniformLocation(this.art,key)]));
     this.texture=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,this.texture);
     this.maxTextureSize=gl.getParameter(gl.MAX_TEXTURE_SIZE);
     gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
@@ -562,12 +573,13 @@ export class FineWeatherRenderer {
     this.frame=frame;const scene=resolveWeatherScene(this.weather);
     gl.bindVertexArray(this.vao);gl.bindFramebuffer(gl.FRAMEBUFFER,this.fbo);gl.viewport(0,0,this.columns,this.rows);gl.useProgram(this.art);
     gl.uniform2f(this.locations.resolution,this.columns,this.rows);
-    gl.uniform1f(this.locations.elapsed,this.reduced.matches?0:this.elapsed);
+    const phase=weatherLoopPhase(this.reduced.matches?0:this.elapsed);
+    gl.uniform1f(this.locations.loopTime,phase.time);
     gl.uniform1i(this.locations.coarse,this.pixelStyle==='block'?1:0);gl.uniform1i(this.locations.scene,SCENES.indexOf(scene));gl.uniform1i(this.locations.night,this.weather.isDay===false&&!['dawn','sunset','fog'].includes(scene)?1:0);
     // The art pass must not sample its own render target.
     gl.bindTexture(gl.TEXTURE_2D,null);gl.drawArrays(gl.TRIANGLES,0,3);
     gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.viewport(0,0,this.canvas.width,this.canvas.height);gl.useProgram(this.copy);gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,this.texture);gl.drawArrays(gl.TRIANGLES,0,3);
-    this.canvas.dataset.scene=scene;this.canvas.dataset.frame=String(frame);this.canvas.dataset.elapsed=this.elapsed.toFixed(2);
+    this.canvas.dataset.scene=scene;this.canvas.dataset.frame=String(frame);this.canvas.dataset.elapsed=this.elapsed.toFixed(2);this.canvas.dataset.loopSeconds=String(WEATHER_LOOP.seconds);this.canvas.dataset.loopTime=phase.time.toFixed(2);
   }
   setPresentationActive(value){this.presentationActive=value;if(this.fallback)this.fallback.setPresentationActive(value);if(value){this.resize();this.sync();}else cancelAnimationFrame(this.raf);}
   setPixelStyle(style){if(!['fine','block'].includes(style))return;this.pixelStyle=style;this.columns=style==='block'?FINE_MOTION.coarseColumns:FINE_MOTION.columns;if(!this.fallback)this.resize();}
