@@ -106,11 +106,53 @@ class ConditionsAdviceTest {
             val hint=whiteBalanceHint(w,noon,lang);assertFalse(Regex("[0-9]+\\s*K").containsMatchIn(hint.direction+hint.note));assertTrue(hint.note.isNotEmpty())
         }
     }
+    @Test fun rainyNightCyclingCoversVisibilityConvectionGroundAndSolarRadiation(){
+        val night=epoch("22:30")
+        val fields=ordinary+mapOf("weather_code" to 80.0,"visibility" to 3300.0,"cape" to 70.0,
+            "convective_inhibition" to 11.0,"soil_moisture_0_to_1cm" to .39,"direct_radiation_instant" to 0.0,"diffuse_radiation_instant" to 0.0)
+        for(lang in listOf("zh","en")){
+            val a=advice(weather(fields,night),2,lang=lang)
+            assertTrue(a.text,a.reasons.containsAll(listOf("rain","visibility","wet_soil","convection","light_quality")))
+            assertTrue(a.text.contains("3.3"));assertFalse(a.text.contains("无雷暴"))
+            assertTrue(a.text.contains(if(lang=="zh")"主动照明"else "use lights"))
+        }
+    }
+    @Test fun visibilityBandsExplainQualityWithoutDiagnosingFogOrGuaranteeingSafeCycling(){
+        for((distance,label)in listOf(800.0 to "很低",3300.0 to "偏低",7000.0 to "远景稍受限",20000.0 to "较好")){
+            val a=advice(weather(ordinary+mapOf("visibility" to distance)),2)
+            assertTrue(a.text,a.text.contains(label));assertFalse(a.text.contains("安全"));assertFalse(a.text.contains("有雾"))
+        }
+        assertFalse(advice(weather(ordinary+mapOf("visibility" to null)),2).reasons.contains("visibility"))
+    }
+    @Test fun highCapeExplainsConditionalStormEffectsAndMissingCapeMakesNoStabilityClaim(){
+        for(cin in listOf(0.0,150.0,null)){
+            val a=advice(weather(ordinary+mapOf("cape" to 1800.0,"convective_inhibition" to cin)),2)
+            assertTrue(a.text,a.reasons.contains("convection"));assertTrue(a.text.contains("若触发"));assertTrue(a.text.contains("强雨阵风"))
+            assertEquals(cin==150.0,a.text.contains("抑制"))
+        }
+        assertFalse(advice(weather(),2).reasons.contains("convection"))
+    }
+    @Test fun radiationIsExplainedInEveryPurposeEvenAlongsideRainAndGusts(){
+        for(p in 0..11)for(radiation in listOf(300.0 to 40.0,20.0 to 180.0,150.0 to 150.0,0.0 to 0.0,null to null)){
+            val a=advice(weather(ordinary+mapOf("weather_code" to 95.0,"wind_gusts_10m" to 50.0,
+                "direct_radiation_instant" to radiation.first,"diffuse_radiation_instant" to radiation.second)),p)
+            assertEquals("thunder",a.reasons.first());assertTrue("$p: ${a.text}",a.reasons.contains("light_quality"))
+        }
+    }
+    @Test fun instrumentCoverageSurvivesCombinedHazardsAndBothLanguageBudgets(){
+        for(code in listOf(0.0,66.0,73.0,80.0,95.0))for(cape in listOf(70.0,2500.0))for(p in 0..11)for(lang in listOf("zh","en")){
+            val fields=ordinary+mapOf("weather_code" to code,"cape" to cape,"convective_inhibition" to 150.0,
+                "wind_gusts_10m" to 50.0,"visibility" to 800.0,"soil_moisture_0_to_1cm" to .45)
+            val a=advice(weather(fields),p,lang=lang)
+            assertTrue("$p/$lang: ${a.text}",a.reasons.contains("light_quality"))
+            if(p<10)assertTrue("$p/$lang: ${a.text}",a.reasons.containsAll(listOf("visibility","convection")))
+        }
+    }
     @Test fun allConditionPurposeAndLanguageCombinationsFitCompleteReadingBudget(){
         val cases=listOf(emptyMap(),ordinary,ordinary+mapOf("soil_moisture_0_to_1cm" to .5),ordinary+mapOf("weather_code" to 95.0,"wind_gusts_10m" to 50.0),ordinary+mapOf("weather_code" to 73.0),ordinary+mapOf("weather_code" to 66.0),ordinary+mapOf("weather_code" to 80.0),ordinary+mapOf("precipitation_probability" to 85.0),ordinary+mapOf("visibility" to 2000.0),ordinary+mapOf("relative_humidity_2m" to 90.0),ordinary+mapOf("temperature_2m" to 31.0,"relative_humidity_2m" to 90.0),ordinary+mapOf("temperature_2m" to 4.0),ordinary+mapOf("cloud_cover_low" to 90.0),ordinary+mapOf("dew_point_2m" to 19.0))
         for(fields in cases)for(p in 0..11)for(lang in listOf("zh","en"))for(at in listOf(dawn,noon)){
             val a=advice(weather(fields,at),p,lang=lang)
-            assertTrue(a.text.isNotEmpty());assertTrue(a.text.length<=if(lang=="zh")84 else 180)
+            assertTrue(a.text.isNotEmpty());assertTrue(a.text.length<=if(lang=="zh")112 else 230)
             assertTrue(a.text.endsWith(if(lang=="zh")"。"else "."));assertFalse(a.text.contains("\n"));assertEquals(a.reasons.size,a.reasons.distinct().size)
         }
     }

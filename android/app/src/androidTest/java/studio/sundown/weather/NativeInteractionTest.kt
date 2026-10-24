@@ -82,9 +82,35 @@ class NativeInteractionTest {
                 pause();s.onActivity{a->assertTrue(a.pager.weatherPage.translationX<0);assertEquals(View.LAYER_TYPE_HARDWARE,a.pager.weatherPage.dashboard.layerType)}
                 capture(if(cancel)"page-cancel-travel"else "page-commit-travel")
                 f.send(if(cancel)MotionEvent.ACTION_CANCEL else MotionEvent.ACTION_UP,x-width*.35f);pause(400)
-                s.onActivity{a->assertEquals(if(cancel)0 else 1,a.model.page);for(p in listOf(a.pager.weatherPage,a.pager.observationPage)){assertEquals(View.LAYER_TYPE_NONE,p.dashboard.layerType);assertEquals(1f,p.dashboard.scaleX,0f)}}
+                s.onActivity{a->assertEquals(if(cancel)0 else 1,a.model.page);for(p in listOf(a.pager.weatherPage,a.pager.observationPage)){assertEquals(View.LAYER_TYPE_HARDWARE,p.dashboard.layerType);assertEquals(1f,p.dashboard.scaleX,0f)}}
             }
             capture("page-after-state-commit")
+        }
+    }
+    @Test fun gpuLoopPrewarmsNextPagePausesForTouchAndResumesAfterBackground(){
+        seed(0);ActivityScenario.launch(MainActivity::class.java).use{s->live(s)
+            s.onActivity{it.model.motion=true;it.redraw()}
+            fun count():Long{var n=0L;s.onActivity{n=it.pager.weatherPage.art.renderedFrames};return n}
+            fun await(timeout:Long=15000,check:()->Boolean){val end=SystemClock.uptimeMillis()+timeout;while(SystemClock.uptimeMillis()<end){if(check())return;SystemClock.sleep(100)};assertTrue(check())}
+            await{var ready=false;s.onActivity{ready=it.pager.observationPage.art.renderedFrames>0};ready}
+            val first=count();await{count()>first}
+            var x=0f;var y=0f;var width=0f
+            s.onActivity{val loc=IntArray(2);it.pager.getLocationOnScreen(loc);width=it.pager.width.toFloat();x=loc[0]+width*.5f;y=loc[1]+it.pager.height*.82f}
+            val f=Finger(i,x,y);f.send(MotionEvent.ACTION_DOWN);f.send(MotionEvent.ACTION_MOVE,x-width*.25f)
+            // Allow a draw already inside eglSwapBuffers to finish, then require
+            // actual quiescence while the finger still owns the transition.
+            var stable=count();var lastChange=SystemClock.uptimeMillis()
+            await{val n=count();if(n!=stable){stable=n;lastChange=SystemClock.uptimeMillis()};SystemClock.uptimeMillis()-lastChange>=650}
+            val held=count();SystemClock.sleep(700);assertEquals(held,count())
+            f.send(MotionEvent.ACTION_CANCEL,x-width*.25f)
+            await{count()>held}
+            s.moveToState(androidx.lifecycle.Lifecycle.State.CREATED)
+            SystemClock.sleep(1200);val paused=count();SystemClock.sleep(700);assertEquals(paused,count())
+            s.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED);await{count()>paused}
+            s.onActivity{a->assertNull(a.pager.weatherPage.art.error);assertNull(a.pager.observationPage.art.error)
+                File(i.targetContext.getExternalFilesDir(null),"gpu-continuity.json").writeText(org.json.JSONObject().put("nextPagePrewarmed",true).put("touchHeldFrames",held).put("backgroundHeldFrames",paused).put("resumedFrames",a.pager.weatherPage.art.renderedFrames).toString(2))
+                a.model.motion=false;a.redraw()
+            }
         }
     }
     private fun find(v:View,label:String):View?{if(v is TextView&&v.text.toString()==label)return v;if(v is ViewGroup)for(n in 0 until v.childCount)find(v.getChildAt(n),label)?.let{return it};return null}

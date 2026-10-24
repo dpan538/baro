@@ -71,7 +71,7 @@ class MainActivity:Activity(){
         weatherArt=PixelArt(this,false);observationArt=PixelArt(this,true)
         weatherArt.elapsed=savedInstanceState?.getDouble("weather_elapsed")?:0.0;observationArt.elapsed=savedInstanceState?.getDouble("observation_elapsed")?:0.0
         val weatherBoard=WeatherDashboard(this,model);val obsBoard=ObservationDashboard(this,model)
-        weatherBoard.onSettings={settings.open()};weatherBoard.onPlace={showPlaces()};obsBoard.onPurpose={obsBoard.animatePurposeChange();redraw()}
+        weatherBoard.onSettings={settings.open()};weatherBoard.onPlace={showPlaces()};obsBoard.onPurpose={pager.cancelEntry();obsBoard.animatePurposeChange();redraw()}
         pager=TwoPageHost(this,model,NativePage(this,weatherBoard,weatherArt),NativePage(this,obsBoard,observationArt))
         pager.onPageChanged={redraw()};pager.onTransition={transition->pageTransition=transition;artLifecycle()}
         root.addView(pager,FrameLayout.LayoutParams(-1,-1))
@@ -87,9 +87,9 @@ class MainActivity:Activity(){
         hide(WindowInsetsCompat.Type.systemBars())
     }}
     override fun onWindowFocusChanged(hasFocus:Boolean){super.onWindowFocusChanged(hasFocus);if(hasFocus)immersive()}
-    override fun onResume(){super.onResume();visible=true;settings.resumePresentation();immersive();refresh(true);if(devicePrefs.getBoolean("location_follow",false))startLocation();artLifecycle();main.removeCallbacks(ticker);main.post(ticker)
+    override fun onResume(){super.onResume();visible=true;pager.renderingEnabled(true);settings.resumePresentation();immersive();refresh(true);if(devicePrefs.getBoolean("location_follow",false))startLocation();artLifecycle();main.removeCallbacks(ticker);main.post(ticker)
         if(updates.installing){updates.installing=false;settings.installPermissionReturned()}}
-    override fun onPause(){visible=false;touchInProgress=false;main.removeCallbacksAndMessages(null);pager.weatherPage.dashboard.contentTransition.clear();pager.observationPage.dashboard.contentTransition.clear();repository.cancelWeather();refreshSchedule.paused();placeSearch?.cancel();placeDialog?.cancelSearch();feedback.cancel();settings.cancelRequests();stopLocation();artLifecycle();super.onPause()}
+    override fun onPause(){visible=false;pager.renderingEnabled(false);touchInProgress=false;main.removeCallbacksAndMessages(null);pager.weatherPage.dashboard.contentTransition.clear();pager.observationPage.dashboard.contentTransition.clear();repository.cancelWeather();refreshSchedule.paused();placeSearch?.cancel();placeDialog?.cancelSearch();feedback.cancel();settings.cancelRequests();stopLocation();artLifecycle();super.onPause()}
     override fun onDestroy(){placeSearch?.cancel();placeDialog?.dismissFromHost();settings.dispose();weatherArt.dispose();observationArt.dispose();repository.close();super.onDestroy()}
     override fun onSaveInstanceState(out:Bundle){out.putDouble("weather_elapsed",weatherArt.elapsed);out.putDouble("observation_elapsed",observationArt.elapsed);super.onSaveInstanceState(out)}
     private val ticker=object:Runnable{override fun run(){
@@ -102,7 +102,7 @@ class MainActivity:Activity(){
         val wx=model.weather;val before=wx?.let{model.window(it)}
         model.now=refreshSchedule.wall()
         if(wx?.stale(model.now)==true){model.weather=null;repository.cached(model.place);refreshSchedule.invalidate();redraw()}
-        else if(wx!=null&&model.window(wx)!=before)redraw()else if(model.page==1&&!pager.overlayOpen)pager.observationPage.dashboard.invalidate()
+        else if(wx!=null&&model.window(wx)!=before)redraw()else if(model.page==1&&!pager.overlayOpen&&!pageTransition)pager.observationPage.dashboard.invalidate()
         if(refreshSchedule.timedOut()){
             repository.cancelWeather();model.status="offline";refreshSchedule.finished(model.weather,true);redraw()
         }
@@ -121,6 +121,7 @@ class MainActivity:Activity(){
         }
     }
     fun changeLanguage(language:String){
+        pager.cancelEntry()
         val board=if(model.page==0)pager.weatherPage.dashboard else pager.observationPage.dashboard
         board.crossfadeContent{model.lang=language;redraw()}
     }
@@ -136,11 +137,12 @@ class MainActivity:Activity(){
     }
     private fun artLifecycle(){
         val transition=pageTransition
-        val pause=transition
+        val pause=transition||touchInProgress
+        weatherArt.foreground=visible;observationArt.foreground=visible
         weatherArt.pauseForInteraction(pause);observationArt.pauseForInteraction(pause)
         val exposed=visible
-        weatherArt.active=exposed&&model.weather!=null&&(model.page==0||transition)
-        observationArt.active=exposed&&model.weather?.let{it.scene(model.window(it).start)!="unknown"}==true&&(model.page==1||transition)
+        weatherArt.active=exposed&&model.weather!=null&&model.page==0
+        observationArt.active=exposed&&model.weather?.let{it.scene(model.window(it).start)!="unknown"}==true&&model.page==1
     }
     override fun dispatchTouchEvent(event:MotionEvent):Boolean{
         if(this::pager.isInitialized){when(event.actionMasked){

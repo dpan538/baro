@@ -2,7 +2,7 @@ package studio.sundown.weather
 
 import java.time.Instant
 
-/** Short, ranked explanations of the selected model window, never site observations. */
+/** Activity decisions plus visibility, convection and light at the same selected model instant. */
 data class ConditionsAdvice(val text:String,val reasons:List<String>)
 
 fun conditionsAdvice(w:Weather?,purpose:Int,at:Long,language:String,windowAvailable:Boolean=true):ConditionsAdvice {
@@ -37,13 +37,13 @@ fun conditionsAdvice(w:Weather?,purpose:Int,at:Long,language:String,windowAvaila
     fun offer(id:String,priority:Int,copy:Pair<String,String>?){if(copy!=null)choices.add(Candidate(id,priority,copy))}
 
     if(code in setOf(95,96,99))offer("thunder",120,when(p){
-        2->"雷暴时段不宜骑行，先到室内等候。" to "Thunderstorms: pause the ride and wait indoors."
-        4,5,6->"雷暴时段先停止露天拍摄，到室内等候。" to "Thunderstorms: pause exposed photography and wait indoors."
-        7,8->"雷暴时段先停止露天观测，到室内等候。" to "Thunderstorms: pause exposed observing and wait indoors."
-        9->"雷暴时段不要把帐篷当作避雷处，转入室内。" to "Thunderstorms: a tent is not lightning shelter; move indoors."
+        2->"雷暴时段不宜骑行，先到室内等候。" to "Thunderstorms: stop riding; wait indoors."
+        4,5,6->"雷暴时段先停止露天拍摄，到室内等候。" to "Thunderstorms: stop outdoor photos; go indoors."
+        7,8->"雷暴时段先停止露天观测，到室内等候。" to "Thunderstorms: stop observing; go indoors."
+        9->"雷暴时段不要把帐篷当作避雷处，转入室内。" to "Thunderstorms: tents do not protect; go indoors."
         10->"雷暴时段先收回阳台衣物，关好迎风侧窗。" to "Thunderstorms: bring balcony laundry in and close exposed windows."
         11->"雷暴时段先把露天器材移入干燥室内。" to "Thunderstorms: move exposed equipment into a dry room."
-        else->"雷暴时段减少露天停留，先到室内等候。" to "Thunderstorms: reduce exposed time and wait indoors."
+        else->"雷暴时段减少露天停留，先到室内等候。" to "Thunderstorms: wait indoors."
     })
     if(code in setOf(56,57,66,67))offer("freezing_rain",115,when(p){
         2->"冻雨可能使路面结冰，先暂停骑行。" to "Freezing rain may ice the road; pause cycling."
@@ -58,7 +58,7 @@ fun conditionsAdvice(w:Weather?,purpose:Int,at:Long,language:String,windowAvaila
         10,11->"雪水带入室内前先擦干，潮湿物品不要直接收纳。" to "Wipe off snowmelt before bringing items in; dry them before storage."
         else->"降雪会影响视线与路面，步行避开未清理路段。" to "Snow affects visibility and surfaces; avoid uncleared paths."
     })
-    else if(wetCode)offer("rain",95,when(p){
+    else if(wetCode&&code !in setOf(95,96,99))offer("rain",95,when(p){
         0->"该时段有降雨，通勤备雨具并给换乘留余量。" to "Rain in this window: carry rainwear and allow time for transfers."
         1->"该时段有降雨，步行选便于避雨和折返的路线。" to "Rain in this window: walk a route with shelter and an easy return."
         2->"该时段有降雨，骑行留出制动距离并保护随身物。" to "Rain in this window: allow braking space and cover belongings."
@@ -91,12 +91,34 @@ fun conditionsAdvice(w:Weather?,purpose:Int,at:Long,language:String,windowAvaila
         10->"阵风较强，固定晾衣架并收好阳台轻物。" to "Strong gusts: secure the drying rack and loose balcony items."
         else->"阵风较强，收起露天轻物并扣好器材箱。" to "Strong gusts: bring light items in and latch equipment cases."
     })
-    if(p<10&&(code in setOf(45,48)||(vis!=null&&vis<3000)))offer("visibility",88,when(p){
-        2->"能见度偏低，骑行先确认照明并降低速度。" to "Low visibility: check bicycle lights and reduce speed."
-        in 4..8->"能见度偏低，远景细节受限，可选近处主体。" to "Low visibility limits distant detail; choose a nearer subject."
-        9->"能见度偏低，扎营和返程前先确认路线标记。" to "Low visibility: confirm route markers before camping or returning."
-        else->"能见度偏低，步行和通勤优先选择熟悉路线。" to "Low visibility: use familiar routes for walking and commuting."
-    })
+    // Reading bands are editorial context, not road-safety limits or a diagnosis of fog.
+    val visibility=if(p<10&&vis!=null&&vis.isFinite()&&vis>=0){
+        val distance=Units.number(vis/1000,if(vis%1000==0.0)0 else 1)
+        val level=when{vis<1000->"很低";vis<5000->"偏低";vis<10000->"远景稍受限";else->"较好"}
+        val english=when{vis<1000->"very low";vis<5000->"reduced";vis<10000->"distant detail limited";else->"good"}
+        val action=when{
+            p==2&&vis<1000->"，先暂停骑行确认路况"
+            p==2&&vis<5000->"，减速留意车辆"
+            p==2&&vis<10000->"，仍需检查近处路况"
+            p==2->"，仍查近处路况"
+            p in 4..8&&vis<10000->"，优先选较近目标"
+            p==9&&vis<5000->"，确认返程路标"
+            vis<5000->"，留意路口与台阶"
+            else->"，仍查局地遮挡"
+        }
+        val enAction=when{
+            p==2&&vis<1000->"pause cycling"
+            p==2&&vis<5000->"slow down and watch traffic"
+            p==2->"still check nearby traffic"
+            p in 4..8&&vis<10000->"choose nearer subjects"
+            p==9&&vis<5000->"check return-route markers"
+            vis<5000->"watch junctions and steps"
+            else->"check local obstructions"
+        }
+        Candidate("visibility",if(vis<1000)105 else if(vis<5000)88 else 30,
+            "能见度${distance}公里${level}${action}。" to "Visibility ${distance} km: $english; $enAction.")
+    }else if(p<10&&code in setOf(45,48))Candidate("visibility",88,
+        "有雾，能见度数值缺失，先确认路线视线。" to "Fog is reported but visibility is missing; check sightlines locally.")else null
     if(wetSoil&&p<10)offer("wet_soil",72,when(p){
         2->"表层土壤可能偏湿，未铺装路段可能泥泞。" to "Model soil moisture is high; unpaved cycling sections may be muddy."
         3->"表层土壤可能偏湿，不宜直接坐草地或地上，先垫坐垫。" to "Model soil moisture is high; avoid sitting directly on grass or soil; use a mat."
@@ -154,16 +176,45 @@ fun conditionsAdvice(w:Weather?,purpose:Int,at:Long,language:String,windowAvaila
         else if(Physics.vpd(t,rh)?.let{it>=1}==true&&!wetCode)offer("drying",55,"室外空气较干，衣物可拉开晾晒；仍需留意降水时段。" to "Outdoor air is drier; space out laundry and still check rain timing.")
     }
     if(p==11&&(rh?.let{it>=80}==true||spread?.let{it<=3}==true))offer("storage_moisture",76,"室外湿度偏高，冷器材带入暖房先装袋回温，晾干后收纳。" to "Humid outside: bag cold gear before entering a warm room; dry it before storage.")
+    val cape=v("cape")?.takeIf{it.isFinite()&&it>=0}
+    val cin=v("convective_inhibition")?.takeIf{it.isFinite()}
+    val convection=if(p<10&&cape!=null)Candidate("convection",if(cape>=1000)84 else 25,when{
+        code in setOf(95,96,99)&&cape<1000->"该时段有雷暴，低位能仍需避险。" to "Thunderstorms are reported; low CAPE does not remove the risk."
+        code in setOf(95,96,99)->"雷暴可能伴强雨阵风，不能单看位能或抑制。" to "Storms may bring heavy rain/gusts despite CIN."
+        cape>=1000&&cin!=null&&kotlin.math.abs(cin)>=100->
+            "对流位能较高但有抑制，若触发雷暴或伴强雨阵风。" to "Higher CAPE with inhibition: triggered storms may bring heavy rain/gusts."
+        cape>=1000->"对流位能较高，若触发雷暴或伴强雨阵风，留意预警。" to "Higher CAPE: storms, if triggered, may bring heavy rain/gusts."
+        else->"对流位能低，仍留意雷暴预警。" to "Low CAPE does not rule out storms."
+    })else null
     val light=radiationState(v("direct_radiation_instant"),v("diffuse_radiation_instant"),elevation)
-    if(p!=7&&p!=11&&light.kind in setOf("direct","diffuse","mixed"))offer("light_quality",if(p in 4..6)58 else 48,when{
-        p==10&&light.kind=="direct"->"直射占比较高，露天晾晒留意深浅衣物的日晒差异。" to "Direct light dominates; consider sun exposure when hanging light and dark fabrics."
-        p==9&&light.kind=="direct"->"直射占比较高，搭营先留意遮阴随太阳移动。" to "Direct light dominates; check how campsite shade moves with the Sun."
-        p==2&&light.kind=="direct"->"直射占比较高，骑行休息点可优先选遮阴处。" to "Direct light dominates; choose shaded stops when cycling."
-        p<4&&light.kind=="direct"->"直射占比较高，步行或停留可优先选遮阴处。" to "Direct light dominates; prefer shaded walking routes and resting spots."
-        light.kind=="direct"->"直射占比较高，主体明暗差更大，留意亮部曝光。" to "Direct light dominates; expect stronger contrast and check highlights."
-        light.kind=="diffuse"->"漫射占比较高，光线较柔，主体阴影可能较浅。" to "Diffuse light dominates; expect softer light and shallower shadows."
-        else->"直射与漫射并存，云隙变化可能改变主体反差。" to "Direct and diffuse light coexist; cloud gaps may change subject contrast."
-    })
+    val hazardous=code in setOf(95,96,99,56,57,66,67)
+    val lightCopy=if(hazardous)when(light.kind){
+        "direct"->"直射主导，明暗反差较强。" to "Direct light dominates; contrast is stronger."
+        "diffuse"->"漫射主导，光线较柔和。" to "Diffuse light dominates; light is softer."
+        "mixed"->"直射、漫射混合，明暗可能变化。" to "Direct/diffuse mix; contrast may change."
+        "night"->"夜间直射、漫射为零，月光灯光仍存在。" to "Night solar direct/diffuse: zero; lamps/Moon remain."
+        "zero"->"日间直射、漫射为零，光线强弱待确认。" to "Daytime solar direct/diffuse: zero; light quality is unknown."
+        else->"直射、漫射缺失，光线强弱待确认。" to "Solar direct/diffuse missing; light quality is unknown."
+    }else when(light.kind){
+        "direct"->when(p){
+            2->"直射主导，留意迎光眩光并选遮阴停靠。" to "Direct light: watch glare; stop in shade."
+            0,1,3->"直射主导，步行或停留优先选遮阴处。" to "Direct light dominates; seek shade."
+            9->"直射主导，留意营地遮阴随太阳移动。" to "Direct light: shade moves around the camp."
+            10->"直射主导，晾晒留意织物日晒差异。" to "Direct light dominates; consider fabric sun exposure when drying."
+            11->"直射主导，器材与织物避免长时间暴晒。" to "Direct light dominates; avoid prolonged sun on stored gear or fabrics."
+            else->"直射主导，反差较强，留意亮部曝光。" to "Direct light dominates; protect highlights."
+        }
+        "diffuse"->if(p in 0..3||p==9)"漫射主导，光线较柔，仍需保持自身可见。" to "Diffuse light is softer; remain visible."
+            else "漫射主导，光线较柔，主体阴影较浅。" to "Diffuse light: soft light, faint shadows."
+        "mixed"->"直射与漫射混合，云隙可能改变明暗反差。" to "Direct/diffuse mix; gaps may change contrast."
+        "night"->when(p){
+            0,1,2->"夜间直射、漫射为零，需主动照明。" to "Night solar direct/diffuse: zero; use lights."
+            7->"夜间直射、漫射为零，观星仍需避开月光与灯光。" to "Night solar direct/diffuse: zero; lamps/Moon affect stars."
+            else->"夜间直射、漫射为零，不代表没有月光或灯光。" to "Night solar direct/diffuse: zero; lamps/Moon remain."
+        }
+        "zero"->"日间直射、漫射为零，暂不据此判断光线强弱。" to "Daytime solar direct/diffuse: zero; quality unknown."
+        else->"直射、漫射数据缺失，暂不判断光线强弱。" to "Direct and diffuse radiation are missing; light quality is unknown."
+    }
     val fallback=when(p){
         0->"通勤前确认换乘与遮雨点，路面积水需现场查看。" to "Check transfers and shelter before commuting; inspect route conditions locally."
         1->"步行选便于折返的路线，草地干湿需现场确认。" to "Choose a walk with an easy return; check grass wetness locally."
@@ -179,16 +230,107 @@ fun conditionsAdvice(w:Weather?,purpose:Int,at:Long,language:String,windowAvaila
         else->"收纳前确认物品已干燥，柜内湿度与器材温度未测量。" to "Check items are dry before storage; cabinet humidity and gear temperature are unmeasured."
     }
     val ranked=choices.sortedByDescending{it.priority}.distinctBy{it.id}
-    if(ranked.isEmpty())return result("local_check",fallback.first,fallback.second)
+    // Preserve two activity decisions, then explain the actual visible instruments.
+    // Explicit coverage prevents rain/soil advice from hiding visibility and radiation.
     val selected=ranked.take(2).toMutableList()
-    if(selected.size==1)selected.add(Candidate("local_check",0,fallback))
-    val budget=if(language=="zh")84 else 180
-    // Keep complete thoughts. Never truncate a caution or join half sentences.
+    if(selected.isEmpty())selected.add(Candidate("local_check",0,fallback))
+    visibility?.let{selected.add(it)};convection?.let{selected.add(it)}
+    if(light.kind!="missing"||choices.isNotEmpty()||visibility!=null||convection!=null)
+        selected.add(Candidate("light_quality",10,lightCopy))
+    if(selected.size==1&&selected.first().id!="local_check")selected.add(Candidate("local_check",0,fallback))
+    val budget=if(language=="zh")112 else 230
+    val compact=selected.size>=3
+    fun copy(candidate:Candidate):String{val pair=if(compact)compactAdvice(candidate.id,p,candidate.copy)else candidate.copy;return tr(pair.first,pair.second)}
+    fun length()=selected.sumOf{copy(it).length}+if(language=="en")selected.size-1 else 0
+    // Optional second activity detail yields to requested instrument coverage;
+    // the highest-priority weather decision is always retained.
+    if(length()>budget&&ranked.size>=2)selected.remove(ranked[1])
     val included=mutableListOf<Candidate>();var text=""
-    for(candidate in selected){val copy=tr(candidate.copy.first,candidate.copy.second);val combined=text+(if(language=="zh"||text.isEmpty())""else " ")+copy
+    for(candidate in selected.sortedByDescending{it.priority}){
+        val combined=text+(if(language=="zh"||text.isEmpty())""else " ")+copy(candidate)
         if(combined.length<=budget){text=combined;included.add(candidate)}
     }
     return ConditionsAdvice(text,included.map{it.id})
+}
+
+private fun compactAdvice(id:String,p:Int,original:Pair<String,String>):Pair<String,String> = when(id){
+    "freezing_rain"->when(p){
+        2->"冻雨可能使路面结冰，先暂停骑行。" to "Freezing rain: roads may ice; pause cycling."
+        in 4..8->"冻雨可能使地面器材结冰，暂停露天架设。" to "Freezing rain: ground/gear may ice; pause setup."
+        10,11->"冻雨时收回露天物品，检查表面水分。" to "Freezing rain: bring items in; check moisture."
+        else->"冻雨可能使地面结冰，先检查落脚处。" to "Freezing rain: ground may ice; check footing."
+    }
+    "snow"->when(p){
+        2->"降雪影响抓地与视线，先检查骑行路况。" to "Snow affects grip/sightlines; check the route."
+        in 4..8->"降雪遮挡远景，镜头和脚架需防湿。" to "Snow hides distant detail; keep optics dry."
+        9->"降雪时检查营地与排水，保持睡具干燥。" to "Snow: check pitch/drainage; keep bedding dry."
+        10,11->"雪水先擦干，潮湿物品不要直接收纳。" to "Wipe off snowmelt; dry items before storage."
+        else->"降雪影响路面，避开未清理路段。" to "Snow affects surfaces; avoid uncleared paths."
+    }
+    "rain_chance"->when(p){
+        2->"降水机会较高，骑行备雨具与避雨点。" to "Rain possible: pack rainwear and plan shelter."
+        in 4..8->"降水机会较高，露天架设先备器材遮雨。" to "Rain possible: prepare a cover for outdoor gear."
+        9->"降水机会较高，扎营先看排水与撤收路线。" to "Rain possible: check drainage and a route out."
+        10->"降水机会较高，露天衣物移到遮雨处。" to "Rain possible: shelter outdoor laundry."
+        11->"降水机会较高，外带器材加防水包。" to "Rain possible: waterproof equipment bags."
+        else->"降水机会较高，带雨具并安排避雨路线。" to "Rain possible: carry rainwear and plan shelter."
+    }
+    "dew"->when(p){
+        2->"近露点且风弱，车座可能有露水，骑前擦干。" to "Calm near dew point: check saddle for dew."
+        3->"近露点且风弱，草地座位可能结露，落座前检查。" to "Calm near dew point: check seats for dew."
+        4,5,6->"近露点且风弱，拍摄留意鞋面与镜头结露。" to "Calm near dew point: protect shoes/lenses from dew."
+        7,8->"近露点且风弱，长时间观测先给镜片防露。" to "Calm near dew point: protect optics from dew."
+        9->"近露点且风弱，外帐可能挂露，收帐前晾干。" to "Calm near dew point: dry a dewy flysheet."
+        else->"清晨或夜间近露点且风弱，草叶可能沾湿鞋袜。" to "Calm near dew point: grass dew may wet shoes/socks."
+    }
+    "gusts"->when(p){
+        2->"阵风较强，桥面与开阔路段留意侧风。" to "Gusts: watch exposed crosswinds."
+        9->"阵风较强，检查营地遮挡和固定。" to "Gusts: check campsite shelter and anchors."
+        in 4..8->"阵风会晃动支架，降低并稳固支撑。" to "Gusts: lower and stabilise mounts."
+        10,11->"阵风较强，收好阳台轻物并固定器材。" to "Gusts: secure balcony items and gear."
+        else->"阵风较强，留意松动物件并收好雨伞。" to "Gusts: secure loose items."
+    }
+    "rain"->when(p){
+        0->"有雨，通勤备雨具并预留换乘时间。" to "Rain: carry rainwear and allow transfer time."
+        1->"有雨，步行选便于避雨和折返的路线。" to "Rain: walk a route with shelter and an easy return."
+        2->"有雨，骑行留足制动余量。" to "Rain: allow braking space and cover belongings."
+        3->"有雨，停留选有顶棚且座位干燥处。" to "Rain: choose covered, dry seating."
+        4->"有雨，晚霞机位需遮雨且西侧开阔。" to "Rain: shelter gear; check western view."
+        5->"有雨，晨拍保护器材并确认东侧视野。" to "Rain: cover gear; check eastern view."
+        6->"有雨，蓝调拍摄先遮雨并摆稳脚架。" to "Rain: cover blue-hour gear; steady tripod."
+        7->"降雨遮挡星空，收起露天望远镜。" to "Rain obscures stars; shelter exposed optics."
+        8->"雨中远景层次受限，优先观察近处目标。" to "Rain limits distant detail; view nearer."
+        9->"有雨，检查营地排水并让睡具隔湿。" to "Rain: check drainage; keep bedding dry."
+        10->"有雨，收回露天晾晒衣物。" to "Rain: bring exposed laundry under cover."
+        else->"淋雨物品先晾干，再密闭收纳。" to "Dry rain-wet items before closed storage."
+    }
+    "wet_soil"->when(p){
+        0->"湿草可能沾鞋，通勤抄近路前先检查。" to "Damp grass may wet shoes on commute shortcuts."
+        1->"湿草可能沾湿鞋面，优先走铺装路。" to "Damp grass may wet shoes; prefer paved paths."
+        2->"表土可能偏湿，土路留意泥泞。" to "Moist soil: unpaved sections may be muddy."
+        3->"表土可能偏湿，坐草地或地上先垫坐垫。" to "Moist model soil: use a mat before sitting on grass or ground."
+        4->"表土可能偏湿，晚霞机位选硬地并垫高器材。" to "Moist soil: firm sunset footing; raise bags."
+        5->"表土可能偏湿，晨拍穿草地先保护鞋面。" to "Moist soil: protect shoes on dawn grass."
+        6->"表土可能偏湿，蓝调低光下确认脚架落点。" to "Moist soil: check blue-hour tripod footing."
+        7->"表土可能偏湿，望远镜底座与电源需隔地防潮。" to "Moist soil: raise telescope bases and power."
+        8->"表土可能偏湿，远眺选硬地避免踏入湿草。" to "Moist soil: view from firm ground and avoid wet grass."
+        else->"表土可能偏湿，检查营地并加防潮垫。" to "Moist soil: check pitch; use a groundsheet."
+    }
+    "local_check"->when(p){
+        0->"通勤先看换乘与遮雨点。" to "Check commute transfers and shelter."
+        1->"步行选便于折返的路线。" to "Choose a walk with an easy return."
+        2->"骑行先检查车况与路线。" to "Check bicycle and route before riding."
+        3->"长时间停留先检查座位干湿。" to "Check seating is dry before a long stop."
+        4->"晚霞拍摄先确认西侧地平线。" to "Check the western horizon for sunset."
+        5->"晨光拍摄先确认东侧视野。" to "Check the eastern view for dawn."
+        6->"蓝调拍摄先摆稳脚架。" to "Stabilise the tripod for blue hour."
+        7->"观星先避开路灯，光污染未实测。" to "Avoid streetlights; local light pollution is unmeasured."
+        8->"远眺先确认目标方向遮挡。" to "Check obstructions toward distant targets."
+        9->"扎营前现场检查排水与干湿。" to "Inspect campsite drainage and ground moisture locally."
+        10->"开窗晾晒还需另看室内温湿度。" to "Check indoor temperature and humidity before airing."
+        else->"收纳前确认物品干燥，柜内湿度未测量。" to "Dry items before storage; cabinet humidity is unmeasured."
+    }
+    else->original
 }
 
 data class RadiationState(val kind:String,val direct:Double?,val diffuse:Double?,val diffuseShare:Double?)

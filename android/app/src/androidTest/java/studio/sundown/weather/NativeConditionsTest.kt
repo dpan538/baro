@@ -25,7 +25,9 @@ class NativeConditionsTest {
                 "soil_moisture_0_to_1cm" to .2,"precipitation_probability" to 0.0,"direct_radiation_instant" to 520.0,"diffuse_radiation_instant" to 80.0)
             val scenarios=mapOf("direct" to (12 to base),"diffuse" to (12 to (base+mapOf("direct_radiation_instant" to 20.0,"diffuse_radiation_instant" to 180.0))),
                 "wet" to (12 to (base+mapOf("soil_moisture_0_to_1cm" to .45))),"dew" to (5 to (base+mapOf("dew_point_2m" to 19.0,"relative_humidity_2m" to 95.0,"soil_moisture_0_to_1cm" to .4))),
-                "night" to (22 to (base+mapOf("direct_radiation_instant" to 0.0,"diffuse_radiation_instant" to 0.0))),"missing" to (12 to emptyMap()))
+                "night" to (22 to (base+mapOf("direct_radiation_instant" to 0.0,"diffuse_radiation_instant" to 0.0))),"missing" to (12 to emptyMap()),
+                "cycling-night" to (22 to (base+mapOf("weather_code" to 80.0,"visibility" to 3300.0,"cape" to 70.0,"convective_inhibition" to 11.0,"soil_moisture_0_to_1cm" to .39,"direct_radiation_instant" to 0.0,"diffuse_radiation_instant" to 0.0))),
+                "convective" to (12 to (base+mapOf("weather_code" to 95.0,"visibility" to 800.0,"cape" to 2500.0,"convective_inhibition" to 150.0,"wind_gusts_10m" to 50.0))))
             data class Run(val text:String,val rect:RectF)
             for((scenario,sample)in scenarios)for(lang in listOf("zh","en"))for(portrait in listOf(false,true))for(purpose in 0..11){
                 val epoch=at(sample.first);val times=(0L..60L).map{epoch+it*3600}
@@ -70,8 +72,8 @@ class NativeConditionsTest {
                     val radiation=runs.filter{nodes.getValue("ins-radiation").contains(it.rect.centerX(),it.rect.centerY())}.joinToString(" "){it.text}
                     if(!radiation.contains(if(lang=="zh")"主导"else "-led"))issues.put("Daylight interpretation absent: $radiation")
                 }
-                records.put(JSONObject().put("scenario",scenario).put("lang",lang).put("portrait",portrait).put("purpose",purpose).put("text",content.text).put("reasons",JSONArray(content.reasons)).put("issues",issues));errors+=issues.length()
-                if((scenario=="direct"&&purpose==4)||(scenario=="wet"&&purpose==3)||(scenario=="dew"&&purpose==5)){
+                records.put(JSONObject().put("scenario",scenario).put("lang",lang).put("portrait",portrait).put("purpose",purpose).put("text",content.text).put("lines",layout.lineCount).put("lastLineFraction",layout.getLineWidth(layout.lineCount-1)/layout.width).put("reasons",JSONArray(content.reasons)).put("issues",issues));errors+=issues.length()
+                if((scenario=="direct"&&purpose==4)||(scenario=="wet"&&purpose==3)||(scenario=="dew"&&purpose==5)||(scenario in listOf("cycling-night","convective")&&purpose==2)){
                     File(i.targetContext.getExternalFilesDir(null),"conditions-controlled-$scenario-${if(portrait)"portrait"else"landscape"}-$lang.png").outputStream().use{bitmap.compress(Bitmap.CompressFormat.PNG,100,it)}
                 }
                 bitmap.recycle()

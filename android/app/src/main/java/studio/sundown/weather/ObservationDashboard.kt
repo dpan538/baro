@@ -36,7 +36,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         if(!ValueAnimator.areAnimatorsEnabled()){contentProgress=1f;invalidate();return}
         contentAnimator=ValueAnimator.ofFloat(from,1f).apply{duration=220;interpolator=LinearInterpolator();addUpdateListener{contentProgress=it.animatedValue as Float;invalidate()};start()}
     }
-    override fun onDetachedFromWindow(){contentAnimator?.cancel();super.onDetachedFromWindow()}
+    override fun cancelPresentation(){contentAnimator?.cancel();contentProgress=1f;super.cancelPresentation()}
     private fun v(k:String)=wx?.value(k,at)
     private fun n(k:String,d:Int=0)=Units.number(v(k),d)
     private fun t(k:String,d:Int=1)=model.temp(v(k),d)
@@ -335,6 +335,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         figureColumn(b,gr,name,value,"%",listOf(heading("逐小时模型","Hourly model"),"0–100%"),dark)
         val fg=if(dark)paper else ink;val activeColor=if(dark)CORAL else 0xff864731.toInt();val inactive=if(dark)0xff68685e.toInt()else 0xffdedbd2.toInt()
         val top=gr.top;val bottom=gr.bottom-20;val chartHeight=bottom-top
+        redrawInk(RectF(gr.left+1,top,gr.right,bottom-1),if(activeId=="ins-focus")CORAL else if(dark)charcoal else paper,true)
         repeat(42){i->val x=gr.left+3+(gr.width()-6)*i/41;val height=chartHeight*(.20f+.80f*i/41)
             line(x,bottom,x,bottom-height,if(number!=null&&number>0&&i/41.0<=number/100)activeColor else inactive,max(.9f,gr.width()/252*1.8f))}
         line(gr.left,top,gr.left,gr.bottom,if(dark)0xff94948a.toInt()else 0xffb4a89b.toInt(),.7f)
@@ -413,6 +414,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         val radius=b.height()*.43f
         val cx=b.right-12-radius;val cy=b.centerY();val gr=RectF(cx-radius,cy-radius,cx+radius,cy+radius)
         figureColumn(b,gr,name,Units.number(az),"°")
+        redrawInk(gr,pale)
         circle(cx,cy,radius,CORAL)
         repeat(72){i->val a=i*PI/36;val outer=radius*.97f;val inner=radius*(if(i%18==0).77f else if(i%6==0).84f else .92f)
             line(cx+cos(a).toFloat()*inner,cy+sin(a).toFloat()*inner,cx+cos(a).toFloat()*outer,cy+sin(a).toFloat()*outer,ink,if(i%6==0)1f else .65f)}
@@ -432,6 +434,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         val reading=Units.number(direct)+" / "+Units.number(diffuse);val size=if(portrait)30f else 32f
         val gr=columnFigure(b,name,b.width()*.44f,reading,size)
         val light=radiationState(direct,diffuse,wx?.let{Astronomy.sun(at,it.place).elevation})
+        redrawInk(RectF(gr.left,gr.top,gr.right,gr.bottom-2),charcoal)
         val day=total!=null&&total>0;val f=light.diffuseShare?:0.0
         val caption=when(light.kind){
             "missing"->heading("模型暂无数据","Model unavailable")
@@ -718,7 +721,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
             else scalar(it,"PM2.5",Units.number(wx?.pm25),"μg/m³")
         }
         draw("ins-freezing"){scalar(it,heading("零度层","0°C level"),n("freezing_level_height"),"m")}
-        draw("ins-signal"){if(wx?.scene()=="storm"){val body=base(it,heading("对流抑制","CIN"));value(body,n("convective_inhibition"),"J/kg",32f);note(heading("模型能量","Model energy"),body)}else{val body=base(it,heading("凝结高度 ≈","LCL height ≈"));value(body,Units.number(Physics.lcl(v("temperature_2m"),v("dew_point_2m")?:Physics.dew(v("temperature_2m"),v("relative_humidity_2m")))),"m",32f);note(heading("距地高度 · 近似","AGL · approx."),body)}}
+        draw("ins-signal"){if(wx?.scene(wx!!.atmosphereTime(at))=="storm"){val body=base(it,heading("对流抑制","CIN"));value(body,n("convective_inhibition"),"J/kg",32f);note(heading("模型能量","Model energy"),body)}else{val body=base(it,heading("凝结高度 ≈","LCL height ≈"));value(body,Units.number(Physics.lcl(v("temperature_2m"),v("dew_point_2m")?:Physics.dew(v("temperature_2m"),v("relative_humidity_2m")))),"m",32f);note(heading("距地高度 · 近似","AGL · approx."),body)}}
         draw("ins-cape"){val body=base(it,heading("对流位能","CAPE"));value(body,n("cape"),"J/kg",32f);note(heading("模型能量","Model energy"),body)}
         activeId="ins-rain";rain(r("ins-rain"),r("ins-rain-total"));activeId=""
         val assembly=r("ins-assembly");p.reset();p.isAntiAlias=true;p.color=groupSurface;c!!.drawPath(m.outline("ins-assembly",assembly),p)
@@ -728,7 +731,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         draw("ins-distance"){if(model.purpose==8)scalar(it,heading("体感温度","Feels like"),t("apparent_temperature"),model.tempUnit)else scalar(it,heading("能见度","Visibility"),Units.number(v("visibility")?.div(1000),1),"km")}
         draw("ins-solar",::solar);draw("ins-bearing",::bearing);draw("ins-radiation",::radiation);draw("ins-stage",::light);draw("ins-lunar"){lunar(it,model.purpose==7)};draw("ins-drift",::upper)
         draw("ins-seeing"){val a=v("soil_temperature_0cm");val b=v("temperature_2m");scalar(it,heading("地表温差","Surface ΔT"),(if(a!=null&&b!=null&&a>b)"+"else "")+model.temp(if(a!=null&&b!=null)a-b else null,1,true),model.tempUnit,true)}
-        draw("ins-stability"){if(wx?.scene()=="storm")scalar(it,heading("凝结高度 ≈","LCL height ≈"),Units.number(Physics.lcl(v("temperature_2m"),v("dew_point_2m")?:Physics.dew(v("temperature_2m"),v("relative_humidity_2m")))),"m",true)else scalar(it,heading("对流抑制","CIN"),n("convective_inhibition"),"J/kg",true)}
+        draw("ins-stability"){if(wx?.scene(wx!!.atmosphereTime(at))=="storm")scalar(it,heading("凝结高度 ≈","LCL height ≈"),Units.number(Physics.lcl(v("temperature_2m"),v("dew_point_2m")?:Physics.dew(v("temperature_2m"),v("relative_humidity_2m")))),"m",true)else scalar(it,heading("对流抑制","CIN"),n("convective_inhibition"),"J/kg",true)}
         draw("ins-micro"){micro->
             val temp=v("temperature_2m");val rh=v("relative_humidity_2m");val isVpd=model.purpose in listOf(10,11);val isTrend=model.purpose in listOf(7,9)
             val body=base(micro,when{isVpd->heading("饱和差 VPD","VPD");isTrend->heading("气温变化","Temp. trend");else->heading("湿球温度 ≈","Wet bulb ≈")})
@@ -738,6 +741,9 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         }
         draw("ins-advice"){
             val body=base(it,heading("环境解读","Conditions summary"),color=0xfff0f0e8.toInt())
+            // Rich copy uses the footer's real free space; keep a 4-unit heading
+            // gap and a 3-unit bottom gutter instead of clipping a final line.
+            body.top-=6;body.bottom=it.bottom-3
             val content=interpretation(model,wx,at)
             // Use the full body below the shared heading gutter. The prototype's
             // text-sized rectangle wastes a line of space with richer copy.

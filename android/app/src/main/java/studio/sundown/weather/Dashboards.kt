@@ -29,7 +29,10 @@ abstract class Dashboard(context:Context,val model:AppModel):View(context){
     protected val inter=Typeface.createFromAsset(context.assets,"fonts/Inter.ttf")
     protected val mono=Typeface.createFromAsset(context.assets,"fonts/RobotoMono.ttf")
     protected val chinese=Typeface.createFromAsset(context.assets,"fonts/MiSansVF.ttf")
+    internal var renderedDraws=0L;private set
     protected var c:Canvas?=null
+    internal val redrawRegions=mutableListOf<InkRegion>()
+    protected fun redrawInk(bounds:RectF,color:Int,vertical:Boolean=false){redrawRegions.add(InkRegion(RectF(bounds),color,vertical))}
     var artRect=RectF();protected set
     var artCornerRadius=0f;protected set
     var frameOutline:Path?=null;protected set
@@ -91,9 +94,16 @@ abstract class Dashboard(context:Context,val model:AppModel):View(context){
         val fitted=if(width>maxWidth&&width>0)size*maxWidth.coerceAtLeast(1f)/width else size
         text(s,x,y,fitted,color,font)
     }
+    private data class ParagraphKey(val text:String,val width:Int,val size:Float,val color:Int,val maxLines:Int)
+    private val paragraphLayouts=object:LinkedHashMap<ParagraphKey,StaticLayout>(64,.75f,true){
+        override fun removeEldestEntry(eldest:MutableMap.MutableEntry<ParagraphKey,StaticLayout>)=size>64
+    }
     protected fun paragraph(s:String,b:RectF,size:Float,color:Int=INK,maxLines:Int=4):StaticLayout{
-        val tp=TextPaint(Paint.ANTI_ALIAS_FLAG).apply{this.color=color;textSize=size;typeface=languageFont(s)}
-        val layout=StaticLayout.Builder.obtain(s,0,s.length,tp,max(1,b.width().toInt())).setAlignment(Layout.Alignment.ALIGN_NORMAL).setIncludePad(false).setMaxLines(maxLines).setEllipsize(android.text.TextUtils.TruncateAt.END).build()
+        val key=ParagraphKey(s,max(1,b.width().toInt()),size,color,maxLines)
+        val layout=paragraphLayouts.getOrPut(key){
+            val tp=TextPaint(Paint.ANTI_ALIAS_FLAG).apply{this.color=color;textSize=size;typeface=languageFont(s)}
+            StaticLayout.Builder.obtain(s,0,s.length,tp,key.width).setAlignment(Layout.Alignment.ALIGN_NORMAL).setIncludePad(false).setMaxLines(maxLines).setEllipsize(android.text.TextUtils.TruncateAt.END).build()
+        }
         c!!.save();c!!.clipRect(b);c!!.translate(b.left,b.top);layout.draw(c);c!!.restore()
         return layout
     }
@@ -114,7 +124,7 @@ abstract class Dashboard(context:Context,val model:AppModel):View(context){
         val endX=x+dx*r;val endY=y+dy*r
         line(endX,endY,endX-dx*9-dy*4,endY-dy*9+dx*4,color,2f);line(endX,endY,endX-dx*9+dy*4,endY-dy*9-dx*4,color,2f)
     }
-    override fun onDraw(canvas:Canvas){c=canvas;canvas.save();canvas.scale(density,density);drawDashboard();if(pressAlpha>0f&&!pressedBounds.isEmpty)rect(pressedBounds,((22*pressAlpha).roundToInt() shl 24),8f);canvas.restore()}
+    override fun onDraw(canvas:Canvas){renderedDraws++;redrawRegions.clear();c=canvas;canvas.save();canvas.scale(density,density);drawDashboard();if(pressAlpha>0f&&!pressedBounds.isEmpty)rect(pressedBounds,((22*pressAlpha).roundToInt() shl 24),8f);canvas.restore()}
     abstract fun drawDashboard()
     override fun onKeyDown(keyCode:Int,event:KeyEvent):Boolean {
         if(dialRect.isEmpty)return super.onKeyDown(keyCode,event)
@@ -135,8 +145,12 @@ abstract class Dashboard(context:Context,val model:AppModel):View(context){
         };return true
     }
     override fun performClick():Boolean=super.performClick()
+    open fun cancelPresentation(){
+        contentTransition.clear();dialAnimator?.cancel();pressAnimator?.cancel()
+        detents.visual(detents.selected.toFloat());dialDragging=false;pressed="";pressAlpha=0f;isPressed=false
+    }
     override fun onSizeChanged(w:Int,h:Int,oldw:Int,oldh:Int){contentTransition.clear();super.onSizeChanged(w,h,oldw,oldh)}
-    override fun onDetachedFromWindow(){contentTransition.clear();dialAnimator?.cancel();pressAnimator?.cancel();super.onDetachedFromWindow()}
+    override fun onDetachedFromWindow(){cancelPresentation();super.onDetachedFromWindow()}
 }
 
 class WeatherDashboard(context:Context,model:AppModel):Dashboard(context,model){
@@ -252,13 +266,24 @@ class WeatherDashboard(context:Context,model:AppModel):Dashboard(context,model){
 
 class NativePage(context:Context,val dashboard:Dashboard,val art:PixelArt):FrameLayout(context){
     private val layer=FrameLayout(context)
-    fun pageMotion(progress:Float,engaged:Boolean){
-        val type=if(engaged)View.LAYER_TYPE_HARDWARE else View.LAYER_TYPE_NONE
-        if(dashboard.layerType!=type)dashboard.setLayerType(type,null)
-        layer.pivotX=width/2f;layer.pivotY=height/2f
-        layer.scaleX=1f;layer.scaleY=1f;layer.translationY=0f
+    private val reveal=PageInkReveal(context)
+    private var cacheEnabled=false
+    internal val revealing get()=reveal.running
+    fun renderingEnabled(enabled:Boolean){
+        if(cacheEnabled==enabled)return
+        cacheEnabled=enabled
+        dashboard.setLayerType(if(enabled)View.LAYER_TYPE_HARDWARE else View.LAYER_TYPE_NONE,null)
+        if(!enabled){reveal.clear();dashboard.cancelPresentation()}
+        else dashboard.postOnAnimation{if(cacheEnabled&&dashboard.isAttachedToWindow)dashboard.buildLayer()}
     }
-    init {setBackgroundColor(PAPER);addView(layer,LayoutParams(-1,-1));layer.addView(dashboard,LayoutParams(-1,-1));layer.addView(art);clipChildren=true;art.clipToOutline=dashboard !is WeatherDashboard;art.outlineProvider=object:android.view.ViewOutlineProvider(){override fun getOutline(v:View,outline:android.graphics.Outline){outline.setRoundRect(0,0,v.width,v.height,dashboard.artCornerRadius*dashboard.coordinateScale)}}}
+    fun pageMotion(progress:Float,engaged:Boolean){if(engaged)reveal.clear()}
+    fun revealInk(done:()->Unit){
+        val scale=dashboard.coordinateScale
+        val regions=dashboard.redrawRegions.map{region->InkRegion(RectF(region.bounds).apply{left*=scale;top*=scale;right*=scale;bottom*=scale},region.color,region.vertical)}
+        reveal.start(regions,done)
+    }
+    fun cancelReveal()=reveal.clear()
+    init {setBackgroundColor(PAPER);addView(layer,LayoutParams(-1,-1));layer.addView(dashboard,LayoutParams(-1,-1));layer.addView(art);layer.addView(reveal,LayoutParams(-1,-1));clipChildren=true;art.clipToOutline=dashboard !is WeatherDashboard;art.outlineProvider=object:android.view.ViewOutlineProvider(){override fun getOutline(v:View,outline:android.graphics.Outline){outline.setRoundRect(0,0,v.width,v.height,dashboard.artCornerRadius*dashboard.coordinateScale)}}}
     fun updateState(){
         val m=dashboard.model;val wx=m.weather
         val known=wx!=null&&(dashboard !is ObservationDashboard||wx.scene(m.window(wx).start)!="unknown")

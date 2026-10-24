@@ -23,7 +23,10 @@ class PixelArt(context: Context, private val instrument: Boolean): TextureView(c
     private var surface: EGLSurface=EGL14.EGL_NO_SURFACE
     private var program=0;private var copy=0;private var texture=0;private var framebuffer=0
     private var gw=0;private var gh=0;private var sw=1;private var sh=1
-    @Volatile var active=false;set(value){if(field==value)return;field=value;worker.removeCallbacks(frame);worker.post(frame)}
+    private val revision=java.util.concurrent.atomic.AtomicLong(1)
+    private var drawnRevision=0L
+    @Volatile var foreground=false;set(value){if(field==value)return;field=value;worker.removeCallbacks(frame);worker.post{last=0;frame.run()}}
+    @Volatile var active=false;set(value){if(field==value)return;field=value;worker.removeCallbacks(frame);worker.post{last=0;frame.run()}}
     @Volatile var motion=true
     @Volatile private var interactionPaused=false
     @Volatile var block=false
@@ -58,11 +61,13 @@ class PixelArt(context: Context, private val instrument: Boolean): TextureView(c
         val ok=IntArray(1);GL.glGetProgramiv(p,GL.GL_LINK_STATUS,ok,0);check(ok[0]!=0){GL.glGetProgramInfoLog(p)};return p
     }
     private fun initEgl(st:SurfaceTexture){
+        error=null
         display=EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY);check(EGL14.eglInitialize(display,IntArray(2),0,IntArray(2),0))
         val configs=arrayOfNulls<EGLConfig>(1);val n=IntArray(1)
         check(EGL14.eglChooseConfig(display,intArrayOf(EGL14.EGL_RENDERABLE_TYPE,0x40,EGL14.EGL_RED_SIZE,8,EGL14.EGL_GREEN_SIZE,8,EGL14.EGL_BLUE_SIZE,8,EGL14.EGL_ALPHA_SIZE,8,EGL14.EGL_SURFACE_TYPE,EGL14.EGL_WINDOW_BIT,EGL14.EGL_NONE),0,configs,0,1,n,0)&&n[0]>0)
         eglContext=EGL14.eglCreateContext(display,configs[0],EGL14.EGL_NO_CONTEXT,intArrayOf(EGL14.EGL_CONTEXT_CLIENT_VERSION,3,EGL14.EGL_NONE),0)
         surface=EGL14.eglCreateWindowSurface(display,configs[0],st,intArrayOf(EGL14.EGL_NONE),0);check(EGL14.eglMakeCurrent(display,surface,surface,eglContext))
+        drawnRevision=0
         program=link(if(instrument)"instrument.vert" else "weather.vert",if(instrument)"instrument.frag" else "weather.frag")
         copy=link("weather.vert","copy.frag")
         val ids=IntArray(1);GL.glGenTextures(1,ids,0);texture=ids[0];GL.glGenFramebuffers(1,ids,0);framebuffer=ids[0]
@@ -73,7 +78,7 @@ class PixelArt(context: Context, private val instrument: Boolean): TextureView(c
     private fun vec(name:String,x:Int,y:Int){GL.glUniform2f(GL.glGetUniformLocation(program,name),x.toFloat(),y.toFloat())}
     private fun draw(){
         val now=SystemClock.elapsedRealtime()
-        if(motion&&!interactionPaused&&last!=0L)elapsed+=(now-last).coerceAtLeast(0)/1000.0
+        if(active&&motion&&!interactionPaused&&last!=0L)elapsed+=(now-last).coerceAtLeast(0)/1000.0
         last=now
         val limit=IntArray(1);GL.glGetIntegerv(GL.GL_MAX_TEXTURE_SIZE,limit,0)
         var w=if(block)if(instrument)192 else 96 else min(1536,sw*(if(instrument)2 else 1))
@@ -113,15 +118,18 @@ class PixelArt(context: Context, private val instrument: Boolean): TextureView(c
     private val frame=object:Runnable{override fun run(){
         // refresh/activation can arrive during a slow draw. Coalesce their queued callbacks.
         worker.removeCallbacks(this)
-        if(!active||surface==EGL14.EGL_NO_SURFACE){last=0;return}
-        try{draw()}catch(e:Exception){error=e.message;active=false;return}
-        if(active&&motion&&!interactionPaused)worker.postDelayed(this,if(instrument)83 else 42)
+        // Offscreen pages get one fresh frame before a gesture. During travel
+        // keep both textures stable, including activation/refresh callbacks.
+        val requested=revision.get()
+        if(error!=null||weather==null||!foreground||interactionPaused||surface==EGL14.EGL_NO_SURFACE||(!active||!motion)&&drawnRevision==requested){last=0;return}
+        try{draw();drawnRevision=requested;if(!active)last=0}catch(e:Exception){error=e.message;active=false;return}
+        if(foreground&&active&&motion&&!interactionPaused)worker.postDelayed(this,if(instrument)83 else 42)
     }}
-    fun refresh(){worker.removeCallbacks(frame);worker.post(frame)}
+    fun refresh(){revision.incrementAndGet();worker.removeCallbacks(frame);worker.post(frame)}
     override fun onSurfaceTextureAvailable(st:SurfaceTexture,w:Int,h:Int){sw=w;sh=h;worker.post{try{initEgl(st);frame.run()}catch(e:Exception){error=e.message}}}
     override fun onSurfaceTextureSizeChanged(st:SurfaceTexture,w:Int,h:Int){worker.post{sw=w;sh=h;refresh()}}
     override fun onSurfaceTextureUpdated(st:SurfaceTexture){}
     override fun onSurfaceTextureDestroyed(st:SurfaceTexture):Boolean{worker.removeCallbacks(frame);if(!worker.post{releaseEgl();st.release()})st.release();return false}
     private fun releaseEgl(){if(display!=EGL14.EGL_NO_DISPLAY){EGL14.eglMakeCurrent(display,EGL14.EGL_NO_SURFACE,EGL14.EGL_NO_SURFACE,EGL14.EGL_NO_CONTEXT);EGL14.eglDestroySurface(display,surface);EGL14.eglDestroyContext(display,eglContext);EGL14.eglTerminate(display)};surface=EGL14.EGL_NO_SURFACE;display=EGL14.EGL_NO_DISPLAY}
-    fun dispose(){active=false;worker.post{releaseEgl();thread.quitSafely()}}
+    fun dispose(){foreground=false;active=false;worker.post{releaseEgl();thread.quitSafely()}}
 }
