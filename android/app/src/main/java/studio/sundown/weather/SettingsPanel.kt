@@ -42,6 +42,7 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
     private var cardAvailableHeight=Int.MAX_VALUE
     private var locationText:TextView?=null
     private var locationSwitch:CompoundButton?=null
+    private var locationRetry:Button?=null
     private var feedbackSend:Button?=null
     private var feedbackStatus:TextView?=null
     private var feedbackInput:EditText?=null
@@ -76,13 +77,14 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
     }
     fun open(){
         animate().cancel();detail="";visibility=VISIBLE;activity.pager.overlayOpen=true;build();alpha=0f
-        translationX=dp(12).toFloat()
-        if(ValueAnimator.areAnimatorsEnabled())animate().alpha(1f).translationX(0f).setDuration(220).setInterpolator(LinearInterpolator()).start()else{alpha=1f;translationX=0f}
+        translationX=-dp(28).toFloat()
+        if(ValueAnimator.areAnimatorsEnabled())animate().alpha(1f).translationX(0f).setDuration(340).setInterpolator(LinearInterpolator()).start()else{alpha=1f;translationX=0f}
         requestFocus();activity.redraw()
     }
     fun close(){
-        uiGeneration++;val generation=uiGeneration;closeUpdate();activity.feedback.cancel();scrollAnimator?.cancel();animate().cancel();activity.pager.overlayOpen=false;detail="";feedbackInput=null;activity.redraw()
-        if(ValueAnimator.areAnimatorsEnabled())animate().alpha(0f).translationX(-dp(8).toFloat()).setDuration(160).setInterpolator(LinearInterpolator()).withEndAction{if(generation==uiGeneration)visibility=GONE}.start()else visibility=GONE
+        uiGeneration++;val generation=uiGeneration;closeUpdate();activity.feedback.cancel();scrollAnimator?.cancel();animate().cancel();detail="";feedbackInput=null
+        fun finish(){if(generation==uiGeneration){visibility=GONE;activity.pager.overlayOpen=false;activity.redraw()}}
+        if(ValueAnimator.areAnimatorsEnabled())animate().alpha(0f).translationX(-dp(28).toFloat()).setDuration(300).setInterpolator(LinearInterpolator()).withEndAction{finish()}.start()else finish()
     }
     fun back(){if(updateCard!=null)closeUpdate()else if(detail.isNotEmpty()){detail="";build()}else close()}
     fun cancelRequests(){activity.updates.cancel();activity.feedback.cancel();feedbackSend?.isEnabled=true
@@ -107,8 +109,8 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
                         animation?.cancel();val start=pill.translationX;val colors=buttons.map{it.currentTextColor};selected=index
                         buttons.forEachIndexed{n,b->b.isSelected=n==index;(b.compoundDrawables[0] as? SettingsPixelIcon)?.tintColor=if(n==index)YELLOW else ink};action(index);activity.redraw()
                         fun apply(f:Float){pill.translationX=start+(position(index)-start)*f;buttons.forEachIndexed{n,b->b.setTextColor(androidx.core.graphics.ColorUtils.blendARGB(colors[n],if(n==index)PAPER else ink,f))}}
-                        if(android.animation.ValueAnimator.areAnimatorsEnabled())animation=ValueAnimator.ofFloat(0f,1f).apply{duration=200;interpolator=LinearInterpolator();addUpdateListener{apply(it.animatedValue as Float)};start()}else apply(1f)
-                        if(language){val generation=uiGeneration;postDelayed({if(generation==uiGeneration&&visibility==VISIBLE)build()},if(ValueAnimator.areAnimatorsEnabled())200 else 0)}
+                        if(android.animation.ValueAnimator.areAnimatorsEnabled())animation=ValueAnimator.ofFloat(0f,1f).apply{duration=280;interpolator=LinearInterpolator();addUpdateListener{apply(it.animatedValue as Float)};start()}else apply(1f)
+                        if(language){val generation=uiGeneration;postDelayed({if(generation==uiGeneration&&visibility==VISIBLE)build()},if(ValueAnimator.areAnimatorsEnabled())280 else 0)}
                     }
                 }
             }
@@ -120,8 +122,12 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
         return box
     }
     fun refreshLocation(){
-        locationText?.text=when(model.locationStatus){"fix"->tr("已使用当前位置","Using current location");"waiting"->tr("定位中；暂用所选地点","Locating; using selected place");"permission"->tr("等待定位权限","Waiting for location permission");"denied"->tr("定位被拒绝；使用所选地点","Location denied; using selected place");"system_off"->tr("系统定位已关闭；使用所选地点","System location is off; using selected place");"timeout"->tr("定位超时；使用所选地点","Location timed out; using selected place");"unavailable"->tr("定位不可用；使用所选地点","Location unavailable; using selected place");else->tr("定位未开启","Location is off")}
+        locationText?.text=when(model.locationStatus){"fix"->tr("已使用当前位置","Using current location");"waiting"->tr("正在获取设备位置，成功后自动更新天气。","Getting device location; weather updates automatically after a fix.");"permission"->tr("等待定位权限","Waiting for location permission");"denied"->tr("定位被拒绝；使用所选地点","Location denied; using selected place");"system_off"->tr("系统定位已关闭；使用所选地点","System location is off; using selected place");"timeout"->tr("定位超时；使用所选地点","Location timed out; using selected place");"unavailable"->tr("定位不可用；使用所选地点","Location unavailable; using selected place");else->tr("定位未开启","Location is off")}
         locationSwitch?.setOnCheckedChangeListener(null);locationSwitch?.isChecked=activity.locationEnabled();locationSwitch?.setOnCheckedChangeListener{_,on->activity.setLocation(on)}
+        locationRetry?.apply{
+            visibility=if(activity.locationEnabled()&&model.locationStatus !in listOf("fix","permission"))VISIBLE else GONE
+            text=if(model.locationStatus=="system_off")tr("打开系统定位","Open system location")else tr("重新定位","Try location again")
+        }
     }
     override fun onSizeChanged(w:Int,h:Int,oldw:Int,oldh:Int){
         super.onSizeChanged(w,h,oldw,oldh)
@@ -140,6 +146,7 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
     private fun showDetail(value:String){
         (context.getSystemService(Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager).hideSoftInputFromWindow(windowToken,0)
         closeUpdate();activity.feedback.cancel();detail=value;build()
+        if(ValueAnimator.areAnimatorsEnabled())panel?.apply{alpha=.5f;translationX=dp(16).toFloat();animate().alpha(1f).translationX(0f).setDuration(260).setInterpolator(LinearInterpolator()).start()}
     }
     private fun build(){
         uiGeneration++;scrollAnimator?.cancel();navButtons.clear();navIndicator=null
@@ -153,7 +160,7 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
         val bounds=metrics.rect(".information-panel");cw=bounds.width()/100
         val pane=column().apply{
             tag="baro-settings-pane";setBackgroundColor(PAPER)
-            background=GradientDrawable().apply{setColor(PAPER);val radius=dp((min(this@SettingsPanel.width/density,this@SettingsPanel.height/density)*.014f).coerceIn(14f,26f)).toFloat();cornerRadii=if(landscape)floatArrayOf(radius,radius,0f,0f,0f,0f,radius,radius)else floatArrayOf(radius,radius,radius,radius,0f,0f,0f,0f)}
+            background=GradientDrawable().apply{setColor(PAPER)}
         };panel=pane
         addView(pane,LayoutParams(dp(bounds.width()),dp(bounds.height()),Gravity.START or Gravity.TOP).apply{leftMargin=dp(bounds.left);topMargin=dp(bounds.top)})
         val header=column().apply{setPadding(dp(4.4f*cw),dp((if(landscape)3.4f else 2.8f)*cw),dp(4.4f*cw),0)}
@@ -213,8 +220,11 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
             category(tr("系统与关于","ABOUT"),BLUE)
             locationSwitch=toggle(tr("仅在前台跟随定位","Follow in foreground"),activity.locationEnabled()){activity.setLocation(it)}
             locationText=text("",(2.2f*cw).coerceIn(16f,20f)).apply{setTextColor(muted)}
-            val locationNote=text(tr("仅在应用可见时跟随定位；未开启时使用所选地点。","Follows location while the app is visible. Uses the selected place when off."),(2.2f*cw).coerceIn(16f,20f)).apply{setTextColor(muted)}
-            switchSetting(6,tr("自动定位","LOCATION"),locationSwitch!!,listOf(locationText!!,locationNote));refreshLocation()
+            val locationNote=text(tr("开启后自动获取当前位置并更新天气，无需手动输入城市；仅在前台请求位置。","Gets the current location and updates weather automatically. No city entry is needed; location is requested only in the foreground."),(2.2f*cw).coerceIn(16f,20f)).apply{setTextColor(muted)}
+            locationRetry=button(tr("重新定位","Try location again")){
+                if(model.locationStatus=="system_off")activity.startActivity(android.content.Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS))else activity.retryLocation()
+            }.apply{tag="baro-location-retry"}
+            switchSetting(6,tr("自动定位","LOCATION"),locationSwitch!!,listOf(locationText!!,locationNote,locationRetry!!));refreshLocation()
             val version=row();version.addView(text("v${BuildConfig.VERSION_NAME} · ${BuildConfig.VERSION_CODE}",2.65f*cw).apply{typeface=mono},LinearLayout.LayoutParams(0,-2,1f))
             version.addView(button(tr("检查更新","Check updates"),primary=true){openUpdate()}.apply{textSize=(2.4f*cw).coerceIn(16f,22f);typeface=inter},LinearLayout.LayoutParams(-2,dp(56)))
             setting(7,tr("软件版本","VERSION"),version,last=true)

@@ -103,9 +103,20 @@ data class Weather(val place: Place, val fetchedAt: Long, val validAt: Long, val
             else -> "unknown"
         }
     }
+    /** An ongoing light window can start between model hours. Prefer the actual
+     * current WMO observation there, rather than a different hourly condition. */
+    fun atmosphereTime(selected:Long)=if(abs(selected-validAt)<3600)validAt else selected
+    fun rainStrength(at:Long):Double {
+        if(scene(at) !in setOf("rain","storm"))return 0.0
+        val floor=if(scene(at)=="storm").65 else .35
+        return max(floor,(value("precipitation",at)?:0.0)/3).coerceIn(0.0,1.0)
+    }
 }
 
 data class ObservationWindow(val start:Long,val end:Long,val available:Boolean)
+fun validLocationFix(latitude:Double,longitude:Double,ageMs:Long,accuracyMetres:Double?):Boolean =
+    latitude.isFinite()&&longitude.isFinite()&&latitude in -90.0..90.0&&longitude in -180.0..180.0&&ageMs in 0..120_000&&
+    (accuracyMetres==null||(accuracyMetres.isFinite()&&accuracyMetres in 0.0..50_000.0))
 fun observationWindow(w:Weather,purpose:Int,reference:Long=w.validAt):ObservationWindow {
     if(purpose !in 4..6)return ObservationWindow(w.validAt,w.validAt+7200,true)
     val date=Instant.ofEpochSecond(reference).atZone(w.zone).toLocalDate()

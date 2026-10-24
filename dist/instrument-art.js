@@ -16,7 +16,7 @@ const INSTRUMENT_FRAGMENT=`#version 300 es
 precision highp float;
 uniform vec2 screen,grid;
 uniform float clock,cloud,rain,fog,elevation,bearing,moonPhase;
-uniform int scene;
+uniform int scene,weatherScene;
 uniform bool coarse;
 out vec4 outputColor;
 const float PI=3.14159265359;
@@ -217,7 +217,7 @@ void radioDish(inout vec3 col,vec2 at){
 void main(){
  cell=floor(gl_FragCoord.xy/screen*grid);uv=(cell+.5)/grid;aspect=screen.x/screen.y;p=vec2(uv.x*aspect,uv.y);pixel=1./grid.y;
  threshold=coarse?.5:(float(BAYER[int(mod(cell.y,4.))*4+int(mod(cell.x,4.))])+.5)/16.;
- bool storm=scene==2,snow=scene==3,night=scene==4,warm=scene==5||scene==6,misty=scene==9;
+ bool storm=scene==2||weatherScene==2,snow=scene==3||weatherScene==3,night=scene==4,warm=scene==5||scene==6,misty=scene==9;
  vec3 a=vec3(.15,.36,.61),b=vec3(.28,.53,.73),c=vec3(.58,.74,.81),d=vec3(.87,.85,.72);
  if(storm){a=vec3(.035,.07,.15);b=vec3(.09,.18,.32);c=vec3(.29,.40,.53);d=vec3(.64,.58,.53);}
  if(scene==1||scene==8){a=vec3(.23,.32,.40);b=vec3(.37,.48,.54);c=vec3(.58,.66,.66);d=vec3(.80,.81,.73);}
@@ -226,6 +226,7 @@ void main(){
  if(scene==5){a=vec3(.13,.11,.29);b=vec3(.35,.20,.39);c=vec3(.75,.37,.36);d=vec3(.99,.70,.40);}
  if(scene==6){a=vec3(.17,.31,.51);b=vec3(.38,.51,.68);c=vec3(.73,.70,.74);d=vec3(.99,.86,.67);}
  if(misty){a=vec3(.34,.44,.46);b=vec3(.47,.58,.56);c=vec3(.66,.73,.67);d=vec3(.83,.84,.74);}
+ if(rain>0.&& !night){float wet=min(.8,rain);a=mix(a,vec3(.16,.24,.34),wet);b=mix(b,vec3(.30,.39,.47),wet);c=mix(c,vec3(.48,.57,.61),wet);d=mix(d,vec3(.65,.70,.69),wet);}
  vec3 col=ramp(a,b,c,d,1.-uv.y*.92);
  lightPoint=vec2(aspect*(scene==6?.24:.74),warm?.43:.82);
  float halo=exp(-dot(p-lightPoint,p-lightPoint)/(warm?.15:.09));
@@ -238,7 +239,7 @@ void main(){
  // Composition is unique to each environment; cloud bodies stay analytic in both modes.
  float drift=clock*.002;
  if(storm){col=drawCloud(col,vec2(aspect*.17+sin(drift)*.03,.82),vec2(aspect*.88,.92),2.,.35);col=drawCloud(col,vec2(aspect*.86,.68),vec2(aspect*.72,1.08),5.,.15);}
- else if(scene==1||scene==8||snow){for(int i=0;i<3;i++){float n=float(i);col=drawCloud(col,vec2(aspect*(.13+n*.40)+sin(drift+n)*.03,.71+n*.08),vec2(aspect*.70,.65),n+2.,.15+n*.12);}}
+ else if(scene==1||scene==8||snow||rain>.01){for(int i=0;i<3;i++){float n=float(i);col=drawCloud(col,vec2(aspect*(.13+n*.40)+sin(drift+n)*.03,.71+n*.08),vec2(aspect*.70,.65),n+2.,.15+n*.12);}}
  else if(scene==5||scene==6){col=drawCloud(col,vec2(aspect*.10+sin(drift)*.03,.75),vec2(aspect*.72,.78),2.,.18);col=drawCloud(col,vec2(aspect*1.04,.60),vec2(aspect*.68,.65),5.,.25);}
  else if(scene==10){for(int i=0;i<3;i++){float n=float(i);col=drawCloud(col,vec2(aspect*(-.08+n*.49)+sin(drift+n)*.03,.63+n*.13),vec2(aspect*.66,.26),n+2.,.20);}}
  else if(scene==0||scene==7){col=drawCloud(col,vec2(aspect*.24+sin(drift)*.025,.75),vec2(aspect*.61,.72),2.,.0);col=drawCloud(col,vec2(aspect*.87,.65),vec2(aspect*.52,.57),5.,.12);}
@@ -300,7 +301,7 @@ void main(){
  if(scene==8||scene==10){for(int i=0;i<4;i++){float n=float(i);turbine(col,vec2(aspect*(.17+n*.23),.17+n*.006),.25-n*.03,clock*(scene==10?.22:.07)+n*.8);}if(scene==10){vec2 at=vec2(aspect*.22,.18);col=mix(col,vec3(.46,.53,.48),stroke(p,at,at+vec2(0,.40),.004));vec2 q=p-at-vec2(0,.36);float tail=cover(min(min(q.x,.18-q.x),(.025-q.x*.07)-abs(q.y+.006*sin(clock*1.5+q.x*20.))));col=mix(col,mix(vec3(.85,.33,.13),vec3(.92,.86,.66),step(.5,fract(q.x*24.))),tail);}}
  if(misty){vec2 lamp=vec2(aspect*.72+.22,.50);float light=exp(-dot(p-lamp,p-lamp)/.0012);col=glow(col,vec3(.95,.65,.28)*light*.24);}
  // Weather overlays originate below cloud base and use independent depth/speed layers.
- if(scene==1||storm){float base=.53+.035*sin(uv.x*9.);for(int i=0;i<3;i++){float n=float(i),columns=79.-n*19.,rows=23.-n*4.,origin=uv.x+max(0.,base-uv.y)*.08;float column=floor(origin*columns),seed=hash(vec2(column,n+2.));vec2 drop=vec2(fract(origin*columns),fract((base-uv.y)*rows-clock*(.65+n*.27)+seed*11.));if(uv.y<base&&seed>.27&&drop.x<.045+n*.025){float tail=(1.-smoothstep(0.,.30,drop.y))*(.18+n*.11)*rain;col=mix(col,vec3(.64,.76,.85),tail);}}}
+ if(rain>.01){float base=.53+.035*sin(uv.x*9.);for(int i=0;i<3;i++){float n=float(i),columns=79.-n*19.,rows=23.-n*4.,origin=uv.x+max(0.,base-uv.y)*.08;float column=floor(origin*columns),seed=hash(vec2(column,n+2.));vec2 drop=vec2(fract(origin*columns),fract((base-uv.y)*rows-clock*(.65+n*.27)+seed*11.));if(uv.y<base&&seed>.27&&drop.x<.045+n*.025){float tail=(1.-smoothstep(0.,.30,drop.y))*(.18+n*.11)*rain;col=mix(col,vec3(.64,.76,.85),tail);}}}
  if(storm){float epoch=floor(clock/29.),at=epoch*29.+5.+hash(vec2(epoch,3.))*9.;float flash=exp(-pow((clock-at)/.13,2.))+.5*exp(-pow((clock-at-.24)/.08,2.));vec2 q=uv-vec2((hash(vec2(epoch,7.))-.5)*.15,0);float bolt=min(min(segment(q,vec2(.78,.58),vec2(.73,.43)),segment(q,vec2(.73,.43),vec2(.78,.45))),segment(q,vec2(.78,.45),vec2(.69,.28)));col=glow(col,vec3(.44,.54,.79)*flash*.13);col=mix(col,vec3(.89,.94,1.),cover(.0018-bolt)*min(1.,flash));}
  if(snow){for(int i=0;i<3;i++){float n=float(i);vec2 field=vec2(37.+n*13.,21.+n*8.),v=uv+vec2(sin(clock*.08+n)*.008,-clock*(.045+n*.023));vec2 tile=floor(v*field),flake=fract(v*field)-.5;float mask=(1.-smoothstep(.02,.055-n*.01,length(flake)))*step(.59,hash(tile+n));col=mix(col,vec3(.94,.97,.96),mask*.8);}}
  if(misty||scene==6){for(int i=0;i<3;i++){float n=float(i);float veil=exp(-pow((uv.y-(.23+n*.08+sin(uv.x*6.+clock*.035+n)*.015))/.045,2.))*(.4+.6*noise(vec2(uv.x*5.-clock*.005,uv.y*21.+n)));col=mix(col,vec3(.75,.81,.77),veil*(misty?.25:.10));}}
@@ -317,7 +318,7 @@ export class InstrumentRenderer{
  initialize(){
   const gl=this.gl,compile=(type,source)=>{const s=gl.createShader(type);gl.shaderSource(s,source);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(s));return s;};
   const v=compile(gl.VERTEX_SHADER,INSTRUMENT_VERTEX),f=compile(gl.FRAGMENT_SHADER,INSTRUMENT_FRAGMENT);this.program=gl.createProgram();gl.attachShader(this.program,v);gl.attachShader(this.program,f);gl.linkProgram(this.program);gl.deleteShader(v);gl.deleteShader(f);if(!gl.getProgramParameter(this.program,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(this.program));
-  this.vao=gl.createVertexArray();this.locations=Object.fromEntries(['screen','grid','clock','cloud','rain','fog','elevation','bearing','moonPhase','scene','coarse'].map(k=>[k,gl.getUniformLocation(this.program,k)]));
+  this.vao=gl.createVertexArray();this.locations=Object.fromEntries(['screen','grid','clock','cloud','rain','fog','elevation','bearing','moonPhase','scene','weatherScene','coarse'].map(k=>[k,gl.getUniformLocation(this.program,k)]));
  }
  update(view,{pixelStyle,motionEnabled,galleryPlaying=true}){this.view=view;this.pixelStyle=pixelStyle;this.animated=motionEnabled&&galleryPlaying;this.resize();this.sync();}
  resize(){const box=this.canvas.getBoundingClientRect();if(!box.width||!box.height)return;const size=instrumentResolution(box.width,box.height,devicePixelRatio||1,this.pixelStyle,this.gl?.getParameter(this.gl.MAX_TEXTURE_SIZE)??4096);this.canvas.width=size.width;this.canvas.height=size.height;this.grid=size.grid;this.draw();}
@@ -326,7 +327,7 @@ export class InstrumentRenderer{
   const m=this.view.m,gl=this.gl;
   if(gl){
    if(gl.isContextLost())return;gl.bindFramebuffer(gl.FRAMEBUFFER,null);gl.viewport(0,0,this.canvas.width,this.canvas.height);gl.bindVertexArray(this.vao);gl.useProgram(this.program);const u=this.locations;
-   gl.uniform2f(u.screen,this.canvas.width,this.canvas.height);gl.uniform2f(u.grid,this.grid.columns,this.grid.rows);gl.uniform1f(u.clock,this.reduced.matches?0:this.elapsed);gl.uniform1f(u.cloud,Math.max(m.high,m.mid,m.low)/100);gl.uniform1f(u.rain,['rain','storm'].includes(this.view.preset)?m.precipitation/100:0);gl.uniform1f(u.fog,this.view.preset==='fog'?.92:Math.max(0,1-m.visibility/15)*.5);gl.uniform1f(u.elevation,m.sun?.elevation??0);gl.uniform1f(u.bearing,m.sun?.azimuth??0);gl.uniform1f(u.moonPhase,m.moon.fraction);gl.uniform1i(u.scene,Math.max(0,INSTRUMENT_SCENES.indexOf(this.view.preset)));gl.uniform1i(u.coarse,this.pixelStyle==='block'?1:0);gl.drawArrays(gl.TRIANGLES,0,3);
+   gl.uniform2f(u.screen,this.canvas.width,this.canvas.height);gl.uniform2f(u.grid,this.grid.columns,this.grid.rows);gl.uniform1f(u.clock,this.reduced.matches?0:this.elapsed);gl.uniform1f(u.cloud,Math.max(m.high,m.mid,m.low)/100);gl.uniform1f(u.rain,['rain','storm'].includes(this.view.preset)?m.precipitation/100:0);gl.uniform1f(u.fog,this.view.preset==='fog'?.92:Math.max(0,1-m.visibility/15)*.5);gl.uniform1f(u.elevation,m.sun?.elevation??0);gl.uniform1f(u.bearing,m.sun?.azimuth??0);gl.uniform1f(u.moonPhase,m.moon.fraction);gl.uniform1i(u.scene,Math.max(0,INSTRUMENT_SCENES.indexOf(this.view.preset)));gl.uniform1i(u.weatherScene,Math.max(0,INSTRUMENT_SCENES.indexOf(this.view.preset)));gl.uniform1i(u.coarse,this.pixelStyle==='block'?1:0);gl.drawArrays(gl.TRIANGLES,0,3);
   }else{
    const ctx=this.owner.fallback?.ctx;if(!ctx)return;const w=this.canvas.width,h=this.canvas.height,g=ctx.createLinearGradient(0,0,0,h);g.addColorStop(0,'#243e51');g.addColorStop(1,'#c0af91');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);for(let layer=0;layer<3;layer++){ctx.fillStyle=['#6b7978','#415b60','#233b43'][layer];ctx.beginPath();ctx.moveTo(0,h);for(let x=0;x<=w;x+=3)ctx.lineTo(x,h*(.68+layer*.1)+Math.sin(x/w*12+layer)*h*.06);ctx.lineTo(w,h);ctx.fill();}
   }

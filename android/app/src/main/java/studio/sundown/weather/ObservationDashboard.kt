@@ -514,17 +514,22 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
     }
     private fun forecastChart(gr:RectF,key:String,maximum:Double,dark:Boolean){
         val fg=if(dark)paper else ink;val muted=if(dark)0xff77776c.toInt()else 0xffb4b1a5.toInt()
-        val plot=RectF(gr.left+2,gr.top,gr.right-2,gr.bottom-20)
-        repeat(5){j->val y=plot.top+plot.height()*j/4;line(plot.left,y,plot.right,y,muted,.5f)}
-        line(gr.left,gr.top,gr.left,gr.bottom,muted,.8f)
         val points=wx?.hourly?.range(key,at,at+7200)?:emptyList()
-        for((epoch,value)in points)if(value!=null){val x=plot.left+(epoch-at)/7200f*plot.width();val y=plot.bottom-(value/maximum).toFloat().coerceIn(0f,1f)*plot.height()
-            line(x,plot.bottom,x,y,if(dark)CORAL else 0xff864731.toInt(),max(2f,plot.width()/20))
-            circle(x,y,1.6f,fg)}
+        val scale=if(key=="precipitation")max(maximum,points.mapNotNull{it.second}.maxOrNull()?:0.0)*1.1 else maximum
+        val barWidth=max(2f,gr.width()/22)
+        val plot=RectF(gr.left+barWidth/2+2,gr.top+6,gr.right-barWidth/2-2,gr.bottom-26)
+        c!!.save();c!!.clipRect(gr.left,gr.top,gr.right,plot.bottom+1)
+        repeat(5){j->val y=plot.top+plot.height()*j/4;line(plot.left,y,plot.right,y,muted,.85f)}
+        repeat(5){j->val x=plot.left+plot.width()*j/4;line(x,plot.top,x,plot.bottom,muted,.6f)}
+        for((epoch,value)in points)if(value!=null){val x=plot.left+(epoch-at)/7200f*plot.width();val y=plot.bottom-(value/scale).toFloat().coerceIn(0f,1f)*plot.height()
+            line(x,plot.bottom,x,y,if(dark)CORAL else 0xff864731.toInt(),barWidth)
+        }
+        line(plot.left,plot.bottom,plot.right,plot.bottom,muted,.85f);c!!.restore()
         val start=wx?.clock(at)?:"—";val end=wx?.clock(at+7200)?:"—"
-        inkText(start,gr.left,gr.bottom-12,16f,fg,mono);val ei=inkBounds(end,16f,mono);inkText(end,gr.right-ei.width(),gr.bottom-12,16f,fg,mono)
+        inkText(start,gr.left,plot.bottom+8,16f,fg,mono);val ei=inkBounds(end,16f,mono);inkText(end,gr.right-ei.width(),plot.bottom+8,16f,fg,mono)
     }
     private fun rain(b:RectF,totalB:RectF){
+        c!!.save();c!!.clipPath(metrics!!.outline(activeId,b))
         val name=heading("短时降水","Rain trend");base(b,"",true)
         val samples=wx?.hourly?.times?.filter{it>at&&it<=at+7200}?:emptyList()
         val values=samples.map{wx?.hourly?.at("precipitation",it)}
@@ -532,6 +537,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         val gr=columnFigure(b,name,b.width()*.48f,reading,30f)
         figureColumn(b,gr,name,reading,"mm/h",listOf(heading("每小时模型 · 非雷达","Hourly model · not radar")),true,readingSize=30f)
         forecastChart(gr,"precipitation",max(1.0,values.filterNotNull().maxOrNull()?:1.0),true)
+        c!!.restore()
         val total=if(values.size==2&&values.all{it!=null})values.sumOf{it!!}else null
         activeId="ins-rain-total";scalar(totalB,heading("2h 累计降水","2h rain total"),Units.number(total,1),"mm",true)
     }

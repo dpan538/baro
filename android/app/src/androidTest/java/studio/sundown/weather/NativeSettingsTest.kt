@@ -39,7 +39,8 @@ class NativeSettingsTest {
             tap(s,"°F");s.onActivity{assertTrue(it.model.fahrenheit)}
             tap(s,"mph");s.onActivity{assertEquals("mph",it.model.wind)}
             tap(s,"···");tap(s,"Clear weather cache");tap(s,"Feedback")
-            s.onActivity{a->assertNotNull(find(a.settings,"Submit feedback"));a.feedback.draft="Retained after settings close";a.settings.close();assertFalse(a.pager.overlayOpen)}
+            s.onActivity{a->assertNotNull(find(a.settings,"Submit feedback"));a.feedback.draft="Retained after settings close";a.settings.close();assertTrue(a.pager.overlayOpen)}
+            SystemClock.sleep(400);s.onActivity{assertFalse(it.pager.overlayOpen)}
             s.recreate();i.waitForIdleSync();s.onActivity{a->assertTrue(a.model.block);assertFalse(a.model.motion);assertTrue(a.model.fahrenheit);assertEquals("mph",a.model.wind);assertEquals("Retained after settings close",a.feedback.draft)}
         }
     }

@@ -89,10 +89,13 @@ class PixelArt(context: Context, private val instrument: Boolean): TextureView(c
         val wx=weather;val at=if(instrument)sampleTime?:wx?.validAt?:0L else wx?.validAt?:0L;val scene=wx?.scene(at)?:"unknown";val time=if(motion)elapsed else 0.0
         i("coarse",if(block)1 else 0)
         if(instrument){
+            val atmosphereAt=wx?.atmosphereTime(at)?:at
+            val weatherScene=wx?.scene(atmosphereAt)?:"unknown"
             vec("screen",w,h);vec("grid",w,h);f("clock",time)
             val low=wx?.value("cloud_cover_low",at);val mid=wx?.value("cloud_cover_mid",at);val high=wx?.value("cloud_cover_high",at)
             f("cloud",listOfNotNull(low,mid,high).maxOrNull()?.div(100)?:0.0)
-            f("rain",if(scene in listOf("rain","storm"))(wx?.value("precipitation",at)?:0.0).div(3).coerceIn(0.0,1.0) else 0.0)
+            f("rain",wx?.rainStrength(atmosphereAt)?:0.0)
+            i("weatherScene",instruments.indexOf(weatherScene).coerceAtLeast(0))
             f("fog",if(scene=="fog").92 else max(0.0,1-(wx?.value("visibility",at)?:15000.0)/15000)*.5)
             val sun=wx?.let { Astronomy.sun(at,it.place) };f("elevation",sun?.elevation?:0.0);f("bearing",sun?.azimuth?:0.0);f("moonPhase",wx?.let { Astronomy.moon(at).fraction }?:0.0)
             i("scene",instruments.indexOf(scene).coerceAtLeast(0))

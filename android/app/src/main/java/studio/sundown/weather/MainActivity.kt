@@ -12,6 +12,12 @@ import android.os.*
 import android.provider.Settings
 import android.view.*
 import android.widget.*
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.ViewCompat
+import androidx.core.location.LocationManagerCompat
+import androidx.core.os.CancellationSignal
 
 class MainActivity:Activity(){
     lateinit var model:AppModel;private set
@@ -35,28 +41,33 @@ class MainActivity:Activity(){
     private val devicePrefs by lazy{getSharedPreferences("sundown-device",MODE_PRIVATE)}
     private val locationManager by lazy{getSystemService(LocationManager::class.java)}
     private var placeSearch:NetworkJob?=null
-    private val listener=object:LocationListener{
-        override fun onLocationChanged(location:Location){
-            if(!visible||!locating||!devicePrefs.getBoolean("location_follow",false))return
-            if(!location.latitude.isFinite()||!location.longitude.isFinite())return
-            stopLocation();model.locationStatus="fix"
-            selectPlace(Place(model.tr("当前位置","Current location"),location.latitude,location.longitude,model.place.zone),manual=false)
-        }
-        override fun onProviderDisabled(provider:String){model.locationStatus="system_off";stopLocation();settings.refreshLocation()}
-        override fun onProviderEnabled(provider:String){}
-        @Deprecated("Legacy provider status") override fun onStatusChanged(provider:String?,status:Int,extras:Bundle?){}
+    private val locationRequests=mutableListOf<CancellationSignal>()
+    private var locationTimeout:Runnable?=null
+    private var placeDialog:PlaceDialog?=null
+    private fun acceptLocation(location:Location){
+        if(!visible||!locating||!locationEnabled()||!usableLocation(location))return
+        stopLocation();model.locationStatus="fix"
+        selectPlace(Place(model.tr("当前位置","Current location"),location.latitude,location.longitude,model.place.zone),manual=false)
+        settings.refreshLocation()
+    }
+    private fun usableLocation(location:Location):Boolean {
+        val age=(SystemClock.elapsedRealtimeNanos()-location.elapsedRealtimeNanos)/1_000_000
+        return validLocationFix(location.latitude,location.longitude,age,if(location.hasAccuracy())location.accuracy.toDouble()else null)
     }
     override fun onCreate(savedInstanceState:Bundle?){
         super.onCreate(savedInstanceState)
         model=AppModel(this);repository=WeatherRepository(this);updates=Updates(this,repository.pool);feedback=Feedback(model.prefs,repository.pool,repository.backend)
         updates.cleanInstalled()
-        window.decorView.systemUiVisibility=View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-        if(Build.VERSION.SDK_INT>=30)window.setDecorFitsSystemWindows(false)
-        root=FrameLayout(this).apply{setBackgroundColor(FRAME);setOnApplyWindowInsetsListener{v,insets->
-            if(Build.VERSION.SDK_INT>=30){val a=insets.getInsets(WindowInsets.Type.displayCutout() or WindowInsets.Type.captionBar());val bar=insets.getInsetsIgnoringVisibility(WindowInsets.Type.statusBars());val ime=insets.getInsets(WindowInsets.Type.ime());val landscape=resources.configuration.orientation==android.content.res.Configuration.ORIENTATION_LANDSCAPE;v.setPadding(a.left,if(landscape)maxOf(a.top,bar.top)else a.top,a.right,maxOf(a.bottom,ime.bottom))}
-            else{@Suppress("DEPRECATION") v.setPadding(insets.systemWindowInsetLeft,insets.systemWindowInsetTop,insets.systemWindowInsetRight,insets.systemWindowInsetBottom)}
+        WindowCompat.setDecorFitsSystemWindows(window,false)
+        window.decorView.setBackgroundColor(PAPER)
+        root=FrameLayout(this).apply{setBackgroundColor(PAPER)}
+        ViewCompat.setOnApplyWindowInsetsListener(root){v,insets->
+            val chrome=insets.getInsets(WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.captionBar())
+            val ime=insets.getInsets(WindowInsetsCompat.Type.ime())
+            v.setPadding(chrome.left,chrome.top,chrome.right,maxOf(chrome.bottom,ime.bottom))
+            if(this::pager.isInitialized)pager.observationPage.requestLayout()
             insets
-        }}
+        }
         weatherArt=PixelArt(this,false);observationArt=PixelArt(this,true)
         weatherArt.elapsed=savedInstanceState?.getDouble("weather_elapsed")?:0.0;observationArt.elapsed=savedInstanceState?.getDouble("observation_elapsed")?:0.0
         val weatherBoard=WeatherDashboard(this,model);val obsBoard=ObservationDashboard(this,model)
@@ -70,13 +81,17 @@ class MainActivity:Activity(){
         model.weather=repository.cached(model.place)
         redraw()
     }
-    private fun immersive(){if(Build.VERSION.SDK_INT>=30){window.insetsController?.apply{systemBarsBehavior=WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;hide(WindowInsets.Type.systemBars())}}else{@Suppress("DEPRECATION")
-        window.decorView.systemUiVisibility=View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_STABLE}}
+    private fun immersive(){WindowInsetsControllerCompat(window,window.decorView).apply{
+        isAppearanceLightStatusBars=true;isAppearanceLightNavigationBars=true
+        systemBarsBehavior=WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        if(model.page==0)hide(WindowInsetsCompat.Type.systemBars())
+        else{show(WindowInsetsCompat.Type.statusBars());hide(WindowInsetsCompat.Type.navigationBars())}
+    }}
     override fun onWindowFocusChanged(hasFocus:Boolean){super.onWindowFocusChanged(hasFocus);if(hasFocus)immersive()}
     override fun onResume(){super.onResume();visible=true;immersive();refresh();if(devicePrefs.getBoolean("location_follow",false))startLocation();artLifecycle();main.post(ticker)
         if(updates.installing){updates.installing=false;settings.installPermissionReturned()}}
-    override fun onPause(){visible=false;touchInProgress=false;main.removeCallbacksAndMessages(null);repository.cancelWeather();placeSearch?.cancel();feedback.cancel();settings.cancelRequests();stopLocation();artLifecycle();super.onPause()}
-    override fun onDestroy(){placeSearch?.cancel();settings.dispose();weatherArt.dispose();observationArt.dispose();repository.close();super.onDestroy()}
+    override fun onPause(){visible=false;touchInProgress=false;main.removeCallbacksAndMessages(null);repository.cancelWeather();placeSearch?.cancel();placeDialog?.cancelSearch();feedback.cancel();settings.cancelRequests();stopLocation();artLifecycle();super.onPause()}
+    override fun onDestroy(){placeSearch?.cancel();placeDialog?.dismissFromHost();settings.dispose();weatherArt.dispose();observationArt.dispose();repository.close();super.onDestroy()}
     override fun onSaveInstanceState(out:Bundle){out.putDouble("weather_elapsed",weatherArt.elapsed);out.putDouble("observation_elapsed",observationArt.elapsed);super.onSaveInstanceState(out)}
     private val ticker=object:Runnable{override fun run(){
         if(!visible)return
@@ -98,7 +113,7 @@ class MainActivity:Activity(){
     }
     fun redraw(){
         model.now=System.currentTimeMillis()/1000
-        pager.syncPage();root.setBackgroundColor(if(model.page==0)0xff191e1d.toInt()else FRAME);pager.weatherPage.updateState();pager.observationPage.updateState()
+        pager.syncPage();immersive();root.setBackgroundColor(PAPER);pager.weatherPage.updateState();pager.observationPage.updateState()
         val enabled=model.motion&&android.animation.ValueAnimator.areAnimatorsEnabled()
         weatherArt.updateScene(model.weather,null,model.block,enabled)
         observationArt.updateScene(model.weather,model.weather?.let{model.window(it).start},model.block,enabled)
@@ -108,7 +123,7 @@ class MainActivity:Activity(){
     }
     private fun artLifecycle(){
         val transition=pageTransition
-        val pause=transition||(touchInProgress&&!pager.overlayOpen)
+        val pause=transition
         weatherArt.pauseForInteraction(pause);observationArt.pauseForInteraction(pause)
         val exposed=visible
         weatherArt.active=exposed&&model.weather!=null&&(model.page==0||transition)
@@ -136,30 +151,34 @@ class MainActivity:Activity(){
         stopLocation();if(!visible||!locationEnabled())return
         if(checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)!=PackageManager.PERMISSION_GRANTED&&checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED){model.locationStatus="denied";settings.refreshLocation();return}
         if(!locationManager.isLocationEnabled){model.locationStatus="system_off";settings.refreshLocation();return}
-        val candidates=if(checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED)listOf(LocationManager.NETWORK_PROVIDER,LocationManager.GPS_PROVIDER)else listOf(LocationManager.NETWORK_PROVIDER)
-        val providers=candidates.filter{locationManager.isProviderEnabled(it)}
+        val fine=checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED
+        val providers=listOf("fused",LocationManager.NETWORK_PROVIDER,LocationManager.GPS_PROVIDER).filter{provider->
+            (provider!=LocationManager.GPS_PROVIDER||fine||Build.VERSION.SDK_INT>=31)&&runCatching{locationManager.isProviderEnabled(provider)}.getOrDefault(false)
+        }
         if(providers.isEmpty()){model.locationStatus="unavailable";settings.refreshLocation();return}
         val gen=++locationGeneration;locating=true;model.locationStatus="waiting"
-        try{providers.forEach{locationManager.requestSingleUpdate(it,listener,Looper.getMainLooper())};main.postDelayed({if(locating&&gen==locationGeneration){stopLocation();model.locationStatus="timeout";settings.refreshLocation()}},20000)}catch(_:SecurityException){stopLocation();model.locationStatus="denied"}
+        // Reuse only recent system fixes. A granted permission is not itself a fix.
+        val cached=(providers+LocationManager.PASSIVE_PROVIDER).mapNotNull{provider->runCatching{locationManager.getLastKnownLocation(provider)}.getOrNull()}.filter(::usableLocation).maxByOrNull{it.elapsedRealtimeNanos}
+        if(cached!=null){acceptLocation(cached);return}
+        for(provider in providers){
+            val request=CancellationSignal();locationRequests.add(request)
+            try{LocationManagerCompat.getCurrentLocation(locationManager,provider,request,mainExecutor){fix->
+                if(gen==locationGeneration&&fix!=null)acceptLocation(fix)
+            }}catch(_:SecurityException){request.cancel()}catch(_:IllegalArgumentException){request.cancel()}
+        }
+        locationTimeout=Runnable{if(locating&&gen==locationGeneration){stopLocation();model.locationStatus="timeout";settings.refreshLocation()}}
+        main.postDelayed(locationTimeout!!,30000)
         settings.refreshLocation()
     }
-    private fun stopLocation(){locationGeneration++;locating=false;locationManager.removeUpdates(listener)}
+    private fun stopLocation(){locationGeneration++;locating=false;locationTimeout?.let(main::removeCallbacks);locationTimeout=null;locationRequests.forEach{it.cancel()};locationRequests.clear()}
+    fun retryLocation(){setLocation(true)}
     override fun onRequestPermissionsResult(requestCode:Int,permissions:Array<out String>,grantResults:IntArray){super.onRequestPermissionsResult(requestCode,permissions,grantResults);if(requestCode==901){if(grantResults.any{it==PackageManager.PERMISSION_GRANTED})startLocation()else{devicePrefs.edit().putBoolean("location_follow",false).apply();model.locationStatus="denied";settings.refreshLocation()}}}
     @android.annotation.SuppressLint("GestureBackNavigation")
     @Deprecated("API 29–32 fallback") override fun onBackPressed(){back()}
     private fun back(){if(settings.visibility==View.VISIBLE)settings.back()else finish()}
     fun showPlaces(){
-        val box=LinearLayout(this).apply{orientation=LinearLayout.VERTICAL;setPadding(dp(24),dp(12),dp(24),dp(12))}
-        val search=EditText(this).apply{hint=model.tr("城市名称","City name");setSingleLine(true);maxLines=1;filters=arrayOf(android.text.InputFilter.LengthFilter(80))}
-        val status=TextView(this);val list=LinearLayout(this).apply{orientation=LinearLayout.VERTICAL};val scroll=ScrollView(this).apply{addView(list)}
-        val button=Button(this).apply{text=model.tr("搜索","Search");minHeight=dp(56);PressFeedback.install(this)}
-        box.addView(search);box.addView(button);box.addView(status);box.addView(scroll,LinearLayout.LayoutParams(-1,dp(330)))
-        val dialog=AlertDialog.Builder(this).setTitle(model.tr("选择地点","Choose place")).setView(box).setNeutralButton(model.tr("重新获取天气","Refresh weather")){_,_->refresh(true)}.setNegativeButton(model.tr("取消","Cancel"),null).create()
-        dialog.setOnDismissListener{placeSearch?.cancel()}
-        button.setOnClickListener{PressFeedback.click(button);val q=search.text.toString().trim();if(q.length<2)return@setOnClickListener;placeSearch?.cancel();button.isEnabled=false;status.text=model.tr("搜索中…","Searching…");list.removeAllViews()
-            placeSearch=repository.search(q,model.lang){places,error->button.isEnabled=true;status.text=if(error!=null)model.tr("搜索失败，请重试","Search failed. Retry.")else if(places.isNullOrEmpty())model.tr("没有匹配地点","No matching places")else ""
-                places?.forEach{place->list.addView(Button(this).apply{text=place.name;minHeight=dp(56);PressFeedback.install(this);setOnClickListener{PressFeedback.click(this);selectPlace(place);dialog.dismiss()}})}}}
-        dialog.show()
+        if(placeDialog?.isShowing==true)return
+        placeDialog=PlaceDialog(this).also{it.show()}
     }
     fun external(url:String){val u=android.net.Uri.parse(url);if(u.scheme!="https")return;runCatching{startActivity(Intent(Intent.ACTION_VIEW,u))}}
     fun dp(value:Int)=(value*resources.displayMetrics.density).toInt()

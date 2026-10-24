@@ -11,11 +11,26 @@ class DesignMetrics(context:Context,path:String){
     private val referenceWidth=json.getDouble("width").toFloat()
     private val referenceHeight=json.getDouble("height").toFloat()
     private val adjusted=mutableMapOf<String,RectF>()
+    private var originX=0f
+    private var originY=0f
     var sx=1f;private set
     var sy=1f;private set
     var inset=0f;private set
     fun configure(widthDp:Float,heightDp:Float,topInsetDp:Float){
-        sx=widthDp/referenceWidth;sy=(heightDp+topInsetDp)/referenceHeight;inset=topInsetDp
+        inset=topInsetDp
+        // Window insets are already consumed by the native parent. The frozen
+        // browser's status allowance and outer preview frame are not app chrome.
+        if(nodes.has(".information-panel")){
+            val info=node(".information-panel")!!;val art=node(".visual-panel")!!
+            originX=minOf(info.getDouble("x"),art.getDouble("x")).toFloat()
+            originY=minOf(info.getDouble("y"),art.getDouble("y")).toFloat()
+            val right=maxOf(info.getDouble("x")+info.getDouble("w"),art.getDouble("x")+art.getDouble("w")).toFloat()
+            val bottom=maxOf(info.getDouble("y")+info.getDouble("h"),art.getDouble("y")+art.getDouble("h")).toFloat()
+            sx=widthDp/(right-originX);sy=heightDp/(bottom-originY)
+        }else{
+            originX=0f;originY=if(referenceWidth>referenceHeight)24f else 0f
+            sx=widthDp/referenceWidth;sy=heightDp/(referenceHeight-originY)
+        }
         adjusted.clear()
         // The full-height figure contract supersedes the former fixed card heights.
         // Keep the assembly edges and columns; redistribute only neighbouring cards.
@@ -57,7 +72,7 @@ class DesignMetrics(context:Context,path:String){
     fun rect(key:String,index:Int=0):RectF {
         adjusted[key]?.let{return RectF(it)}
         val n=node(key,index)?:return RectF()
-        val x=n.getDouble("x").toFloat()*sx;val y=n.getDouble("y").toFloat()*sy-inset
+        val x=(n.getDouble("x").toFloat()-originX)*sx;val y=(n.getDouble("y").toFloat()-originY)*sy
         return RectF(x,y,x+n.getDouble("w").toFloat()*sx,y+n.getDouble("h").toFloat()*sy)
     }
     fun outline(key:String,bounds:RectF=rect(key)):Path{

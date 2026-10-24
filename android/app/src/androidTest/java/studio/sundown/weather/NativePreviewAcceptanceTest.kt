@@ -53,7 +53,7 @@ class NativePreviewAcceptanceTest {
         s.onActivity { a -> a.model.page = page;a.redraw() };pause(700)
         var left = 0;var y = 0
         s.onActivity { a -> val r = Rect();a.root.getGlobalVisibleRect(r);left = r.left + 3;y = r.centerY() }
-        val expected = if (page == 0) Color.rgb(25, 30, 29) else Color.rgb(11, 11, 10)
+        val expected = if (page == 0) PAPER else Color.rgb(11, 11, 10)
         val deadline = SystemClock.uptimeMillis() + 12000;var shown = false
         while (!shown && SystemClock.uptimeMillis() < deadline) {
             val b = i.uiAutomation.takeScreenshot()!!;val p = b.getPixel(left, y);b.recycle()

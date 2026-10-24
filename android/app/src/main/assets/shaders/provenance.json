@@ -27,6 +27,6 @@
     "source": "dist/instrument-art.js",
     "constant": "INSTRUMENT_FRAGMENT",
     "target": "instrument.frag",
-    "sha256": "a06010d2012ae6f134703efd20099575404673cc848e30941bdbaa086fa1f736"
+    "sha256": "96d63acea1f25038a0a2841b475455790e21c46f3ebb11f2f7487d9d493ff7da"
   }
 ]

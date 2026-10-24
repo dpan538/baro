@@ -36,7 +36,7 @@ class NativeSmallViewportTest {
             val frame=android.graphics.Color.red(edge)
             val pixel=image.getPixel(40,200)
             val paper=android.graphics.Color.red(pixel)>245&&android.graphics.Color.green(pixel)>245
-            val presented=if(page==0)frame in 23..27&&paper else frame in 9..13
+            val presented=if(page==0)frame>245&&paper else frame in 9..13
             if(presented){
                 File(i.targetContext.getExternalFilesDir(null),"small-$name.png").outputStream().use{image.compress(Bitmap.CompressFormat.PNG,100,it)};image.recycle();return
             }
@@ -64,7 +64,7 @@ class NativeSmallViewportTest {
                         s.onActivity{a->
                             val p=a.pager.observationPage;val board=p.dashboard
                             assertEquals(portrait,p.height>p.width)
-                            assertEquals("The full dashboard must fit the viewport",p.height,board.height)
+                            assertEquals("Only the observation status bar is reserved",p.height,board.top+board.height)
                             assertEquals(p.width,board.width);assertEquals(0,p.scrollY)
                             assertFalse(p.canScrollVertically(1));assertFalse(p.canScrollVertically(-1))
                             val d=board.coordinateScale;val dial=board.dialRect
@@ -79,7 +79,7 @@ class NativeSmallViewportTest {
                     drag(x,y,endY);drag(x,endY,y)
                     s.onActivity{a->assertEquals(1,a.model.page);assertEquals(11,a.model.purpose);assertEquals(0,a.pager.observationPage.scrollY)}
                     var oldPurpose=0
-                    s.onActivity{a->val p=a.pager.observationPage;val d=p.dashboard.coordinateScale;val r=p.dashboard.dialRect;val loc=IntArray(2);p.getLocationOnScreen(loc);x=loc[0]+r.centerX()*d;y=loc[1]+r.centerY()*d;endY=y-450;oldPurpose=a.model.purpose}
+                    s.onActivity{a->val p=a.pager.observationPage;val d=p.dashboard.coordinateScale;val r=p.dashboard.dialRect;val loc=IntArray(2);p.dashboard.getLocationOnScreen(loc);x=loc[0]+r.centerX()*d;y=loc[1]+r.centerY()*d;endY=y-450;oldPurpose=a.model.purpose}
                     drag(x,y,endY)
                     s.onActivity{a->assertEquals(1,a.model.page);assertNotEquals(oldPurpose,a.model.purpose);assertEquals(0,a.pager.observationPage.scrollY)}
                     s.onActivity{a->a.model.page=0;a.redraw()};i.waitForIdleSync();SystemClock.sleep(500);capture("weather-$orientation-$lang",s,0)

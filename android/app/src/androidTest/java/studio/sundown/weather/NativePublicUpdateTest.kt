@@ -29,20 +29,20 @@ class NativePublicUpdateTest {
     private fun tap(s:ActivityScenario<MainActivity>,label:String){
         val r=Rect()
         s.onActivity{a->val v=find(a.settings,label)?:error("Missing $label");v.requestRectangleOnScreen(Rect(0,0,v.width,v.height),true)}
-        i.waitForIdleSync();SystemClock.sleep(250)
+        SystemClock.sleep(250)
         s.onActivity{a->assertTrue(find(a.settings,label)!!.getGlobalVisibleRect(r))}
         val now=SystemClock.uptimeMillis()
         for(action in listOf(MotionEvent.ACTION_DOWN,MotionEvent.ACTION_UP)){
             val e=MotionEvent.obtain(now,SystemClock.uptimeMillis(),action,r.exactCenterX(),r.exactCenterY(),0);i.sendPointerSync(e);e.recycle();SystemClock.sleep(70)
         }
-        i.waitForIdleSync();SystemClock.sleep(300)
+        SystemClock.sleep(300)
     }
     private fun capture(name:String){val b=i.uiAutomation.takeScreenshot()!!;File(ctx.getExternalFilesDir(null),name).outputStream().use{b.compress(Bitmap.CompressFormat.PNG,100,it)};b.recycle()}
     @Test fun settingsDiscoversAndDownloadsTheActualPublicApk(){
         assertEquals("yes",args.getString("publicUpdate"))
         val expected=args.getString("expectedSha")!!;val code=args.getString("expectedCode")!!.toLong()
         assertTrue(ctx.packageManager.getPackageInfo(ctx.packageName,0).longVersionCode<code)
-        ctx.getSharedPreferences("baro-native",Context.MODE_PRIVATE).edit().putString("language","en").putBoolean("fahrenheit",true).putString("wind","mph").putInt("purpose",11).putInt("page",1).putString("feedback_draft","Upgrade retention 草稿").putString("upgrade_marker","BARO-native-install-20261024").commit()
+        ctx.getSharedPreferences("baro-native",Context.MODE_PRIVATE).edit().putString("language","en").putBoolean("motion",false).putBoolean("block",true).putBoolean("fahrenheit",true).putString("wind","mph").putInt("purpose",11).putInt("page",1).putString("feedback_draft","Upgrade retention 草稿").putString("upgrade_marker","BARO-native-install-20261024").commit()
         File(ctx.filesDir,"upgrade-canary.txt").writeText("BARO private data remains intact\n")
         ActivityScenario.launch(MainActivity::class.java).use{s->
             s.onActivity{a->a.updates.apk.delete();File(ctx.cacheDir,"updates/pending.json").delete();a.settings.open()};SystemClock.sleep(350)
