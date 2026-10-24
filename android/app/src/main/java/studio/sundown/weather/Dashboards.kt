@@ -94,16 +94,20 @@ abstract class Dashboard(context:Context,val model:AppModel):View(context){
         val fitted=if(width>maxWidth&&width>0)size*maxWidth.coerceAtLeast(1f)/width else size
         text(s,x,y,fitted,color,font)
     }
-    private data class ParagraphKey(val text:String,val width:Int,val size:Float,val color:Int,val maxLines:Int)
+    private data class ParagraphKey(val text:String,val width:Int,val size:Float,val color:Int,val maxLines:Int,val balanced:Boolean)
     private val paragraphLayouts=object:LinkedHashMap<ParagraphKey,StaticLayout>(64,.75f,true){
         override fun removeEldestEntry(eldest:MutableMap.MutableEntry<ParagraphKey,StaticLayout>)=size>64
     }
-    protected fun paragraph(s:String,b:RectF,size:Float,color:Int=INK,maxLines:Int=4):StaticLayout{
-        val key=ParagraphKey(s,max(1,b.width().toInt()),size,color,maxLines)
+    protected fun paragraphLayout(s:String,width:Float,size:Float,color:Int=INK,maxLines:Int=4,balanced:Boolean=false):StaticLayout{
+        val key=ParagraphKey(s,max(1,width.toInt()),size,color,maxLines,balanced)
         val layout=paragraphLayouts.getOrPut(key){
             val tp=TextPaint(Paint.ANTI_ALIAS_FLAG).apply{this.color=color;textSize=size;typeface=languageFont(s)}
-            StaticLayout.Builder.obtain(s,0,s.length,tp,key.width).setAlignment(Layout.Alignment.ALIGN_NORMAL).setIncludePad(false).setMaxLines(maxLines).setEllipsize(android.text.TextUtils.TruncateAt.END).build()
+            StaticLayout.Builder.obtain(s,0,s.length,tp,key.width).setAlignment(Layout.Alignment.ALIGN_NORMAL).setIncludePad(false).setMaxLines(maxLines).setBreakStrategy(if(balanced)android.graphics.text.LineBreaker.BREAK_STRATEGY_BALANCED else android.graphics.text.LineBreaker.BREAK_STRATEGY_SIMPLE).setEllipsize(android.text.TextUtils.TruncateAt.END).build()
         }
+        return layout
+    }
+    protected fun paragraph(s:String,b:RectF,size:Float,color:Int=INK,maxLines:Int=4,balanced:Boolean=false):StaticLayout{
+        val layout=paragraphLayout(s,b.width(),size,color,maxLines,balanced)
         c!!.save();c!!.clipRect(b);c!!.translate(b.left,b.top);layout.draw(c);c!!.restore()
         return layout
     }

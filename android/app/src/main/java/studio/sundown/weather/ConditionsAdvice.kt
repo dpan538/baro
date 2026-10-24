@@ -4,8 +4,9 @@ import java.time.Instant
 
 /** Activity decisions plus visibility, convection and light at the same selected model instant. */
 data class ConditionsAdvice(val text:String,val reasons:List<String>)
+private data class AdviceCandidate(val id:String,val priority:Int,val copy:Pair<String,String>)
 
-fun conditionsAdvice(w:Weather?,purpose:Int,at:Long,language:String,windowAvailable:Boolean=true):ConditionsAdvice {
+fun conditionsAdvice(w:Weather?,purpose:Int,at:Long,language:String,windowAvailable:Boolean=true,fits:((String)->Boolean)?=null):ConditionsAdvice {
     fun tr(zh:String,en:String)=if(language=="zh")zh else en
     fun result(id:String,zh:String,en:String)=ConditionsAdvice(tr(zh,en),listOf(id))
     if(w==null)return result("unavailable","天气数据暂不可用，恢复联网后会自动更新。","Weather is unavailable; it will update when connectivity returns.")
@@ -32,9 +33,8 @@ fun conditionsAdvice(w:Weather?,purpose:Int,at:Long,language:String,windowAvaila
     // These are editorial triggers, not soil-type saturation or measured grass wetness.
     val wetSoil=soil!=null&&soil>=.35
     val frost=dewWeather&&((surface!=null&&surface<=0)||(t!=null&&t<=2))
-    data class Candidate(val id:String,val priority:Int,val copy:Pair<String,String>)
-    val choices=mutableListOf<Candidate>()
-    fun offer(id:String,priority:Int,copy:Pair<String,String>?){if(copy!=null)choices.add(Candidate(id,priority,copy))}
+    val choices=mutableListOf<AdviceCandidate>()
+    fun offer(id:String,priority:Int,copy:Pair<String,String>?){if(copy!=null)choices.add(AdviceCandidate(id,priority,copy))}
 
     if(code in setOf(95,96,99))offer("thunder",120,when(p){
         2->"雷暴时段不宜骑行，先到室内等候。" to "Thunderstorms: stop riding; wait indoors."
@@ -115,9 +115,9 @@ fun conditionsAdvice(w:Weather?,purpose:Int,at:Long,language:String,windowAvaila
             vis<5000->"watch junctions and steps"
             else->"check local obstructions"
         }
-        Candidate("visibility",if(vis<1000)105 else if(vis<5000)88 else 30,
+        AdviceCandidate("visibility",if(vis<1000)105 else if(vis<5000)88 else 30,
             "能见度${distance}公里${level}${action}。" to "Visibility ${distance} km: $english; $enAction.")
-    }else if(p<10&&code in setOf(45,48))Candidate("visibility",88,
+    }else if(p<10&&code in setOf(45,48))AdviceCandidate("visibility",88,
         "有雾，能见度数值缺失，先确认路线视线。" to "Fog is reported but visibility is missing; check sightlines locally.")else null
     if(wetSoil&&p<10)offer("wet_soil",72,when(p){
         2->"表层土壤可能偏湿，未铺装路段可能泥泞。" to "Model soil moisture is high; unpaved cycling sections may be muddy."
@@ -178,7 +178,7 @@ fun conditionsAdvice(w:Weather?,purpose:Int,at:Long,language:String,windowAvaila
     if(p==11&&(rh?.let{it>=80}==true||spread?.let{it<=3}==true))offer("storage_moisture",76,"室外湿度偏高，冷器材带入暖房先装袋回温，晾干后收纳。" to "Humid outside: bag cold gear before entering a warm room; dry it before storage.")
     val cape=v("cape")?.takeIf{it.isFinite()&&it>=0}
     val cin=v("convective_inhibition")?.takeIf{it.isFinite()}
-    val convection=if(p<10&&cape!=null)Candidate("convection",if(cape>=1000)84 else 25,when{
+    val convection=if(p<10&&cape!=null)AdviceCandidate("convection",if(cape>=1000)84 else 25,when{
         code in setOf(95,96,99)&&cape<1000->"该时段有雷暴，低位能仍需避险。" to "Thunderstorms are reported; low CAPE does not remove the risk."
         code in setOf(95,96,99)->"雷暴可能伴强雨阵风，不能单看位能或抑制。" to "Storms may bring heavy rain/gusts despite CIN."
         cape>=1000&&cin!=null&&kotlin.math.abs(cin)>=100->
@@ -233,21 +233,86 @@ fun conditionsAdvice(w:Weather?,purpose:Int,at:Long,language:String,windowAvaila
     // Preserve two activity decisions, then explain the actual visible instruments.
     // Explicit coverage prevents rain/soil advice from hiding visibility and radiation.
     val selected=ranked.take(2).toMutableList()
-    if(selected.isEmpty())selected.add(Candidate("local_check",0,fallback))
+    if(selected.isEmpty())selected.add(AdviceCandidate("local_check",0,fallback))
     visibility?.let{selected.add(it)};convection?.let{selected.add(it)}
     if(light.kind!="missing"||choices.isNotEmpty()||visibility!=null||convection!=null)
-        selected.add(Candidate("light_quality",10,lightCopy))
-    if(selected.size==1&&selected.first().id!="local_check")selected.add(Candidate("local_check",0,fallback))
+        selected.add(AdviceCandidate("light_quality",10,lightCopy))
+    if(selected.size==1&&selected.first().id!="local_check")selected.add(AdviceCandidate("local_check",0,fallback))
     val budget=if(language=="zh")112 else 230
     val compact=selected.size>=3
-    fun copy(candidate:Candidate):String{val pair=if(compact)compactAdvice(candidate.id,p,candidate.copy)else candidate.copy;return tr(pair.first,pair.second)}
-    fun length()=selected.sumOf{copy(it).length}+if(language=="en")selected.size-1 else 0
-    // Optional second activity detail yields to requested instrument coverage;
-    // the highest-priority weather decision is always retained.
-    if(length()>budget&&ranked.size>=2)selected.remove(ranked[1])
-    val included=mutableListOf<Candidate>();var text=""
-    for(candidate in selected.sortedByDescending{it.priority}){
-        val combined=text+(if(language=="zh"||text.isEmpty())""else " ")+copy(candidate)
+    fun copy(candidate:AdviceCandidate,level:Int):String{
+        val pair=when{
+            level>0->when(candidate.id){
+                "visibility"->{
+                    val distance=vis?.let{Units.number(it/1000,if(it%1000==0.0)0 else 1)}
+                    if(distance==null)"有雾，能见度数值缺失。" to "Fog; visibility unavailable."
+                    else {
+                        val zh=when{vis<1000->"很低";vis<5000->"偏低";vis<10000->"远景受限";else->"较好"}
+                        val en=when{vis<1000->"very low";vis<5000->"reduced";vis<10000->if(level==2)"limited"else "distant detail limited";else->"good"}
+                        "能见度${distance}公里${zh}。" to "Visibility $distance km: $en."
+                    }
+                }
+                "convection"->when{
+                    code in setOf(95,96,99)->if(cape!=null&&cape<1000)"雷暴或伴强雨阵风，低位能也需避险。" to (if(level==1)"Storms can bring rain/gusts despite low CAPE."else "Low CAPE ≠ no storms.")
+                        else "雷暴可伴强雨阵风，先避险。" to (if(level==1)"Storms may bring heavy rain/gusts."else "Storms: rain/gusts possible.")
+                    cape!=null&&cape>=1000&&cin!=null&&kotlin.math.abs(cin)>=100->
+                        (if(level==1)"位能高但受抑，触发后或伴强雨阵风。" else "位能高但受抑，雷暴仍取决于触发。") to
+                        (if(level==1)"High CAPE, inhibited; triggered storms may bring rain/gusts." else "High CAPE, inhibited.")
+                    cape!=null&&cape>=1000->(if(level==1)"位能高，若触发雷暴或伴强雨阵风。" else "位能高，雷暴仍取决于触发。") to
+                        (if(level==1)"High CAPE; storms, if triggered, may bring rain/gusts." else "High CAPE; trigger needed.")
+                    else->"低对流位能不代表无雷暴。" to (if(level==1)"Low CAPE does not exclude storms."else "Low CAPE ≠ no storms.")
+                }
+                "light_quality"->when(light.kind){
+                    "direct"->"直射主导，明暗反差强。" to "Direct-led: stronger contrast."
+                    "diffuse"->"漫射主导，阴影较柔。" to "Diffuse-led: soft shadows."
+                    "mixed"->"直漫射混合，反差可能变化。" to "Mixed direct/diffuse: contrast varies."
+                    "night"->if(p in 0..2)"夜间直漫射为零，需主动照明。" to "Night direct/diffuse 0; use lights."
+                        else "夜间直漫射为零，月光灯光仍存在。" to (if(level==1)"Night direct/diffuse 0; Moon/lamps remain."else "Night direct/diffuse 0 ≠ darkness.")
+                    "zero"->"日间直漫射为零，光线待确认。" to "Day direct/diffuse 0; light uncertain."
+                    else->"直漫射缺失，光线待确认。" to "Solar direct/diffuse unknown."
+                }
+                "thunder"->if(p==9)"雷暴时帐篷不防雷，转入室内。" to (if(level==1)"Tents are not shelter; go indoors."else "Tents ≠ shelter; go indoors.")
+                    else "雷暴，停止露天活动，到室内等候。" to (if(level==1)"Thunderstorms: stop; go indoors."else "Storms: go indoors.")
+                "rain"->when(p){
+                    2->"有雨，骑行留足制动余量。" to "Rain: allow braking space."
+                    10,11->"淋湿物品先晾干再收纳。" to "Dry rain-wet items before storage."
+                    9->"有雨，检查营地排水。" to "Rain: check pitch drainage."
+                    7->"雨挡星空，收好望远镜。" to "Rain hides stars; shelter optics."
+                    in 4..6->"有雨，拍摄器材先遮雨。" to "Rain: cover camera gear."
+                    else->"有雨，备雨具与避雨点。" to (if(level==1)"Rain: carry rainwear; plan shelter."else "Rain: plan shelter.")
+                }
+                "freezing_rain"->"冻雨可能使路面结冰，暂停露天活动。" to "Freezing rain: ice possible; pause travel."
+                "snow"->"降雪影响视线与抓地，先检查路线。" to "Snow: check sightlines and grip."
+                "rain_chance"->"降水机会高，先备雨具。" to "Rain possible: pack rainwear."
+                "gusts"->if(p==2)"阵风较强，骑行留意侧风。" to "Gusts: watch crosswinds."
+                    else "阵风较强，固定随身物与支架。" to (if(level==1)"Gusts: secure items and mounts."else "Gusts: secure gear.")
+                "local_check"->compactAdvice(candidate.id,p,candidate.copy)
+                else->compactAdvice(candidate.id,p,candidate.copy)
+            }
+            compact->compactAdvice(candidate.id,p,candidate.copy)
+            else->candidate.copy
+        }
+        return tr(pair.first,pair.second)
+    }
+    val ordered=selected.sortedByDescending{it.priority}
+    fun compose(items:List<AdviceCandidate>,level:Int)=ConditionsAdvice(items.joinToString(if(language=="zh")""else " "){copy(it,level)},items.map{it.id})
+    if(fits!=null){
+        // Physical line fitting uses the actual native font and viewport. Keep
+        // complete concepts; never rely on ellipsis to enforce the two-line cap.
+        val essential=ordered.filter{it.id in setOf(ordered.first().id,ranked.firstOrNull()?.id,"visibility","convection","light_quality")}
+        val variants=listOf(compose(ordered,0),compose(ordered,1),compose(essential,1),compose(essential,2))
+        variants.firstOrNull{fits(it.text)}?.let{return it}
+        // A narrow multi-window can fit fewer facts. Preserve the first weather
+        // decision and drop whole contextual clauses, never half a warning.
+        val trimmed=essential.toMutableList()
+        while(trimmed.size>1){trimmed.removeAt(trimmed.lastIndex);compose(trimmed,2).let{if(fits(it.text))return it}}
+        return compose(trimmed,2)
+    }
+    val items=ordered.toMutableList()
+    fun length()=items.sumOf{copy(it,0).length}+if(language=="en")items.size-1 else 0
+    if(length()>budget&&ranked.size>=2)items.remove(ranked[1])
+    val included=mutableListOf<AdviceCandidate>();var text=""
+    for(candidate in items){val combined=text+(if(language=="zh"||text.isEmpty())""else " ")+copy(candidate,0)
         if(combined.length<=budget){text=combined;included.add(candidate)}
     }
     return ConditionsAdvice(text,included.map{it.id})

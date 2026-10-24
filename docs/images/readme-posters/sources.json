@@ -1,0 +1,44 @@
+[
+  {
+    "file": "docs/images/readme-posters/sky-simplified.jpg",
+    "sourceSha256": "063e15de3c375810774ed54de6c067bbdc55bbbd395bd0d65b2d21a000afaaa2",
+    "sourceSize": [
+      3000,
+      4200
+    ],
+    "sha256": "3c3f257cbd8d62b37f5d3ad23eab82a0b046800382cc505006b4e82bd18dd80e",
+    "size": [
+      900,
+      1260
+    ],
+    "origin": "User-selected source-authored BARO poster; proportional README derivative, no crop or design edits."
+  },
+  {
+    "file": "docs/images/readme-posters/sky-in-screen.jpg",
+    "sourceSha256": "af1ee44a94885377f1041217c6f6c8807148193cf9769ed3d4e83780f8e76be5",
+    "sourceSize": [
+      3000,
+      4200
+    ],
+    "sha256": "bad92103fec236686d9d251e4b96eca3d22c3f9e8ad580f6c467c632dc2289d6",
+    "size": [
+      900,
+      1260
+    ],
+    "origin": "User-selected source-authored BARO poster; proportional README derivative, no crop or design edits."
+  },
+  {
+    "file": "docs/images/readme-posters/pixels-with-warmth.jpg",
+    "sourceSha256": "e6f472509e2e96ae84c56ed2e36eaf5515dc5ba271d130d05c34ded2a4f4debe",
+    "sourceSize": [
+      3000,
+      4200
+    ],
+    "sha256": "c3e18923e12eb510f24c25c518c1cb3ed715fc7e9e8b3b1ba0019ebf57e93261",
+    "size": [
+      900,
+      1260
+    ],
+    "origin": "User-selected source-authored BARO poster; proportional README derivative, no crop or design edits."
+  }
+]

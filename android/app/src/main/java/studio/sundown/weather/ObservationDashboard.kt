@@ -26,6 +26,7 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
     private var lunarEvents:Pair<String,List<Pair<Long,Boolean>>>?=null
     private var contentProgress=1f
     private var contentAnimator:ValueAnimator?=null
+    internal var adviceShown:ConditionsAdvice?=null;private set
     internal var adviceTextLayout:android.text.StaticLayout?=null;private set
     internal var adviceTextBounds=RectF();private set
     val contentAnimating get()=contentAnimator?.isRunning==true||contentTransition.running
@@ -741,14 +742,13 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         }
         draw("ins-advice"){
             val body=base(it,heading("环境解读","Conditions summary"),color=0xfff0f0e8.toInt())
-            // Rich copy uses the footer's real free space; keep a 4-unit heading
-            // gap and a 3-unit bottom gutter instead of clipping a final line.
-            body.top-=6;body.bottom=it.bottom-3
-            val content=interpretation(model,wx,at)
-            // Use the full body below the shared heading gutter. The prototype's
-            // text-sized rectangle wastes a line of space with richer copy.
-            adviceTextBounds=RectF(body)
-            adviceTextLayout=paragraph(content,body,if(w>=1500)22f else 20f,ink,4)
+            val size=if(w>=1500)22f else 20f
+            val advice=conditionsAdvice(wx,model.purpose,at,model.lang,win?.available?:true){text->
+                val layout=paragraphLayout(text,body.width(),size,ink,3,true)
+                layout.lineCount<=2&&layout.height<=body.height()&&(0 until layout.lineCount).all{layout.getEllipsisCount(it)==0}
+            }
+            adviceShown=advice;adviceTextBounds=RectF(body)
+            adviceTextLayout=paragraph(advice.text,body,size,ink,2,true)
         }
         wheel(r("ins-wheel"))
         // The approved paper groups use short inset rules rather than card outlines.

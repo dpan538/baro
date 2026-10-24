@@ -27,6 +27,8 @@ class NativeConditionsTest {
                 "wet" to (12 to (base+mapOf("soil_moisture_0_to_1cm" to .45))),"dew" to (5 to (base+mapOf("dew_point_2m" to 19.0,"relative_humidity_2m" to 95.0,"soil_moisture_0_to_1cm" to .4))),
                 "night" to (22 to (base+mapOf("direct_radiation_instant" to 0.0,"diffuse_radiation_instant" to 0.0))),"missing" to (12 to emptyMap()),
                 "cycling-night" to (22 to (base+mapOf("weather_code" to 80.0,"visibility" to 3300.0,"cape" to 70.0,"convective_inhibition" to 11.0,"soil_moisture_0_to_1cm" to .39,"direct_radiation_instant" to 0.0,"diffuse_radiation_instant" to 0.0))),
+                "convective-night" to (22 to (base+mapOf("weather_code" to 95.0,"visibility" to 800.0,"cape" to 70.0,"convective_inhibition" to 0.0,"direct_radiation_instant" to 0.0,"diffuse_radiation_instant" to 0.0))),
+                "high-energy" to (12 to (base+mapOf("visibility" to 7000.0,"cape" to 2500.0,"convective_inhibition" to 150.0,"wind_gusts_10m" to 50.0,"soil_moisture_0_to_1cm" to .45))),
                 "convective" to (12 to (base+mapOf("weather_code" to 95.0,"visibility" to 800.0,"cape" to 2500.0,"convective_inhibition" to 150.0,"wind_gusts_10m" to 50.0))))
             data class Run(val text:String,val rect:RectF)
             for((scenario,sample)in scenarios)for(lang in listOf("zh","en"))for(portrait in listOf(false,true))for(purpose in 0..11){
@@ -61,19 +63,22 @@ class NativeConditionsTest {
                 for(x in runs.indices)for(y in x+1 until runs.size){val one=runs[x];val two=runs[y];val overlap=RectF(one.rect)
                     if(overlap.intersect(two.rect)&&overlap.width()>4&&overlap.height()>minOf(one.rect.height(),two.rect.height())*.25f)issues.put("Overlap: ${one.text} / ${two.text}")
                 }
-                val selected=a.model.window(a.model.weather!!);val content=conditionsAdvice(a.model.weather,purpose,selected.start,lang,selected.available)
+                val selected=a.model.window(a.model.weather!!);val content=board.adviceShown!!
                 // StaticLayout can draw through the MeasuredText Canvas overload,
                 // so inspect the actual returned layout rather than missing runs.
                 val layout=board.adviceTextLayout!!
-                if(layout.text.toString()!=content.text||layout.getLineEnd(layout.lineCount-1)!=content.text.length||
+                if(layout.lineCount>2||layout.text.toString()!=content.text||layout.getLineEnd(layout.lineCount-1)!=content.text.length||
                     (0 until layout.lineCount).any{layout.getEllipsisCount(it)>0}||layout.height>board.adviceTextBounds.height()+1)
                     issues.put("Incomplete advice (${layout.height}/${board.adviceTextBounds.height()}, ${layout.lineCount} lines): ${content.text}")
                 if(scenario in listOf("direct","diffuse")){
                     val radiation=runs.filter{nodes.getValue("ins-radiation").contains(it.rect.centerX(),it.rect.centerY())}.joinToString(" "){it.text}
                     if(!radiation.contains(if(lang=="zh")"主导"else "-led"))issues.put("Daylight interpretation absent: $radiation")
                 }
+                if(purpose<10&&scenario in listOf("cycling-night","convective","convective-night","high-energy")&&!content.reasons.containsAll(listOf("visibility","convection","light_quality")))
+                    issues.put("Required visibility/convection/radiation coverage missing: ${content.reasons}")
+                if(layout.lineCount==2&&layout.getLineWidth(1)<layout.width*.20f)issues.put("Orphan last line: ${content.text}")
                 records.put(JSONObject().put("scenario",scenario).put("lang",lang).put("portrait",portrait).put("purpose",purpose).put("text",content.text).put("lines",layout.lineCount).put("lastLineFraction",layout.getLineWidth(layout.lineCount-1)/layout.width).put("reasons",JSONArray(content.reasons)).put("issues",issues));errors+=issues.length()
-                if((scenario=="direct"&&purpose==4)||(scenario=="wet"&&purpose==3)||(scenario=="dew"&&purpose==5)||(scenario in listOf("cycling-night","convective")&&purpose==2)){
+                if((scenario=="direct"&&purpose==4)||(scenario=="wet"&&purpose==3)||(scenario=="dew"&&purpose==5)||(scenario in listOf("cycling-night","convective","convective-night","high-energy")&&purpose==2)){
                     File(i.targetContext.getExternalFilesDir(null),"conditions-controlled-$scenario-${if(portrait)"portrait"else"landscape"}-$lang.png").outputStream().use{bitmap.compress(Bitmap.CompressFormat.PNG,100,it)}
                 }
                 bitmap.recycle()
