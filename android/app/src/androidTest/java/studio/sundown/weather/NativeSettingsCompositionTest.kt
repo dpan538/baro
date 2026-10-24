@@ -13,6 +13,8 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.*
 import org.junit.Test
+import org.json.JSONObject
+import java.io.File
 
 /** Native GLES and a genuine system IME; no public feedback is sent. */
 class NativeSettingsCompositionTest {
@@ -27,6 +29,7 @@ class NativeSettingsCompositionTest {
         val old=android.provider.Settings.Secure.getString(i.targetContext.contentResolver,"show_ime_with_hard_keyboard")
         i.uiAutomation.executeShellCommand("settings put secure show_ime_with_hard_keyboard 1").close()
         val draft="Native IME draft 草稿 retained"
+        val evidence=JSONObject().put("publicFeedbackSent",false)
         i.targetContext.getSharedPreferences("baro-native",Context.MODE_PRIVATE).edit().clear().putString("language","en").putBoolean("motion",true).putInt("page",0).commit()
         try{
             ActivityScenario.launch(MainActivity::class.java).use{s->
@@ -37,6 +40,7 @@ class NativeSettingsCompositionTest {
                 var moving=false;val until=SystemClock.uptimeMillis()+10000
                 while(!moving&&SystemClock.uptimeMillis()<until){s.onActivity{a->assertTrue(a.pager.overlayOpen);assertTrue(a.pager.weatherPage.art.active);moving=a.pager.weatherPage.art.renderedFrames>before+2};SystemClock.sleep(100)}
                 assertTrue("Visible sky must keep animating under partial Settings",moving)
+                s.onActivity{evidence.put("framesBeforeSettings",before).put("framesUnderSettings",it.pager.weatherPage.art.renderedFrames).put("exposedSkyActive",it.pager.weatherPage.art.active)}
                 s.onActivity{a->find(a.settings){it is TextView&&it.text.toString()=="···"}!!.performClick()};i.waitForIdleSync()
                 s.onActivity{a->find(a.settings){it is TextView&&it.text.toString()=="Feedback"}!!.performClick()};i.waitForIdleSync()
                 lateinit var editor:EditText
@@ -49,10 +53,17 @@ class NativeSettingsCompositionTest {
                     assertEquals(draft,a.feedback.draft)
                     val pane=a.settings.findViewWithTag<View>("baro-settings-pane")!!;val r=Rect();pane.getGlobalVisibleRect(r);val root=Rect();a.root.getGlobalVisibleRect(root)
                     assertTrue("Resized Settings must stay inside available app space",r.bottom<=root.bottom)
+                    evidence.put("realImeVisible",true).put("editorIdentityRetained",true).put("draftRetainedDuringIme",true).put("paneBounds",r.toShortString()).put("rootBounds",root.toShortString())
+                }
+                val shot=i.uiAutomation.takeScreenshot()!!
+                File(i.targetContext.getExternalFilesDir(null),"settings-ime-resize.png").outputStream().use{shot.compress(android.graphics.Bitmap.CompressFormat.PNG,100,it)};shot.recycle()
+                s.onActivity{a->
                     (a.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(editor.windowToken,0)
                 }
                 SystemClock.sleep(500);s.onActivity{it.settings.close()};SystemClock.sleep(250)
                 s.recreate();i.waitForIdleSync();s.onActivity{assertEquals(draft,it.feedback.draft);assertFalse(it.pager.overlayOpen)}
+                evidence.put("draftRetainedAfterRecreation",true)
+                File(i.targetContext.getExternalFilesDir(null),"settings-ime-evidence.json").writeText(evidence.toString(2))
             }
         }finally{
             i.uiAutomation.executeShellCommand(if(old==null)"settings delete secure show_ime_with_hard_keyboard"else"settings put secure show_ime_with_hard_keyboard $old").close()
