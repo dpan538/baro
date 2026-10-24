@@ -1,12 +1,12 @@
 # First Android preview and subsequent updates
 
-The current public user test build is `0.10.0-preview.4` (`versionCode 16`). It keeps
+The current public user test build is `0.10.0-preview.5` (`versionCode 17`). It keeps
 `studio.sundown.weather` and the existing dedicated BARO test certificate. The
 `preview` Gradle variant inherits release settings, disables debugging and cleartext
 network traffic, and uses this persistent local test signer. It is a prerelease,
 not a Play/store production signing identity. Never replace its key between tests.
 
-[Download the published APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.4/BARO-0.10.0-preview.4.apk) · [Pad installation and update instructions](../DOWNLOAD.md) · [exact-package acceptance](../android/verification/preview-0.10.0-preview.4.json). Anonymous public delivery has been verified against the native package hash. The package contains source `1e9cfe1`; test-only follow-ups do not alter its bytes.
+[Download the published APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.5/BARO-0.10.0-preview.5.apk) · [Pad installation and update instructions](../DOWNLOAD.md) · [exact-package acceptance](../android/verification/preview-0.10.0-preview.5.json). Anonymous public delivery has been verified against the native package hash. The package contains source `290a284`; test-only follow-ups do not alter its bytes.
 
 The launcher/installer uses the selected **G1b** cloud and graphite gradient,
 not the old sunrise line icon. `branding/icons/selection.json` identifies the
@@ -104,6 +104,13 @@ APK must have a full source commit and its own exact-package acceptance.
 The user’s latest display requirement supersedes the historical shared landscape status allowance for the native weather page: weather hides system bars, reserves no status-bar padding, removes the preview frame and fills the actual viewport. Observation reserves readable light status chrome inside its own page; the shared swipe viewport stays fixed. Display cutouts, caption bars and the IME retain their actual platform insets.
 
 
-## Current public follow-up: preview.4
+## Earlier public follow-up: preview.4
 
 `0.10.0-preview.4 / 16`, source `1e9cfe1`, includes the earlier full-bleed fixes and the user’s later refresh, typography and memory requirements. Frontend weather refreshes every 15 minutes while visible, retries failures after five minutes and has a 45-second deadline. Expired readings are removed rather than retained as offline fallback. The backend cache is 15 minutes; its code is tested locally and has no claimed public deployment. The signed APK is published. All three assets were downloaded anonymously and matched their local hashes; the tag points to the exact application source. [Current changes and exact-package acceptance](ANDROID-PREVIEW-4-CHANGES.md).
+
+
+## Current public follow-up: preview.5
+
+`0.10.0-preview.5 / 17`, exact source `290a284aecc167345ca0af63c1357c50ff04450e`, refines activity-specific environmental advice and the solar/radiation/light-timer/white-balance instruments. Both pages now fill the screen without a persistent status strip; language/point selection and Settings markers use longer linear transitions with repeated-click, reduced-motion and lifecycle cleanup. It retains the previous strict foreground refresh/expiry policy.
+
+The same-signer non-debug APK is 20,523,012 bytes; SHA-256 `016263e73e2654d5d038f3570eab2cdcf4d8a867f4f3915cffc9bdee904f928d`. Exact-package native checks, genuine-provider captures, green source CI and anonymous asset delivery are recorded in [preview.5 acceptance](../android/verification/preview-0.10.0-preview.5.json). It is a prerelease for user Pad verification before formal release.

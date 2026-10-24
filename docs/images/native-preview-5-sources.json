@@ -1,0 +1,49 @@
+{
+  "sourceCommit": "290a284aecc167345ca0af63c1357c50ff04450e",
+  "package": "0.10.0-preview.5 / 17",
+  "scope": "Actual API 36 emulator / genuine Open-Meteo input; 3408x2272 or 2272x3408 at 320 dpi; not Xiaomi hardware. Observation photograph uses its selected forecast window.",
+  "images": [
+    {
+      "image": "native-preview-5-weather-zh.jpg",
+      "nativeCapture": "density-320/preview-landscape-zh-page0.png",
+      "originalSha256": "8785f1bae2b1211f3bd0d810d5bf36f032fbe0fb11253197f9ecab0d06052090",
+      "sha256": "9bc190d2b17f192397c610949c53e91e91a73177acdc07fafa5322cd12becdf4",
+      "originalSize": [
+        3408,
+        2272
+      ],
+      "displaySize": [
+        1704,
+        1136
+      ]
+    },
+    {
+      "image": "native-preview-5-observation-zh.jpg",
+      "nativeCapture": "purpose-captures/native-observation-landscape-zh-purpose-4.png",
+      "originalSha256": "f15a03078505aee316aabf5512469d5bfb26e4a37ae6827bab52677a6c8f9e2e",
+      "sha256": "340e38d97f95a49f7eea719a8e162777f61f127d3ca5ea12e2bf116694e5a58f",
+      "originalSize": [
+        3408,
+        2272
+      ],
+      "displaySize": [
+        1704,
+        1136
+      ]
+    },
+    {
+      "image": "native-preview-5-settings-portrait-zh.jpg",
+      "nativeCapture": "density-320/preview-portrait-zh-appearance.png",
+      "originalSha256": "d4df1f534f9ebadbb64aaa3e8a76db5770338047ecdfcd62187b7ba28d0e812c",
+      "sha256": "4e2f1d5cb0c1d4ef19cab0d50f35492681a762be6722c9518cd219b3181d7ce6",
+      "originalSize": [
+        2272,
+        3408
+      ],
+      "displaySize": [
+        1136,
+        1704
+      ]
+    }
+  ]
+}

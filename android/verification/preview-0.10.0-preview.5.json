@@ -1,0 +1,419 @@
+{
+  "date": "2026-10-24",
+  "timezone": "Australia/Brisbane",
+  "channel": "published signed prerelease",
+  "applicationSourceCommit": "290a284aecc167345ca0af63c1357c50ff04450e",
+  "versionName": "0.10.0-preview.5",
+  "versionCode": 17,
+  "packageName": "studio.sundown.weather",
+  "apk": {
+    "sourceIdentity": {
+      "sourceCommit": "290a284aecc167345ca0af63c1357c50ff04450e",
+      "packageName": "studio.sundown.weather",
+      "versionCode": 17,
+      "versionName": "0.10.0-preview.5",
+      "backendOrigin": ""
+    },
+    "packageName": "studio.sundown.weather",
+    "versionCode": 17,
+    "versionName": "0.10.0-preview.5",
+    "size": 20523012,
+    "sha256": "016263e73e2654d5d038f3570eab2cdcf4d8a867f4f3915cffc9bdee904f928d",
+    "certificateSha256": "aac2bf88afcc1ce08009a9cf5e9f91eb0092b30bb280e16a0f9d095dbf338593",
+    "debuggable": false,
+    "signatureVerified": true,
+    "productionSampleDataAbsent": true,
+    "publicDownloadVerified": true,
+    "launcherIdentity": {
+      "selection": "G1b",
+      "master": "branding/icons/v10/G1b-darker/icon-4096.png",
+      "masterSha256": "fa58809a2b329c5d5107222e1c1e51cd038626486feed9de3ae4ba71d5cebc0f",
+      "foreground": "branding/icons/v8/S1a-refined-soft/foreground-4096.png",
+      "foregroundSha256": "2f045d9b6d541f27e2b9bca19cae7ed015ebd1eb892b216de16f4d05b1d685d8",
+      "adaptiveForegroundSha256": "7c09ef15fc2a2e806cba794a85f048873a17fc8baa16cc7213b4d6319e38aac7",
+      "legacyIconSha256": "6c26f94d35e0f2c7682c78096b04d64d4644a6de936f5dc617272d60b434f946",
+      "backgroundStops": [
+        "#252525",
+        "#1a1a1a",
+        "#121212"
+      ],
+      "imageGenerationUsed": false,
+      "artworkModified": false
+    },
+    "selectedLauncherPixelsVerified": true
+  },
+  "publication": {
+    "sourcePushed": true,
+    "releasePublished": true,
+    "tag": "v0.10.0-preview.5",
+    "releaseUrl": "https://github.com/dpan538/baro/releases/tag/v0.10.0-preview.5",
+    "publishedAt": "2026-10-24T11:46:09Z",
+    "tagMatchesApplicationSource": true,
+    "publicDelivery": {
+      "anonymousDownloadsVerified": true,
+      "authenticationSent": false,
+      "assets": [
+        {
+          "file": "BARO-0.10.0-preview.5.apk",
+          "url": "https://github.com/dpan538/baro/releases/download/v0.10.0-preview.5/BARO-0.10.0-preview.5.apk",
+          "status": 200,
+          "size": 20523012,
+          "sha256": "016263e73e2654d5d038f3570eab2cdcf4d8a867f4f3915cffc9bdee904f928d",
+          "anonymous": true
+        },
+        {
+          "file": "baro-update.json",
+          "url": "https://github.com/dpan538/baro/releases/download/v0.10.0-preview.5/baro-update.json",
+          "status": 200,
+          "size": 482,
+          "sha256": "bf43c84016d8cd1b37aedbe12fb3fa933c4c09182b6c0501fa71d37b0648dd44",
+          "anonymous": true
+        },
+        {
+          "file": "SHA256SUMS",
+          "url": "https://github.com/dpan538/baro/releases/download/v0.10.0-preview.5/SHA256SUMS",
+          "status": 200,
+          "size": 175,
+          "sha256": "87d65ed2cb49ca40d672a7a2c60b52bdffab6d46e72b61abb7c6f0afacb4f42a",
+          "anonymous": true
+        }
+      ],
+      "apkManifestAgreement": true
+    }
+  },
+  "checks": {
+    "previewUnitTests": 42,
+    "debugUnitTests": 42,
+    "backendTests": 15,
+    "sourceChecks": true,
+    "previewBuildLint": true,
+    "debugBuildLint": true,
+    "installedBytesMatched": true,
+    "sourceCI": {
+      "url": "https://github.com/dpan538/baro/actions/runs/40090523408",
+      "conclusion": "success"
+    },
+    "sourceCheckCI": {
+      "url": "https://github.com/dpan538/baro/actions/runs/40090523441",
+      "conclusion": "success"
+    }
+  },
+  "exactPreviewNative": {
+    "tests": [
+      {
+        "log": "exact-controlled-conditions-transitions.log",
+        "methods": 3,
+        "passed": true,
+        "seconds": 116.53
+      },
+      {
+        "log": "genuine-ui-matrix.log",
+        "methods": 1,
+        "passed": true,
+        "seconds": 129.02
+      },
+      {
+        "log": "genuine-purpose-captures.log",
+        "methods": 1,
+        "passed": true,
+        "seconds": 54.6
+      }
+    ],
+    "controlledConditionsCases": 288,
+    "controlledConditionsIssues": 0,
+    "genuineProviderCaptures": 52,
+    "displayDensity": 320,
+    "landscapePixels": [
+      3408,
+      2272
+    ],
+    "portraitPixels": [
+      2272,
+      3408
+    ],
+    "apiLevel": 36,
+    "captures": [
+      {
+        "file": "density-320/preview-landscape-en-about.png",
+        "sha256": "0257b8fb3c736e48a4e14bbc86bfc23dbb571dab7f7fcc30caf2a639c6bd6955",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-landscape-en-appearance-scrolled.png",
+        "sha256": "9759cfa91a6a0665bdb18456457271c343a5f669d86b511c5ebcf9be7d1c2331",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-landscape-en-appearance.png",
+        "sha256": "bd20b9a6314b7d697f3d33d29a55b9c5e20b9d46dab476cf2563a260640dd6a6",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-landscape-en-credits.png",
+        "sha256": "fdb3733b2ba803e740abb92dd48202131e0bb3c7de634de580d54001a46796c4",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-landscape-en-page0.png",
+        "sha256": "a9f8ecacf87bd4eb5e53ef294c2848071f6d10587098bc368ee4b9cbc6fadb37",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-landscape-en-page1.png",
+        "sha256": "d0c193d231c37f40268917525cbe7a2ba97cbe01d48e72f7dc5805c30aaac44e",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-landscape-en-units.png",
+        "sha256": "01d79173fef21ed89d60f496717881625d72169f2727134bca36703c99cd981b",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-landscape-en-update-live.png",
+        "sha256": "3440ddd71677253662181bd8a2dc36e2754db486feae1e8317815385ce85eda3",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-landscape-en-update-long-notes.png",
+        "sha256": "0bf290123c2d837711160fcf828d579ea7690adcf78db6fedf9486951bbd6630",
+        "controlledLongNotes": true
+      },
+      {
+        "file": "density-320/preview-landscape-zh-about.png",
+        "sha256": "cd793606c5dfa469d33e978c2334523870dbc2ab347e076707669556adc15f89",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-landscape-zh-appearance-scrolled.png",
+        "sha256": "908e26af7d12c670b29ffa0c11d181afbbcb4553449b59291573ffe78c9c1b73",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-landscape-zh-appearance.png",
+        "sha256": "985bf68690cfc266594a6d299e4e2c56301762603c2303d4cc0aa27deadcbcd5",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-landscape-zh-credits.png",
+        "sha256": "2aa31077646b7815206a644f9eb0368900c508ee1024fec29fbb416e76de5c34",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-landscape-zh-page0.png",
+        "sha256": "8785f1bae2b1211f3bd0d810d5bf36f032fbe0fb11253197f9ecab0d06052090",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-landscape-zh-page1.png",
+        "sha256": "726fd0767c5adf5c94dcb40df5d6b723105fec8ff535fa549697571873039c5f",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-landscape-zh-units.png",
+        "sha256": "c56c9039f17e420271e8a1baaed61cc7310d4c7b948f1cc4d6fd2eaba2b5ccac",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-landscape-zh-update-live.png",
+        "sha256": "d0513c478569c293879b6255fdf77b97bc31d765e96f664d6ef3ebb21598cda2",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-landscape-zh-update-long-notes.png",
+        "sha256": "d41f1dc72ce5b43ad2d1aff235f3583b2ec96aa7e9d98a06d90305730fd7d908",
+        "controlledLongNotes": true
+      },
+      {
+        "file": "density-320/preview-portrait-en-about.png",
+        "sha256": "731bb81929d7ba90aa0b20a47118f3ed8d63f681cfac006f06ccecdc650a2ab3",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-portrait-en-appearance-scrolled.png",
+        "sha256": "273bf1e72689b231174f5e15fa133242d45f38f3278e7d5bdb45dbb073c4effb",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-portrait-en-appearance.png",
+        "sha256": "3d0232bab4ddd8eb275518bbdfca043a56bb7e3b2873634181f4daddd2153f51",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-portrait-en-credits.png",
+        "sha256": "392615f9d0da0aea69e2d04db19b7def2fa41a3a18f6610229ef8070c4aff716",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-portrait-en-page0.png",
+        "sha256": "5c4ef94d5435156203397f343f420f03b74691bccf32fe2c3b952212e1e48e58",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-portrait-en-page1.png",
+        "sha256": "7affc1cd2af2c04d854270cf1c0d33108c405f97af30a68c6bcd30ec6b3d1b97",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-portrait-en-units.png",
+        "sha256": "54f9e5dfd862a2b9127cbd7f832b32d0126a192e20eae7d7731d8caf4bd91902",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-portrait-en-update-live.png",
+        "sha256": "080491a8844075811fa0b35bdca1f7c70689cc742eb321388efb4439ac258b3e",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-portrait-en-update-long-notes.png",
+        "sha256": "46745c93afaa3bd62b8e236c184ac2483464c2fcf659db435670d360a62dfdec",
+        "controlledLongNotes": true
+      },
+      {
+        "file": "density-320/preview-portrait-zh-about.png",
+        "sha256": "f75e53546f7a87ea034aa9ef743f912e267936b01f238f89d3a63df70901930a",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-portrait-zh-appearance-scrolled.png",
+        "sha256": "463068929ba802155c6c69ed018a269a05b14057b3c6757763e26ca955e81fc1",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-portrait-zh-appearance.png",
+        "sha256": "d4df1f534f9ebadbb64aaa3e8a76db5770338047ecdfcd62187b7ba28d0e812c",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-portrait-zh-credits.png",
+        "sha256": "68352c47e158150d39f86466833d69e6c1442953b086dc45cef6f96c09d76fb5",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-portrait-zh-page0.png",
+        "sha256": "c3ff346076a3ad3a5e447f8c9b1204a63317933fe91802be1194145826b71ea1",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-portrait-zh-page1.png",
+        "sha256": "4394ca78178c88c7354b3ecc1f305716dc242ed11b41c6a1669634e3f2ff9ef7",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-portrait-zh-units.png",
+        "sha256": "f03782fb8507e14acfbc2eedde4534465a48b176fae1b3d0fb61b9f57a529471",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-portrait-zh-update-live.png",
+        "sha256": "02b4be68ee6b70ba7684ed12317bdbda87c372e3233cc58cf570134ff41a15c1",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "density-320/preview-portrait-zh-update-long-notes.png",
+        "sha256": "467c9f6e31dbbc99b2fad0bd1b403a60372f2be7a6d49a4d340558332380320a",
+        "controlledLongNotes": true
+      },
+      {
+        "file": "purpose-captures/native-observation-landscape-en-purpose-4.png",
+        "sha256": "1e45a2badcd6c5afadf540df8fe1d2f6b7938b296bc720bd3427110ff183798a",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-observation-landscape-en-purpose-5.png",
+        "sha256": "1c1feae2e613f03685ccf939190a2c88cabd82e7dc4e94931a223aaa1db2a7d5",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-observation-landscape-en-purpose-6.png",
+        "sha256": "77a61b7cdc9d0a4c90a517da3d7dbaaf0d0afcd9007b8d69d83d480a8b8bb873",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-observation-landscape-zh-purpose-4.png",
+        "sha256": "f15a03078505aee316aabf5512469d5bfb26e4a37ae6827bab52677a6c8f9e2e",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-observation-landscape-zh-purpose-5.png",
+        "sha256": "2040383acc73baefcd208dbd7d701923790fd95432d4c449e5b3e7afd44791e5",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-observation-landscape-zh-purpose-6.png",
+        "sha256": "c297d11b4b0e362ff37131d9b0dbd4741ddb0462f1afc99dfbca0bd3becf1942",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-observation-portrait-en-purpose-4.png",
+        "sha256": "88c9e8eccbff81502447c83b884e830edc4f04bc868a16a13214b58fcfc8c4ee",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-observation-portrait-en-purpose-5.png",
+        "sha256": "9722d7e9435172bad0010c040a632989b842ac629a3046d090181d4c9a0cf0e2",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-observation-portrait-en-purpose-6.png",
+        "sha256": "9adbea827e4b58eb47ae9818429fb9384765272a43ae6a2f4273a80255e10fc1",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-observation-portrait-zh-purpose-4.png",
+        "sha256": "8cd1278e93e38dbd64ba2796cdc9f28402665a8a35f536fea1d86341ae4c571e",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-observation-portrait-zh-purpose-5.png",
+        "sha256": "230f02bec72180683b49bf5dfd71fb9e3a49cb2d17e65d84dba5fe3113eea37b",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-observation-portrait-zh-purpose-6.png",
+        "sha256": "54fe17b82effd78b4d1a6d4e4fc5f2fbd1c452784917d54a31bdb2ad578361e0",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-weather-landscape-en.png",
+        "sha256": "a9f8ecacf87bd4eb5e53ef294c2848071f6d10587098bc368ee4b9cbc6fadb37",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-weather-landscape-zh.png",
+        "sha256": "8785f1bae2b1211f3bd0d810d5bf36f032fbe0fb11253197f9ecab0d06052090",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-weather-portrait-en.png",
+        "sha256": "5b7f1b7547127a1816c8eef1a7592647454a3e4bf81d77fa6196337efc55a683",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-weather-portrait-zh.png",
+        "sha256": "e0ece724312b4bc35703bbfccd6c27d740e24dbc001796227534a34adb1aa0ce",
+        "controlledLongNotes": false
+      }
+    ],
+    "controlledLongNotesCaptures": 4
+  },
+  "additionalSourceNativeChecks": {
+    "actualGlyphCases": 296,
+    "glyphIssues": 0,
+    "settingsInteractionAndFullBleedMethods": 6,
+    "transitionAndSettingsFinalInvocation": 3,
+    "logsRetained": true
+  },
+  "upgrade": {
+    "sameCertificateAsEarlierPreviews": true,
+    "installedThroughAdbWithDataPreserved": true,
+    "publicNativeSettingsToSystemInstallerUpgradeVerified": false
+  },
+  "limits": [
+    "API 36 emulator acceptance is not Xiaomi hardware acceptance for GPS, touch feel, frame rate or power.",
+    "Controlled model scenarios and the UI-only transition checks are distinct from genuine API/GLES product captures.",
+    "Weather/soil inputs are regional model estimates. Dew/frost reminders are conditional, and white-balance hints are adjustable suggestions rather than spectral measurements.",
+    "Public standalone feedback/backend deployment and production store signing remain separate.",
+    "All original attempts, prior packages, fonts/licenses, frozen reference and raw process evidence are preserved.",
+    "Four update-card screenshots use explicitly controlled long release notes for layout stress; weather input is genuine and these files are individually labelled."
+  ]
+}

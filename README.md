@@ -6,24 +6,25 @@ Today's weather on the left, a living pixel sky on the right.
 
 Bilingual, built for the big screen. Data by Open-Meteo.
 
-[![Android preview](https://img.shields.io/badge/preview-0.10.0--preview.4-2458ce)](https://github.com/dpan538/baro/releases/tag/v0.10.0-preview.4)
+[![Android preview](https://img.shields.io/badge/preview-0.10.0--preview.5-2458ce)](https://github.com/dpan538/baro/releases/tag/v0.10.0-preview.5)
 [![Checks](https://github.com/dpan538/baro/actions/workflows/ci.yml/badge.svg)](https://github.com/dpan538/baro/actions/workflows/ci.yml)
+[![Android CI](https://github.com/dpan538/baro/actions/workflows/android.yml/badge.svg)](https://github.com/dpan538/baro/actions/workflows/android.yml)
 [![Code license: MIT](https://img.shields.io/badge/code-MIT-4c6b5b)](LICENSE)
 ![Android 10+](https://img.shields.io/badge/Android-10%2B-4c6b5b)
 
-[**下载 Android 测试 APK / Download APK ↗**](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.4/BARO-0.10.0-preview.4.apk) · [下载与安装 / Install on your Pad](DOWNLOAD.md) · [版本说明 / Release notes](https://github.com/dpan538/baro/releases/tag/v0.10.0-preview.4) · [SHA-256](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.4/SHA256SUMS)
+[**下载 Android 测试 APK / Download APK ↗**](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.5/BARO-0.10.0-preview.5.apk) · [下载与安装 / Install on your Pad](DOWNLOAD.md) · [版本说明 / Release notes](https://github.com/dpan538/baro/releases/tag/v0.10.0-preview.5) · [SHA-256](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.5/SHA256SUMS)
 
-**当前公开测试版：0.10.0-preview.4 · Android 10+ · 20.5 MB。** 在平板浏览器中直接点击上面的 APK 链接，下载完成后打开安装。后续从「设置 → 关于 → 检查更新」下载并确认覆盖升级；同签名测试版保留设置和草稿，无须先卸载。
+**当前公开测试版：0.10.0-preview.5 · Android 10+ · 20.5 MB。** 在平板浏览器中直接点击上面的 APK 链接，下载完成后打开安装。后续从「设置 → 关于 → 检查更新」下载并确认覆盖升级；同签名测试版保留设置和草稿，无须先卸载。
 
 [**Run the web preview**](PREVIEW.md) · [Project status](docs/IMPLEMENTATION-STATUS.md) · [中文说明](#中文说明) · [Architecture](docs/ARCHITECTURE.md) · [UI system](docs/DESIGN-SYSTEM.md) · [Daytime](docs/images/weather-english.jpg) · [Sunrise](docs/images/weather-dawn.jpg) · [Sunset](docs/images/weather-sunset.jpg)
 
-> **Current Android preview:** a signed, non-debug Kotlin APK with two main pages, native Settings and real Open-Meteo/CAMS data. This update includes full-bleed weather, readable observation status icons, city search/location, precipitation geometry, weather overlays and linear transitions. Foreground weather refreshes every 15 minutes, retries failures after five minutes and discards expired readings. Sunrise uses its original uncluttered label; precipitation time intervals have a separate gap. The Pad build permits a larger managed heap and retains up to 24 fresh places. Native emulator evidence and public-delivery status are recorded separately in the acceptance record. This preview uses a persistent BARO test certificate; public feedback/backend deployment, production signing and Xiaomi hardware acceptance remain separate. See [download instructions](DOWNLOAD.md), the [native build guide](android/README.md) and [preview acceptance](android/verification/preview-0.10.0-preview.4.json). The frozen browser reference remains at [`ui-baseline-2026-10-23`](https://github.com/dpan538/baro/tree/ui-baseline-2026-10-23).
+> **Current Android preview:** a signed, non-debug Kotlin APK with two full-screen pages, native Settings and real Open-Meteo/CAMS data. Preview.5 adds activity-specific conditions advice, a solar compass/pointer, direct/diffuse light explanations, light-window progress and adjustable white-balance guidance. Language and point selections blend through native linear transitions. Source-bound emulator and public-delivery evidence is recorded separately; Xiaomi hardware acceptance and public feedback/backend deployment remain separate. See [download instructions](DOWNLOAD.md) and [exact-package acceptance](android/verification/preview-0.10.0-preview.5.json).
 
-![BARO 0.10.0-preview.4 native Android weather page](docs/images/native-preview-4-weather-zh.jpg)
+![BARO 0.10.0-preview.5 native Android weather page](docs/images/native-preview-5-weather-zh.jpg)
 
 Screenshots below are from the published preview's native Android emulator acceptance, not Xiaomi hardware. Historical browser studies remain linked above.
 
-This version adds 15-minute foreground weather refresh, five-minute recovery, strict expiry, clearer sunrise/precipitation text and additional managed-heap headroom. [Changes and verification](docs/ANDROID-PREVIEW-4-CHANGES.md).
+This version refines conditions and light instruments, native selection transitions and the full-screen observation page. It retains 15-minute foreground refresh, five-minute recovery and strict expiry. [Changes and verification](docs/NATIVE-DATA-SOURCES.md).
 
 ## What is included
 
@@ -36,9 +37,9 @@ This version adds 15-minute foreground weather refresh, five-minute recovery, st
 - Daily highs/lows, feels-like temperature, humidity, UV index, precipitation chance, visibility and cloud cover. Dates and solar events follow the provider's local timezone; missing fields remain `—` and derived values identify their method.
 - A left-panel settings screen with seven primary appearance, unit, location and version controls; cache, sources and feedback live under the footer menu.
 
-![BARO native observation instrument panel](docs/images/native-preview-4-observation-zh.jpg)
+![BARO native observation instrument panel](docs/images/native-preview-5-observation-zh.jpg)
 
-<a href="docs/images/native-preview-4-settings-portrait-zh.jpg"><img src="docs/images/native-preview-4-settings-portrait-zh.jpg" alt="原生竖屏设置：上方七项设置，下方动态天气保持可见" width="440"></a>
+<a href="docs/images/native-preview-5-settings-portrait-zh.jpg"><img src="docs/images/native-preview-5-settings-portrait-zh.jpg" alt="原生竖屏设置：上方七项设置，下方动态天气保持可见" width="440"></a>
 
 Portrait Settings occupies the upper information pane and leaves the animated sky visible below. Landscape Settings uses the left pane.
 
@@ -69,7 +70,7 @@ For native builds, configure `ANDROID_HOME` or an untracked `android/local.prope
 
 The Kotlin app fetches real weather and air quality as model estimates, with explicit source timestamps, missing values, bounded valid-data caching and no shipping sample-data mode. Foreground location changes the forecast place only after a valid fix; denied or unavailable location retains the selected place. No account, telemetry or background tracking is included.
 
-Native updates compare versionCode and verify downloaded APK hash, package, version and installed signer before opening the Android installer. The [public preview APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.4/BARO-0.10.0-preview.4.apk), update manifest and checksums are available without signing in; downloaded bytes match the reviewed package. Feedback retains failed drafts and accepts success only after an independently verified Issue receipt; the dedicated public BARO feedback relay is not configured. See [privacy](docs/PRIVACY.md), [native distribution](docs/ANDROID-DISTRIBUTION.md) and the [acceptance ledger](docs/ANDROID-IMPLEMENTATION.md).
+Native updates compare versionCode and verify downloaded APK hash, package, version and installed signer before opening the Android installer. The [public preview APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.5/BARO-0.10.0-preview.5.apk), update manifest and checksums are available without signing in; downloaded bytes match the reviewed package. Feedback retains failed drafts and accepts success only after an independently verified Issue receipt; the dedicated public BARO feedback relay is not configured. See [privacy](docs/PRIVACY.md), [native distribution](docs/ANDROID-DISTRIBUTION.md) and the [acceptance ledger](docs/ANDROID-IMPLEMENTATION.md).
 
 The current Xiaomi Pad 9 Pro Max target and Android inset contract are documented in [the tablet display contract](docs/TABLET-DISPLAY-CONTRACT.md). Use [the local device preview](http://127.0.0.1:4175/tablet-preview.html) for exact 3:2 / 2:3 geometry.
 
@@ -77,13 +78,13 @@ The current Xiaomi Pad 9 Pro Max target and Android inset contract are documente
 
 **BARO，中文名「晴雨」。一半数据，一半天空。**
 
-[**在 Pad 上直接下载测试 APK ↗**](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.4/BARO-0.10.0-preview.4.apk) · [安装与覆盖升级说明](DOWNLOAD.md)
+[**在 Pad 上直接下载测试 APK ↗**](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.5/BARO-0.10.0-preview.5.apk) · [安装与覆盖升级说明](DOWNLOAD.md)
 
 左边是今日天气，右边是流动的像素天空。中文或英文界面，为大屏而生；气象数据路线采用 Open-Meteo。
 
 第二页是独立的环境观测仪器面板：二十九个模块、右下目的拨轮与专用横向像素视窗。拨轮选择用户目的和关注点，联动信息组合；底部环境解读把与当前目的有关的温湿、风雨、光线或器材结露条件汇成更大字的圆角段落，并补充闷热、结露、水汽或光线等相关解释。原生 App 在任一主页面完成左滑或右滑，都会切换到另一页。产品只使用真实 API 模型数据与明确说明的派生计算；无示例入口或示例数据，缺失字段保留 —。
 
-冻结网页 UI 作为原生移植的视觉合同。当前公开测试包为 **0.10.0-preview.4 / 16**，采用 G1b 图标。两个主页面与七项设置已有原生验收；本次修复首页全屏顶边和外框、信息页状态栏、定位与城市搜索、短时降水网格、降雨叠层及线性动画，原生回归结果见[测试版验收](android/verification/preview-0.10.0-preview.4.json)。界面一次只显示中文或英文，不提供中英并排模式。公开 APK 已匿名下载核验；独立后端/反馈的公开部署、商店正式签名和小米真机验收仍单列。
+冻结网页 UI 作为原生移植的视觉合同。当前公开测试包为 **0.10.0-preview.5 / 17**，采用 G1b 图标。本轮细化十二用途环境建议，完善太阳指针、直漫射、光影进度与色温补偿；两页完整铺屏，语言、点选、标记与开关过渡更连贯。界面一次只显示中文或英文。原生模拟器验收与匿名下载记录见[本包验收](android/verification/preview-0.10.0-preview.5.json)；正式 release 前仍需在你的 Pad 上复测。独立后端／反馈公开部署与商店签名仍单列。
 
 源码、文档、构建与分发分开组织，参考同作者的 Annota 工程。BARO 原生端使用 Kotlin / Canvas / OpenGL ES，独立维护后端；没有挪用 Annota 的阅读器功能、生产服务、Token 或签名身份。
 
