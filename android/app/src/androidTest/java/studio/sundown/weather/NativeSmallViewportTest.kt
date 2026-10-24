@@ -30,11 +30,14 @@ class NativeSmallViewportTest {
                 assertEquals(0f,p.translationX,.1f);assertNull(p.art.error)
             }
             val image=i.uiAutomation.takeScreenshot();assertNotNull(image)
-            // The weather's paper corner and the panorama at this point differ clearly.
-            // Checking model.page alone accepted two stale-compositor portrait captures.
+            // The page frame has a stable distinct tone, clear of artwork and glyphs.
+            // The panorama's white rim makes a paper-only test ambiguous at 400 dpi.
+            val edge=image.getPixel(4,image.height/2)
+            val frame=android.graphics.Color.red(edge)
             val pixel=image.getPixel(40,200)
             val paper=android.graphics.Color.red(pixel)>245&&android.graphics.Color.green(pixel)>245
-            if(paper==(page==0)){
+            val presented=if(page==0)frame in 23..27&&paper else frame in 9..13
+            if(presented){
                 File(i.targetContext.getExternalFilesDir(null),"small-$name.png").outputStream().use{image.compress(Bitmap.CompressFormat.PNG,100,it)};image.recycle();return
             }
             image.recycle();SystemClock.sleep(250)
