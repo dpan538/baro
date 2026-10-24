@@ -1,7 +1,25 @@
-# Distribution status
+# BARO Android 测试版下载
 
-The Kotlin Android preview can now be built and installed locally. Public BARO APK publication and a stable release signing decision have not been verified. See the [native build instructions](android/README.md), [distribution contract](docs/ANDROID-DISTRIBUTION.md) and [actual acceptance ledger](docs/ANDROID-IMPLEMENTATION.md).
+首个测试版：**0.10.0-preview.1（13）**，使用选定的 **G1b** 图标。
 
-Generated APKs, SDKs, caches and signing material stay outside Git. CI debug artifacts use a runner certificate and are not guaranteed to overwrite a locally signed preview. The package remains `studio.sundown.weather`. Do not uninstall a user installation merely to bypass a signer mismatch.
+**[点击直接下载 APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.1/BARO-0.10.0-preview.1.apk)**
 
-The [frozen browser preview](PREVIEW.md) remains available as the visual reference; it is not an APK download. No nonexistent public download is presented here as working.
+也可以复制下面的完整地址，在平板浏览器中打开：
+
+```text
+https://github.com/dpan538/baro/releases/download/v0.10.0-preview.1/BARO-0.10.0-preview.1.apk
+```
+
+[版本说明与全部附件](https://github.com/dpan538/baro/releases/tag/v0.10.0-preview.1)
+
+Android 10 及以上，当前主要针对 3:2 平板。首次下载 APK 后按 Android
+提示安装；源代码 ZIP 不能安装。后续在 **设置 → 关于 → 检查更新** 下载新包，
+按系统提示覆盖升级，保留设置和草稿，无须卸载旧版。需要时允许 BARO 安装此来源的应用。
+
+这是非调试预发布包，沿用固定的 BARO 测试证书。反馈接收服务尚未配置，
+反馈草稿会保留；小米真机功耗、物理触感及厂商安装界面仍需实测。
+
+SHA-256：`28bc326f32fd20bb6d36b543ab80dbf98c75f5fe42439bffc9880c0fe34ee955`
+
+源码：`0beac968fa0f9af4971023f29164d919ca2cb9e3`。
+详细构建、更新与验收范围见 [测试版分发说明](docs/ANDROID-PREVIEW-DISTRIBUTION.md)。
