@@ -1,12 +1,12 @@
 # First Android preview and subsequent updates
 
-The current public user test build is `0.10.0-preview.5` (`versionCode 17`). It keeps
+The current public user test build is `0.10.0-preview.6-r2` (`versionCode 19`). It keeps
 `studio.sundown.weather` and the existing dedicated BARO test certificate. The
 `preview` Gradle variant inherits release settings, disables debugging and cleartext
 network traffic, and uses this persistent local test signer. It is a prerelease,
 not a Play/store production signing identity. Never replace its key between tests.
 
-[Download the published APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.5/BARO-0.10.0-preview.5.apk) · [Pad installation and update instructions](../DOWNLOAD.md) · [exact-package acceptance](../android/verification/preview-0.10.0-preview.5.json). Anonymous public delivery has been verified against the native package hash. The package contains source `290a284`; test-only follow-ups do not alter its bytes.
+[Download the published APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.6-r2/BARO-0.10.0-preview.6-r2.apk) · [Pad installation/update](../DOWNLOAD.md) · [exact-package acceptance](../android/verification/preview-0.10.0-preview.6-r2.json). Anonymous delivery matches the exact source-bound package `7fa6037`.
 
 The launcher/installer uses the selected **G1b** cloud and graphite gradient,
 not the old sunrise line icon. `branding/icons/selection.json` identifies the
@@ -68,11 +68,7 @@ observation page stays in one viewport; Settings and long update notes may scrol
 Historical visual/300-cycle evidence remains tied to its original APK; record
 the exact preview's new test scope separately.
 
-Public feedback still requires deployment/configuration of the dedicated BARO
-relay. The default unconfigured app retains feedback drafts and never reports
-delivery without a verified receipt. Do not describe that as working public
-submission. Xiaomi power, physical haptics and device-specific installation
-still require hardware testing.
+Public feedback uses the dedicated BARO Vercel relay. Actual native submission, verified Issue receipt, retry reconciliation, inline results and offline draft retention pass in Chinese and English. Weather remains independent of that endpoint. Xiaomi power, physical haptics and device-specific installation still require hardware testing.
 
 ## Settings source alignment
 
@@ -109,7 +105,7 @@ The user’s latest display requirement supersedes the historical shared landsca
 `0.10.0-preview.4 / 16`, source `1e9cfe1`, includes the earlier full-bleed fixes and the user’s later refresh, typography and memory requirements. Frontend weather refreshes every 15 minutes while visible, retries failures after five minutes and has a 45-second deadline. Expired readings are removed rather than retained as offline fallback. The backend cache is 15 minutes; its code is tested locally and has no claimed public deployment. The signed APK is published. All three assets were downloaded anonymously and matched their local hashes; the tag points to the exact application source. [Current changes and exact-package acceptance](ANDROID-PREVIEW-4-CHANGES.md).
 
 
-## Current public follow-up: preview.5
+## Historical public follow-up: preview.5
 
 `0.10.0-preview.5 / 17`, exact source `290a284aecc167345ca0af63c1357c50ff04450e`, refines activity-specific environmental advice and the solar/radiation/light-timer/white-balance instruments. Both pages now fill the screen without a persistent status strip; language/point selection and Settings markers use longer linear transitions with repeated-click, reduced-motion and lifecycle cleanup. It retains the previous strict foreground refresh/expiry policy.
 
@@ -117,3 +113,7 @@ The same-signer non-debug APK is 20,523,012 bytes; SHA-256 `016263e73e2654d5d038
 
 
 Public preview.4 → preview.5 was additionally exercised through the installed app’s actual Settings discovery/download, process-death restoration and Android system installer. The host confirmed the observed system Update control on the disposable AVD; installed bytes matched the public APK and a post-install native test verified retained language/units/purpose/page, feedback draft and private canary, with the installed candidate cleaned up. The opt-in test’s old English button label was corrected; the initial failed attempt is retained. This is emulator installation evidence, not a Xiaomi installer claim.
+
+## Current public follow-up: preview.6-r2
+
+`0.10.0-preview.6-r2 / 19`, source `7fa603771a821afcdb949578037e3509304b6968`, improves page continuity and linear instrument reveal, fits complete conditions into two native lines, and closes the real public feedback flow. Both languages show an in-page submitted or reconnect/retry notice, with a receipt control and retained failed drafts. The [package record](../android/verification/preview-0.10.0-preview.6-r2.json) binds 47 unit tests, 480 controlled two-line cases, 12 genuine-provider captures, actual feedback and public system-upgrade evidence. Original preview.6 / 18 was withdrawn to draft for the added feedback gate; its tag and bytes are preserved.

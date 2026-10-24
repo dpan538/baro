@@ -13,3 +13,7 @@ python3 -m unittest discover -s feedback-service -p 'test_*.py' -v
 ```
 
 Local tests use a controlled GitHub transport and do not prove public delivery. Publication requires an opt-in native acceptance using the actual production endpoint, a real GitHub Issue and the automatic success dialog, plus failure/draft retention checks. Do not expose or print the Production Secret during deployment or verification.
+
+## Public native acceptance
+
+Preview.6-r2 / 19 verifies the real native form → this Vercel service → [BARO Issue #1](https://github.com/dpan538/baro/issues/1) → independent native receipt check. Chinese and English inline submitted/retry status, retry reconciliation without duplicate Issues, and offline exact-draft/request-identity retention pass. The original creation and subsequent source-bound retries are separated in the [package record](../android/verification/preview-0.10.0-preview.6-r2.json). Eleven relay tests use controlled transports; they are not substituted for that public acceptance.

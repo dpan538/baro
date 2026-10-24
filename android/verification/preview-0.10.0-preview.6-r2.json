@@ -1,0 +1,489 @@
+{
+  "date": "2026-10-25",
+  "timezone": "Australia/Brisbane",
+  "channel": "published signed prerelease",
+  "targetDevice": "Xiaomi Pad 9 Pro Max",
+  "futureDeviceScope": "Other Xiaomi Pad sizes will be adapted progressively",
+  "applicationSourceCommit": "7fa603771a821afcdb949578037e3509304b6968",
+  "versionName": "0.10.0-preview.6-r2",
+  "versionCode": 19,
+  "packageName": "studio.sundown.weather",
+  "apk": {
+    "sourceIdentity": {
+      "sourceCommit": "7fa603771a821afcdb949578037e3509304b6968",
+      "packageName": "studio.sundown.weather",
+      "versionCode": 19,
+      "versionName": "0.10.0-preview.6-r2",
+      "backendOrigin": "",
+      "feedbackOrigin": "https://baro-feedback-dpan538s-projects.vercel.app"
+    },
+    "packageName": "studio.sundown.weather",
+    "versionCode": 19,
+    "versionName": "0.10.0-preview.6-r2",
+    "size": 20560756,
+    "sha256": "138dea585bfb3734f6e8f052e10b026747f480afb989a09f9dad7b8bfa8f4b26",
+    "certificateSha256": "aac2bf88afcc1ce08009a9cf5e9f91eb0092b30bb280e16a0f9d095dbf338593",
+    "debuggable": false,
+    "signatureVerified": true,
+    "productionSampleDataAbsent": true,
+    "publicDownloadVerified": true,
+    "launcherIdentity": {
+      "selection": "G1b",
+      "master": "branding/icons/v10/G1b-darker/icon-4096.png",
+      "masterSha256": "fa58809a2b329c5d5107222e1c1e51cd038626486feed9de3ae4ba71d5cebc0f",
+      "foreground": "branding/icons/v8/S1a-refined-soft/foreground-4096.png",
+      "foregroundSha256": "2f045d9b6d541f27e2b9bca19cae7ed015ebd1eb892b216de16f4d05b1d685d8",
+      "adaptiveForegroundSha256": "7c09ef15fc2a2e806cba794a85f048873a17fc8baa16cc7213b4d6319e38aac7",
+      "legacyIconSha256": "6c26f94d35e0f2c7682c78096b04d64d4644a6de936f5dc617272d60b434f946",
+      "backgroundStops": [
+        "#252525",
+        "#1a1a1a",
+        "#121212"
+      ],
+      "imageGenerationUsed": false,
+      "artworkModified": false
+    },
+    "selectedLauncherPixelsVerified": true
+  },
+  "publication": {
+    "tag": "v0.10.0-preview.6-r2",
+    "releaseUrl": "https://github.com/dpan538/baro/releases/tag/v0.10.0-preview.6-r2",
+    "publishedAt": "2026-10-24T15:20:56Z",
+    "sourcePushed": true,
+    "releasePublished": true,
+    "publicDelivery": {
+      "anonymousDownloadsVerified": true,
+      "authenticationSent": false,
+      "assets": [
+        {
+          "file": "BARO-0.10.0-preview.6-r2.apk",
+          "url": "https://github.com/dpan538/baro/releases/download/v0.10.0-preview.6-r2/BARO-0.10.0-preview.6-r2.apk",
+          "status": 200,
+          "size": 20560756,
+          "sha256": "138dea585bfb3734f6e8f052e10b026747f480afb989a09f9dad7b8bfa8f4b26",
+          "anonymous": true
+        },
+        {
+          "file": "baro-update.json",
+          "url": "https://github.com/dpan538/baro/releases/download/v0.10.0-preview.6-r2/baro-update.json",
+          "status": 200,
+          "size": 491,
+          "sha256": "61b08e72643e8a694d081e171748c711b72d17d4873fcd4d7f22d9f2d0ec725f",
+          "anonymous": true
+        },
+        {
+          "file": "SHA256SUMS",
+          "url": "https://github.com/dpan538/baro/releases/download/v0.10.0-preview.6-r2/SHA256SUMS",
+          "status": 200,
+          "size": 178,
+          "sha256": "802b2b6362cb4caa17ed4a022a98b89e9bca3c1aa4b417827cec0fbb779939b8",
+          "anonymous": true
+        }
+      ],
+      "apkManifestAgreement": true,
+      "tagMatchesApplicationSource": true,
+      "sourceCommit": "7fa603771a821afcdb949578037e3509304b6968"
+    }
+  },
+  "checks": {
+    "previewUnitTests": 47,
+    "backendTests": 15,
+    "feedbackRelayTests": 11,
+    "previewBuildLint": true,
+    "sourceCI": [
+      {
+        "conclusion": "success",
+        "databaseId": 40105597156,
+        "name": "Source and preview checks",
+        "status": "completed",
+        "url": "https://github.com/dpan538/baro/actions/runs/40105597156"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 40105597066,
+        "name": "Kotlin Android and BARO backend",
+        "status": "completed",
+        "url": "https://github.com/dpan538/baro/actions/runs/40105597066"
+      }
+    ],
+    "installedBytesMatched": true
+  },
+  "exactPreviewNative": {
+    "tests": [
+      {
+        "log": "real-public-feedback-en.log",
+        "methods": 1,
+        "passed": true,
+        "seconds": 17.4
+      },
+      {
+        "log": "real-public-feedback-zh.log",
+        "methods": 1,
+        "passed": true,
+        "seconds": 18.75
+      },
+      {
+        "log": "two-lines-motion-feedback-state.log",
+        "methods": 7,
+        "passed": true,
+        "seconds": 154.69
+      },
+      {
+        "log": "genuine-api-purpose-captures.log",
+        "methods": 1,
+        "passed": true,
+        "seconds": 38.57
+      }
+    ],
+    "distinctMethods": 9,
+    "successfulMethodInvocations": 10,
+    "controlledConditionsCases": 480,
+    "maximumAdviceLines": 2,
+    "conditionsIssues": 0,
+    "genuineProviderCaptures": 12,
+    "apiLevel": 36,
+    "displayDensity": 320,
+    "landscapePixels": [
+      3408,
+      2272
+    ],
+    "portraitPixels": [
+      2272,
+      3408
+    ],
+    "captures": [
+      {
+        "file": "controlled/conditions-controlled-convective-landscape-en.png",
+        "sha256": "deb11a2bbb2eae77739b49469f0d6dbbd6dae2e0ffa8522fb6a19a27516dd188",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-convective-landscape-zh.png",
+        "sha256": "d0b64369a356224427a034e2ebd57c20fa31e0f2f747e428e7b107569461c4af",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-convective-night-landscape-en.png",
+        "sha256": "07ce7d0193f3666b8aa85d459741062f35fe84b4241ab9e918a04e88d13a64d9",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-convective-night-landscape-zh.png",
+        "sha256": "5f370ba115b716e3a252b2e66a7c93f1d3c0f79999d2a36746feaa1062aa6c9d",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-convective-night-portrait-en.png",
+        "sha256": "95c7cf1be996d51b94f8e2b95bcc1ee8591d2d7321bc3d3f2983c585444ccf55",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-convective-night-portrait-zh.png",
+        "sha256": "c37b45329cd135f429719c2ad45375ffc714ace315033e420c31728c18441e2b",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-convective-portrait-en.png",
+        "sha256": "b5fc1157f78d311ef7994893bb10003c064e98a662085bc95bc667b7f720de54",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-convective-portrait-zh.png",
+        "sha256": "89bf7e3a60d83028ce8ce3b5d6584cee19bb870a662169de2453a2437b26ecc1",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-cycling-night-landscape-en.png",
+        "sha256": "2169c635f57d0d51b3ea6ddd34f7e660a85c68e46d8a94cb03783c934637d837",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-cycling-night-landscape-zh.png",
+        "sha256": "94a143f8abba824031e71cdf3ece8124791227facffc8ecb7eb1d0a92222e4b8",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-cycling-night-portrait-en.png",
+        "sha256": "208fc88e91ed49ca5f27f9484e4ae83e41130ced6a99d22f69bcc608c34fbb13",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-cycling-night-portrait-zh.png",
+        "sha256": "7b0fef5ce35e9c1bdba5f1843ce4cf238a9a7f9311a4d570e4ff63e5e73ff6f1",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-dew-landscape-en.png",
+        "sha256": "5841f91daa7389dcccd0f01f97589bea35f4d67360716abdd9537496a952c0ce",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-dew-landscape-zh.png",
+        "sha256": "921e333dc7f997e121c599a51737e4d757bf2c171b9042c0683b95e0849dfcd0",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-dew-portrait-en.png",
+        "sha256": "88135b82be810cdc82a8c777ce1a7baba61d24602b2ae80856c5fc067f281659",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-dew-portrait-zh.png",
+        "sha256": "226d5d8aa7daa649760c9854283b020b978afebfad3918d955191c6416bf92d2",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-direct-landscape-en.png",
+        "sha256": "5f8b9080d8c27a72534f3222c32f2a4b0d0adad270a076302e6494b686936f35",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-direct-landscape-zh.png",
+        "sha256": "0f1a03e36c5543821993b29a497c6087499904583eb1ed10d2af8669aa22da04",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-direct-portrait-en.png",
+        "sha256": "d5952264d07ff596191ec9876f7cc205dc172aa341cbbe53bda3d1f0fe09786d",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-direct-portrait-zh.png",
+        "sha256": "4cae50a253fa216cc89e59daff0c12f04e7ebf2e68baa9d8f2041cdddb5dc0fc",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-high-energy-landscape-en.png",
+        "sha256": "2c879fd4beca3d5fe96278dd0d9f9e8ff7189b02d15ce56ed68745e6b22c94b3",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-high-energy-landscape-zh.png",
+        "sha256": "502946a6bfed8757e7c67085b87d287ee48872f144db6eba4eddf9ffe992bf47",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-high-energy-portrait-en.png",
+        "sha256": "6d74dc75ae458c8d21e58855b95a0f0cb2d020e516b43c7c44c3290728f5995f",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-high-energy-portrait-zh.png",
+        "sha256": "d941236d009c361f0ab51f4a8737b50af8deafc203646cf726bcc442641da0c4",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-wet-landscape-en.png",
+        "sha256": "b7797841abd14c27dcf6dcefd5f0ac8581910661920d505109e0006ac8194efa",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-wet-landscape-zh.png",
+        "sha256": "ebc9b4b42913c4197cf2a77bec98df0222fed503d70c4686541b6bb2956f33a5",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-wet-portrait-en.png",
+        "sha256": "011022a8e05b5e40f1b685a8bd4817a4e9868f4eb689a4e080ac021ab8a8a12d",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "controlled/conditions-controlled-wet-portrait-zh.png",
+        "sha256": "23f504cb54833df922dc0bf48df6adc3386587abf17fdb39616a221a2fffd33c",
+        "scope": "controlled native model/layout"
+      },
+      {
+        "file": "purpose-captures/native-observation-landscape-en-purpose-2.png",
+        "sha256": "47f3f3dddebc96f9c7112a464bcfc3d6b93be061cc354b4e1ada1fe9670b220f",
+        "scope": "genuine provider/GLES"
+      },
+      {
+        "file": "purpose-captures/native-observation-landscape-en-purpose-7.png",
+        "sha256": "a3a1d52105885b09051308c1fcb1a6a08da08eb807264e6f3f683becc57bd975",
+        "scope": "genuine provider/GLES"
+      },
+      {
+        "file": "purpose-captures/native-observation-landscape-zh-purpose-2.png",
+        "sha256": "967ea3c6f9b047a836d49621d1778a062df96a8ff85857eb9f7143718f12997a",
+        "scope": "genuine provider/GLES"
+      },
+      {
+        "file": "purpose-captures/native-observation-landscape-zh-purpose-7.png",
+        "sha256": "d07e0c0cd76083e99270c2b75b28e26303c3c6df0032f849ac6bd1f209308f18",
+        "scope": "genuine provider/GLES"
+      },
+      {
+        "file": "purpose-captures/native-observation-portrait-en-purpose-2.png",
+        "sha256": "4e39b0b20cb4e6fe7be790e08d5ed38f29941de1de578ad7ab7b40257981cf7b",
+        "scope": "genuine provider/GLES"
+      },
+      {
+        "file": "purpose-captures/native-observation-portrait-en-purpose-7.png",
+        "sha256": "72a039e1af4f6ca56ddac1f04d94c50b247f5be4c68a31195fb1ef0588edf6b0",
+        "scope": "genuine provider/GLES"
+      },
+      {
+        "file": "purpose-captures/native-observation-portrait-zh-purpose-2.png",
+        "sha256": "142836c3509fec12cfc150f899d244b5e67102ee888f40293fe884c4fcb0f0b9",
+        "scope": "genuine provider/GLES"
+      },
+      {
+        "file": "purpose-captures/native-observation-portrait-zh-purpose-7.png",
+        "sha256": "0b1adbee25b0d5f8c7402f2c2ef0a178ecadd70a46f9d5b59a440fdd5d9c7cb5",
+        "scope": "genuine provider/GLES"
+      },
+      {
+        "file": "purpose-captures/native-weather-landscape-en.png",
+        "sha256": "2e04ba7418fbd1208cad32a48979a23082a381678e944eba83a9aad400f4e1fe",
+        "scope": "genuine provider/GLES"
+      },
+      {
+        "file": "purpose-captures/native-weather-landscape-zh.png",
+        "sha256": "ab730506050c78526d4d135488a674dca5159547eef91064c931d853c207a2dd",
+        "scope": "genuine provider/GLES"
+      },
+      {
+        "file": "purpose-captures/native-weather-portrait-en.png",
+        "sha256": "718fd318ab452731b8ec35dce1b324fd1fe4335ab5d701a2e9614ed5fb1b18b5",
+        "scope": "genuine provider/GLES"
+      },
+      {
+        "file": "purpose-captures/native-weather-portrait-zh.png",
+        "sha256": "44cc96a5672f892a526d3aee0ba863ecbf0cf7150695081f38eafa811f3c5ed6",
+        "scope": "genuine provider/GLES"
+      },
+      {
+        "file": "feedback/zh/feedback-offline-draft-retained.png",
+        "sha256": "7897d5168a081eb03407dc01ebf05eb2822bddd41b16cae777446bc1cc6e196b",
+        "scope": "public feedback UI"
+      },
+      {
+        "file": "feedback/zh/feedback-public-form.png",
+        "sha256": "731fe0340ad186a71e6e6849c17fc67614bec3409029b01035819c1556ada4dd",
+        "scope": "public feedback UI"
+      },
+      {
+        "file": "feedback/zh/feedback-public-success.png",
+        "sha256": "fb7546ebc1e095364e19b068e5cd3da3b9d3d76b84215428a8ea56992ed2f6c0",
+        "scope": "public feedback UI"
+      },
+      {
+        "file": "feedback/en/feedback-offline-draft-retained.png",
+        "sha256": "6723053581801fed3bdb26ee9795b9c249652cdbe240a92eaa835c8fa2091f48",
+        "scope": "public feedback UI"
+      },
+      {
+        "file": "feedback/en/feedback-public-form.png",
+        "sha256": "df4e2514a7d64a8d1ae56ff9a3cad88636adff1849d1d60a7971ee1d594f7ab4",
+        "scope": "public feedback UI"
+      },
+      {
+        "file": "feedback/en/feedback-public-success.png",
+        "sha256": "b9fc1f927dabd16f85540b7be85df0a1807c49efcf49ac4cafcda6067616e776",
+        "scope": "public feedback UI"
+      }
+    ]
+  },
+  "feedback": {
+    "origin": "https://baro-feedback-dpan538s-projects.vercel.app",
+    "vercelProject": "baro-feedback",
+    "deploymentId": "dpl_GU9G66A43d7tFLuUjzjFCB7jUMC9",
+    "productionAnonymousAccessVerified": true,
+    "credentialsReadOrEmbedded": false,
+    "weatherOriginIndependent": true,
+    "receipt": "https://github.com/dpan538/baro/issues/1",
+    "languages": [
+      {
+        "sourceCommit": "7fa603771a821afcdb949578037e3509304b6968",
+        "issueCreatedBySourceCommit": "c2c5f886ca84e47d5d30c373d4e29df3e521ba45",
+        "origin": "https://baro-feedback-dpan538s-projects.vercel.app",
+        "body": "BARO preview.6 end-to-end feedback acceptance. Native app -> Vercel -> GitHub Issue -> verified receipt. Test only; no personal data.",
+        "requestId": "056d91fa-033e-49c7-bf1b-87131e58d946",
+        "version": "0.10.0-preview.6-r2",
+        "receipt": "https://github.com/dpan538/baro/issues/1",
+        "language": "zh",
+        "nativeUiSubmitted": true,
+        "nativeReceiptVerified": true,
+        "nativeInlineSuccessShown": true,
+        "nativeSuccessDialogShown": false,
+        "nativeReceiptControlShown": true,
+        "draftClearedAfterVerification": true,
+        "offlineFailureShown": true,
+        "offlineDraftRetained": true,
+        "offlineRequestIdentityRetained": true,
+        "failedDraftNotPublished": true
+      },
+      {
+        "sourceCommit": "7fa603771a821afcdb949578037e3509304b6968",
+        "issueCreatedBySourceCommit": "c2c5f886ca84e47d5d30c373d4e29df3e521ba45",
+        "origin": "https://baro-feedback-dpan538s-projects.vercel.app",
+        "body": "BARO preview.6 end-to-end feedback acceptance. Native app -> Vercel -> GitHub Issue -> verified receipt. Test only; no personal data.",
+        "requestId": "056d91fa-033e-49c7-bf1b-87131e58d946",
+        "version": "0.10.0-preview.6-r2",
+        "receipt": "https://github.com/dpan538/baro/issues/1",
+        "language": "en",
+        "nativeUiSubmitted": true,
+        "nativeReceiptVerified": true,
+        "nativeInlineSuccessShown": true,
+        "nativeSuccessDialogShown": false,
+        "nativeReceiptControlShown": true,
+        "draftClearedAfterVerification": true,
+        "offlineFailureShown": true,
+        "offlineDraftRetained": true,
+        "offlineRequestIdentityRetained": true,
+        "failedDraftNotPublished": true
+      }
+    ],
+    "creationScope": "Issue created by c2c5f88; final 7fa6037 APK reuses the same identity through the real relay and independently re-verifies the Issue without duplicate public writes.",
+    "anonymousIssueProof": {
+      "issueUrl": "https://github.com/dpan538/baro/issues/1",
+      "status": 200,
+      "anonymous": true,
+      "authenticationSent": false,
+      "exactMarkerVerified": true,
+      "createdAt": "2026-10-24T14:54:23Z",
+      "requestId": "056d91fa-033e-49c7-bf1b-87131e58d946",
+      "sha256BodyAndOriginalVersion": "47c859a97f6a96eb3fe9d4be3df4d8b057c9738bed14b30ecaf5fb0d5ce7acaf",
+      "oneMatchingPublicIssue": true,
+      "offlineDraftAbsentFromPublicIssues": true,
+      "health": {
+        "service": "baro-feedback",
+        "schema": 1,
+        "configured": true
+      }
+    }
+  },
+  "upgrade": {
+    "fromVersionCode": 17,
+    "toVersionCode": 19,
+    "sameSigner": true,
+    "dataClearingOrUninstallUsed": false,
+    "disposableDebugBridgeUsedForBaselineSetup": true,
+    "nativePublicDiscoveryAndDownload": true,
+    "verifiedCandidateRestoredAfterProcessDeath": true,
+    "observedSystemUpdateConfirmed": true,
+    "installedSha256": "138dea585bfb3734f6e8f052e10b026747f480afb989a09f9dad7b8bfa8f4b26",
+    "retention": {
+      "versionCode": 19,
+      "settingsRetained": true,
+      "feedbackDraftRetained": true,
+      "privateCanaryRetained": true,
+      "installedCandidateCleaned": true
+    }
+  },
+  "withdrawnOriginalPreview6": {
+    "tag": "v0.10.0-preview.6",
+    "versionCode": 18,
+    "state": "withdrawn to draft after the added feedback publication gate",
+    "sourceCommit": "e0bbb6ca4d618d9885745914f49231de2df47a3b",
+    "sha256": "27e1081ac8463583236221eaa6a2add34c2c3a56e9e335f450d616044f76a1ac",
+    "artifactAndTagPreserved": true
+  },
+  "limits": [
+    "API 36 emulator results do not establish Xiaomi hardware GPS, touch feel, frame rate or power.",
+    "Controlled model/layout cases are separate from genuine API captures; the historical continuous GPU test remains bound to its original source.",
+    "The feedback service has bounded reconciliation and a submission limit; strict cross-instance exactly-once delivery is not claimed.",
+    "The persistent BARO test signer is not a Play/store production signing identity.",
+    "All prior APKs, failed attempts, original posters, fonts/licenses and design-process files are preserved."
+  ]
+}

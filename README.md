@@ -4,15 +4,15 @@
 
 **专为小米 Pad 9 Pro Max 开发。** 后续将逐步适配其他尺寸的小米 Pad。
 
-[![Android preview](https://img.shields.io/badge/preview-0.10.0--preview.5-2458ce)](https://github.com/dpan538/baro/releases/tag/v0.10.0-preview.5)
+[![Android preview](https://img.shields.io/badge/preview-0.10.0--preview.6--r2-2458ce)](https://github.com/dpan538/baro/releases/tag/v0.10.0-preview.6-r2)
 [![Checks](https://github.com/dpan538/baro/actions/workflows/ci.yml/badge.svg)](https://github.com/dpan538/baro/actions/workflows/ci.yml)
 [![Android CI](https://github.com/dpan538/baro/actions/workflows/android.yml/badge.svg)](https://github.com/dpan538/baro/actions/workflows/android.yml)
 [![Code license: MIT](https://img.shields.io/badge/code-MIT-4c6b5b)](LICENSE)
 ![Android 10+](https://img.shields.io/badge/Android-10%2B-4c6b5b)
 
-[**直接下载 Android 测试 APK ↗**](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.5/BARO-0.10.0-preview.5.apk) · [Pad 安装与覆盖升级](DOWNLOAD.md) · [版本说明](https://github.com/dpan538/baro/releases/tag/v0.10.0-preview.5) · [SHA-256](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.5/SHA256SUMS)
+[**直接下载 Android 测试 APK ↗**](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.6-r2/BARO-0.10.0-preview.6-r2.apk) · [Pad 安装与覆盖升级](DOWNLOAD.md) · [版本说明](https://github.com/dpan538/baro/releases/tag/v0.10.0-preview.6-r2) · [SHA-256](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.6-r2/SHA256SUMS)
 
-**当前公开测试版：0.10.0-preview.5 · Android 10+ · 20.5 MB。** 在平板浏览器中直接点击 APK 链接，下载后打开安装。同签名测试版可覆盖升级，保留设置与草稿；后续可从「设置 → 关于 → 检查更新」下载。
+**当前公开测试版：0.10.0-preview.6-r2 · Android 10+ · 20.6 MB。** 在平板浏览器中直接点击 APK 链接，下载后打开安装。同签名测试版可覆盖升级，保留设置与草稿；后续可从「设置 → 关于 → 检查更新」下载。
 
 <table>
   <tr>
@@ -38,9 +38,9 @@ BARO 将天气与环境信息收进两页原生界面，无示例数据模式。
 
 Developed specifically for **Xiaomi Pad 9 Pro Max**, with support for other Xiaomi Pad sizes planned progressively. Two native full-screen pages, real model data, separate Chinese and English interfaces, and source-authored pixel skies. The posters above are design artwork; native screenshots below come from emulator acceptance, not Xiaomi hardware performance tests.
 
-![BARO 原生天气主页](docs/images/native-preview-5-weather-zh.jpg)
+![BARO 原生天气主页](docs/images/native-preview-6-r2-weather-zh.jpg)
 
-![BARO 原生环境观测仪表盘](docs/images/native-preview-5-observation-zh.jpg)
+![BARO 原生环境观测仪表盘](docs/images/native-preview-6-r2-observation-zh.jpg)
 
 [下载与验收](DOWNLOAD.md) · [数据来源与解释边界](docs/NATIVE-DATA-SOURCES.md) · [项目状态](docs/IMPLEMENTATION-STATUS.md) · [原生架构](docs/ARCHITECTURE.md) · [界面系统](docs/DESIGN-SYSTEM.md) · [冻结网页参考](PREVIEW.md)
 
@@ -65,13 +65,13 @@ Android CI builds the Kotlin preview, runs backend/domain/lint checks and exerci
 
 For native builds, configure `ANDROID_HOME` or an untracked `android/local.properties`. The checked-in Gradle wrapper pins version 8.13 and verifies its distribution checksum. Generated packages remain outside Git.
 
-`dist/` contains the authored, frozen browser reference. The native APK uses Kotlin Canvas/View controls and OpenGL ES, and does not embed that webpage. The dedicated [backend](backend/README.md) supplies shared upstream caching, place search and a server-side feedback relay; public deployment remains a separate configured step.
+`dist/` contains the authored, frozen browser reference and is not embedded in the APK. The optional [weather backend](backend/README.md) provides shared caching and place search; this preview fetches real weather directly. The separate [BARO feedback service](feedback-service/README.md) runs publicly on Vercel and does not proxy weather or location.
 
 ## Data, privacy and distribution
 
 The Kotlin app fetches real weather and air quality as model estimates, with explicit source timestamps, missing values, bounded valid-data caching and no shipping sample-data mode. Foreground location changes the forecast place only after a valid fix; denied or unavailable location retains the selected place. No account, telemetry or background tracking is included.
 
-Native updates compare versionCode and verify downloaded APK hash, package, version and installed signer before opening the Android installer. The [public preview APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.5/BARO-0.10.0-preview.5.apk), update manifest and checksums are available without signing in; downloaded bytes match the reviewed package. The separate BARO Vercel feedback relay is configured. The next preview remains withheld until native submission, verified Issue receipt and offline draft retention all pass. See [privacy](docs/PRIVACY.md), [native distribution](docs/ANDROID-DISTRIBUTION.md) and the [acceptance ledger](docs/ANDROID-IMPLEMENTATION.md).
+Native updates compare versionCode and verify downloaded APK hash, package, version and installed signer before opening the Android installer. The [public preview APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.6-r2/BARO-0.10.0-preview.6-r2.apk), update manifest and checksums are available without signing in; downloaded bytes match the reviewed package. Feedback now follows App → BARO Vercel service → GitHub Issue → independently verified receipt. The form shows submitted/retry status and retains failed drafts. Both languages and offline retention passed actual native acceptance ([test receipt](https://github.com/dpan538/baro/issues/1)). See [privacy](docs/PRIVACY.md), [native distribution](docs/ANDROID-DISTRIBUTION.md) and the [acceptance ledger](docs/ANDROID-IMPLEMENTATION.md).
 
 The current Xiaomi Pad 9 Pro Max target and Android inset contract are documented in [the tablet display contract](docs/TABLET-DISPLAY-CONTRACT.md). Use [the local device preview](http://127.0.0.1:4175/tablet-preview.html) for exact 3:2 / 2:3 geometry.
 

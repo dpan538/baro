@@ -2,6 +2,14 @@
 
 Started 2026-10-23 (Australia/Brisbane). This ledger supersedes the old paused Android host status. The immutable `ui-baseline-2026-10-23` tag remains the reference. No Annota application code, service credentials or signing identity is used.
 
+## Current public preview.6-r2 — 2026-10-25
+
+**0.10.0-preview.6-r2 / 19**, source `7fa603771a821afcdb949578037e3509304b6968`, is the current signed non-debug [APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.6-r2/BARO-0.10.0-preview.6-r2.apk). The [exact-package record](../android/verification/preview-0.10.0-preview.6-r2.json) contains hashes, CI, test scope and publication/upgrade evidence.
+
+The final package passes 47 unit tests/lint, 480 actual native-font/layout cases with at most two complete lines, two-language real public feedback and offline draft retention, rapid selection/page-motion checks and 12 genuine API/GLES captures. The separate BARO Vercel service creates and independently verifies GitHub Issues; the app independently verifies the receipt again before clearing only the submitted draft. Success/retry messages stay in the form, with a receipt control. [Actual test Issue](https://github.com/dpan538/baro/issues/1). The first creation belongs to c2c5f88; final-app retries deliberately reuse its identity, not duplicate public Issues.
+
+APK, manifest and checksums were downloaded anonymously and matched. A public preview.5 / 17 → preview.6-r2 / 19 upgrade through native Settings and the actual Android installer retains settings, draft and private canary. Original preview.6 / 18 remains a withdrawn draft with its original artifact/tag preserved. README identifies Xiaomi Pad 9 Pro Max and uses the three selected posters; all full-size artwork and process files remain local. Emulator results do not establish Xiaomi hardware frame rate, power or GPS acceptance. Earlier records below keep their historical scope.
+
 ## First public Android preview — 2026-10-24
 
 **0.10.0-preview.2 / versionCode 14** is available as a signed, non-debug [public APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.2/BARO-0.10.0-preview.2.apk). Application source/tag is `149482a00622d815582c257c6b61763958b574ce`; the test-only synchronization follow-up is `93589ca1de026451c199bbc5e64a898b64d52278`. The 20,469,240-byte package has SHA-256 `04b99a675cbd2d8b549c9369f5656e04c2063f244cec4d3c29ddeb258b86e13a` and the persistent BARO certificate `aac2bf88afcc1ce08009a9cf5e9f91eb0092b30bb280e16a0f9d095dbf338593`.

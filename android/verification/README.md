@@ -1,6 +1,6 @@
 # Native evidence
 
-The current published **0.10.0-preview.5 / 17** has a [source-bound package record](preview-0.10.0-preview.5.json): 42 unit tests, 288 controlled native conditions cases, rapid language/point selection and lifecycle checks, plus 52 genuine-provider captures of the exact APK. Source CI, same-signer package inspection, installed-byte matching and anonymous APK/manifest/checksum delivery pass. [Interpretation and source-level scope](conditions-2026-10-24.json). Earlier records remain bound to their own artifacts.
+The current published **0.10.0-preview.6-r2 / 19** has a [source-bound package record](preview-0.10.0-preview.6-r2.json): 47 unit tests, 480 controlled native two-line conditions cases, real bilingual public feedback/offline drafts, rapid selection and page-motion checks, 12 genuine-provider captures and actual public Settings/system-installer upgrade from preview.5. Both source/native CI and anonymous artifact-byte checks pass. Earlier records remain bound to their own artifacts.
 
 The prepared **0.10.0-preview.3 / 15** is still local and unpublished. Its [exact-package record](preview-0.10.0-preview.3.json) covers the full-bleed Pad fixes, 22 unit tests, 20 distinct native methods (22 successful invocations including repeated modes/densities) and 72 screenshot-matrix captures. It preserves initial failures and does not claim public preview.3 delivery or Xiaomi acceptance.
 
