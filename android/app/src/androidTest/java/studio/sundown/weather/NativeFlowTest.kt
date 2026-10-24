@@ -51,11 +51,14 @@ class NativeFlowTest {
                 val runs=mutableListOf<Run>()
                 override fun drawText(text:String,x:Float,y:Float,paint:android.graphics.Paint){runs.add(Run(text,x+paint.measureText(text),paint.textSize));super.drawText(text,x,y,paint)}
             }
-            for(lang in listOf("zh","en"))for(portrait in listOf(false,true))for(code in listOf(56,57,65,67,95,96,99)){
-                a.model.lang=lang;a.model.weather=recorded.copy(current=recorded.current+("weather_code" to code.toDouble()))
+            for(lang in listOf("zh","en"))for(portrait in listOf(false,true))for(code in listOf(56,57,65,67,95,96,99))for(stale in listOf(false,true)){
+                val now=System.currentTimeMillis()/1000
+                a.model.lang=lang;a.model.status=if(stale)"offline"else "ready"
+                a.model.weather=recorded.copy(fetchedAt=now,validAt=now,serverStale=stale,current=recorded.current+("weather_code" to code.toDouble()))
                 val board=WeatherDashboard(a,a.model);val width=if(portrait)1136 else 1704;val height=if(portrait)1704 else 1136;val d=a.resources.displayMetrics.density
                 board.layout(0,0,(width*d).toInt(),(height*d).toInt());val canvas=TextCanvas();board.draw(canvas)
-                val run=canvas.runs.single{it.text==a.model.conditionName(a.model.weather)}
+                val expected=(if(stale)a.model.tr("过期缓存 · ","Stale · ")else "")+a.model.conditionName(a.model.weather)
+                val run=canvas.runs.single{it.text==expected}
                 val metrics=DesignMetrics(a,"weather-${if(portrait)"portrait"else "landscape"}-$lang");metrics.configure(width.toFloat(),height.toFloat(),0f)
                 assertTrue("$lang $code overlaps the solar column",run.right+16<=metrics.rect("#solar-event-time").left)
                 assertTrue("Condition text must remain readable",run.size>=16)
