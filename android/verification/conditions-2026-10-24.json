@@ -1,0 +1,51 @@
+{
+  "versionName": "0.10.0-preview.5",
+  "versionCode": 17,
+  "stage": "Source-level validation; exact signed-package verification recorded separately",
+  "conditions": {
+    "pureTests": 15,
+    "conditionPurposeLanguageTimeCases": 672,
+    "nativeScenarioLanguageOrientationPurposeCases": 288,
+    "nativeIssues": 0,
+    "scenarios": [
+      "direct",
+      "diffuse",
+      "wet",
+      "dew",
+      "night",
+      "missing"
+    ],
+    "controlledInputs": true
+  },
+  "nativeRegression": {
+    "flowMethods": 10,
+    "cacheMethods": 8,
+    "typographyMethods": 1,
+    "glyphAuditCases": 296,
+    "glyphIssues": 0
+  },
+  "unitTestsTotal": 42,
+  "buildLintSourceChecks": true,
+  "limits": [
+    "Controlled scenario renders are actual native Canvas/font output, not live weather screenshots.",
+    "Initial audit failures and subsequent fixes remain in ignored local output.",
+    "No Xiaomi hardware or package-delivery claim is made by this working-source record."
+  ],
+  "conditionsSourceCommit": "5cc7d3781ba8f711c6e596ba989ff59e7a60ca28",
+  "hostedConditionsCI": {
+    "run": "https://github.com/dpan538/baro/actions/runs/40088906947",
+    "conclusion": "success"
+  },
+  "animationAndFullScreen": {
+    "nativeTransitionMethods": 2,
+    "finalTransitionAndSettingsInvocationMethods": 3,
+    "finalInvocationPassed": true,
+    "liveSettingsInteractionAndFullBleedMethods": 6,
+    "liveInvocationPassed": true,
+    "reducedMotion": true,
+    "rapidLanguageAndPointSelections": true,
+    "languageBackgroundResume": true,
+    "bothMainPagesHidePersistentSystemBars": true,
+    "recording": "Controlled native emulator recording retained locally; no hardware performance claim."
+  }
+}

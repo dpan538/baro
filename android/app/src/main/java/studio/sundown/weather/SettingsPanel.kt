@@ -33,6 +33,7 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
     private var panel:LinearLayout?=null
     private var scroller:ScrollView?=null
     private var scrollAnimator:ValueAnimator?=null
+    private var sectionAnimator:ValueAnimator?=null
     private var detail=""
     private var updateCard:ScrollView?=null
     private var updateMessage:TextView?=null
@@ -47,6 +48,9 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
     private var feedbackStatus:TextView?=null
     private var feedbackInput:EditText?=null
     private var uiGeneration=0L
+    private var languageChange=0L
+    private var renderedLanguage=""
+    internal val contentTransition=ContentTransition(this)
     init{visibility=GONE;isFocusable=true;isClickable=true}
     private fun text(value:String,size:Float=22f)=TextView(context).apply{text=value;textSize=size;setTextColor(ink);typeface=font;includeFontPadding=false;letterSpacing=-.02f}
     private fun button(value:String,selected:Boolean=false,flat:Boolean=false,primary:Boolean=false,control:Button=Button(context),click:()->Unit):Button=control.apply{
@@ -72,8 +76,10 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
     private fun setSection(index:Int){
         activeSection=index;navButtons.forEachIndexed{n,b->b.setTextColor(if(n==index)ink else muted);b.isSelected=n==index}
         val b=navButtons.getOrNull(index)?:return;val marker=navIndicator?:return
-        marker.layoutParams=marker.layoutParams.apply{width=b.width};marker.animate().cancel()
-        if(ValueAnimator.areAnimatorsEnabled())marker.animate().translationX(b.left.toFloat()).setDuration(220).setInterpolator(LinearInterpolator()).start()else marker.translationX=b.left.toFloat()
+        sectionAnimator?.cancel()
+        val fromX=marker.translationX;val fromWidth=marker.layoutParams.width.takeIf{it>0}?:b.width
+        fun apply(f:Float){marker.translationX=fromX+(b.left-fromX)*f;marker.layoutParams=marker.layoutParams.apply{width=(fromWidth+(b.width-fromWidth)*f).roundToInt()}}
+        if(ValueAnimator.areAnimatorsEnabled())sectionAnimator=ValueAnimator.ofFloat(0f,1f).apply{duration=320;interpolator=LinearInterpolator();addUpdateListener{apply(it.animatedValue as Float)};start()}else apply(1f)
     }
     fun open(){
         animate().cancel();detail="";visibility=VISIBLE;activity.pager.overlayOpen=true;build();alpha=0f
@@ -82,15 +88,16 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
         requestFocus();activity.redraw()
     }
     fun close(){
-        uiGeneration++;val generation=uiGeneration;closeUpdate();activity.feedback.cancel();scrollAnimator?.cancel();animate().cancel();detail="";feedbackInput=null
+        uiGeneration++;languageChange++;contentTransition.clear();sectionAnimator?.cancel();val generation=uiGeneration;closeUpdate();activity.feedback.cancel();scrollAnimator?.cancel();animate().cancel();detail="";feedbackInput=null
         fun finish(){if(generation==uiGeneration){visibility=GONE;activity.pager.overlayOpen=false;activity.redraw()}}
         if(ValueAnimator.areAnimatorsEnabled())animate().alpha(0f).translationX(-dp(28).toFloat()).setDuration(300).setInterpolator(LinearInterpolator()).withEndAction{finish()}.start()else finish()
     }
     fun back(){if(updateCard!=null)closeUpdate()else if(detail.isNotEmpty()){detail="";build()}else close()}
-    fun cancelRequests(){activity.updates.cancel();activity.feedback.cancel();feedbackSend?.isEnabled=true
+    fun resumePresentation(){if(visibility==VISIBLE&&renderedLanguage!=model.lang)build()}
+    fun cancelRequests(){languageChange++;contentTransition.clear();sectionAnimator?.cancel();activity.updates.cancel();activity.feedback.cancel();feedbackSend?.isEnabled=true
         if(updateCard!=null){updateMessage?.text=tr("请求已暂停，可重试","Request paused. Retry when ready.");updateAction?.isEnabled=true;updateAction?.text=tr("重试","Retry");updateAction?.setOnClickListener{checkUpdate()}}
     }
-    fun dispose(){uiGeneration++;animate().cancel();scrollAnimator?.cancel();activity.updates.cancel();activity.feedback.cancel()}
+    fun dispose(){uiGeneration++;languageChange++;contentTransition.clear();sectionAnimator?.cancel();animate().cancel();scrollAnimator?.cancel();activity.updates.cancel();activity.feedback.cancel()}
     private fun options(labels:List<String>,chosen:Int,language:Boolean=false,pixels:Boolean=false,action:(Int)->Unit):View{
         val box=FrameLayout(context).apply{setPadding(dp(5),dp(5),dp(5),dp(5));background=GradientDrawable().apply{setColor(0xfff2f2ed.toInt());cornerRadius=dp(12).toFloat();setStroke(dp(1),0xffcecec6.toInt())}}
         val pill=View(context).apply{tag="baro-segment-indicator";importantForAccessibility=View.IMPORTANT_FOR_ACCESSIBILITY_NO;background=GradientDrawable().apply{setColor(ink);cornerRadius=dp(8).toFloat()}}
@@ -109,8 +116,14 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
                         animation?.cancel();val start=pill.translationX;val colors=buttons.map{it.currentTextColor};selected=index
                         buttons.forEachIndexed{n,b->b.isSelected=n==index;(b.compoundDrawables[0] as? SettingsPixelIcon)?.tintColor=if(n==index)YELLOW else ink};action(index);activity.redraw()
                         fun apply(f:Float){pill.translationX=start+(position(index)-start)*f;buttons.forEachIndexed{n,b->b.setTextColor(androidx.core.graphics.ColorUtils.blendARGB(colors[n],if(n==index)PAPER else ink,f))}}
-                        if(android.animation.ValueAnimator.areAnimatorsEnabled())animation=ValueAnimator.ofFloat(0f,1f).apply{duration=280;interpolator=LinearInterpolator();addUpdateListener{apply(it.animatedValue as Float)};start()}else apply(1f)
-                        if(language){val generation=uiGeneration;postDelayed({if(generation==uiGeneration&&visibility==VISIBLE)build()},if(ValueAnimator.areAnimatorsEnabled())280 else 0)}
+                        if(android.animation.ValueAnimator.areAnimatorsEnabled())animation=ValueAnimator.ofFloat(0f,1f).apply{duration=320;interpolator=LinearInterpolator();addUpdateListener{apply(it.animatedValue as Float)};start()}else apply(1f)
+                        if(language){
+                            val generation=uiGeneration;val selection=++languageChange
+                            postDelayed({if(generation==uiGeneration&&selection==languageChange&&visibility==VISIBLE){
+                                val old=panel;val bounds=if(old!=null)android.graphics.Rect(old.left,old.top,old.right,old.bottom)else android.graphics.Rect()
+                                contentTransition.change(bounds=bounds){build()}
+                            }},if(ValueAnimator.areAnimatorsEnabled())320 else 0)
+                        }
                     }
                 }
             }
@@ -130,6 +143,7 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
         }
     }
     override fun onSizeChanged(w:Int,h:Int,oldw:Int,oldh:Int){
+        contentTransition.clear()
         super.onSizeChanged(w,h,oldw,oldh)
         if(visibility==VISIBLE)post{
             if(w!=oldw)build()else if(h!=oldh){
@@ -149,7 +163,7 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
         if(ValueAnimator.areAnimatorsEnabled())panel?.apply{alpha=.5f;translationX=dp(16).toFloat();animate().alpha(1f).translationX(0f).setDuration(260).setInterpolator(LinearInterpolator()).start()}
     }
     private fun build(){
-        uiGeneration++;scrollAnimator?.cancel();navButtons.clear();navIndicator=null
+        uiGeneration++;renderedLanguage=model.lang;sectionAnimator?.cancel();scrollAnimator?.cancel();navButtons.clear();navIndicator=null
         val y=listScrollY
         val card=updateCard
         removeAllViews();updateCard=null
@@ -181,7 +195,7 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
             listOf(tr("界面","Appearance"),tr("单位","Units"),tr("关于","About")).forEachIndexed{i,label->
                 val control=button(label,flat=true){
                     scrollAnimator?.cancel();val to=min(anchors.getOrNull(i)?.top?:0,max(0,body.height-scroll.height));setSection(i)
-                    if(!ValueAnimator.areAnimatorsEnabled())scroll.scrollTo(0,to)else scrollAnimator=ValueAnimator.ofInt(scroll.scrollY,to).apply{duration=240;interpolator=LinearInterpolator();addUpdateListener{scroll.scrollTo(0,it.animatedValue as Int)};start()}
+                    if(!ValueAnimator.areAnimatorsEnabled())scroll.scrollTo(0,to)else scrollAnimator=ValueAnimator.ofInt(scroll.scrollY,to).apply{duration=320;interpolator=LinearInterpolator();addUpdateListener{scroll.scrollTo(0,it.animatedValue as Int)};start()}
                 }.apply{minWidth=0;minimumWidth=0;textSize=2.5f*cw;letterSpacing=-.02f;typeface=Typeface.create(font,450,false);setPadding(0,dp(1.4f*cw),0,dp(1.8f*cw))}
                 navButtons.add(control);nav.addView(control,LinearLayout.LayoutParams(-2,dp(navHeight)).apply{rightMargin=dp(3*cw)})
             }
@@ -211,7 +225,7 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
                 gap(group,3*cw);if(!last)line(group);body.addView(group,LinearLayout.LayoutParams(-1,-2).apply{bottomMargin=if(last)0 else dp(3*cw)})
             }
             category(tr("界面与视觉","APPEARANCE"),ORANGE)
-            setting(1,tr("界面语言","LANGUAGE"),options(listOf("中文","English"),if(model.lang=="zh")0 else 1,language=true){model.lang=if(it==0)"zh"else"en"})
+            setting(1,tr("界面语言","LANGUAGE"),options(listOf("中文","English"),if(model.lang=="zh")0 else 1,language=true){activity.changeLanguage(if(it==0)"zh"else"en")})
             setting(2,tr("像素画风","PIXEL ART"),options(listOf(tr("精细","Fine"),tr("方块","Block")),if(model.block)1 else 0,pixels=true){model.block=it==1})
             switchSetting(3,tr("天气动画","ANIMATION"),toggle(tr("天气动画","Weather animation"),model.motion){model.motion=it;activity.redraw()},last=true)
             category(tr("气象单位","UNITS"),YELLOW)

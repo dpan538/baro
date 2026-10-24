@@ -40,6 +40,8 @@ abstract class Dashboard(context:Context,val model:AppModel):View(context){
     var onSettings:(()->Unit)?=null
     var onPlace:(()->Unit)?=null
     var onPurpose:(()->Unit)?=null
+    internal val contentTransition=ContentTransition(this)
+    fun crossfadeContent(change:()->Unit)=contentTransition.change(update=change)
     private var down=PointF();private var dialStart=0
     private var dialMoved=false
     var dialDragging=false;private set
@@ -57,17 +59,21 @@ abstract class Dashboard(context:Context,val model:AppModel):View(context){
     private fun selectPurpose(index:Int,tick:Boolean=true){
         val value=((index%12)+12)%12
         if(model.purpose==value)return
-        model.purpose=value
+        val apply={model.purpose=value;onPurpose?.invoke();invalidate()}
+        if(this is ObservationDashboard&&(!dialDragging||!dialMoved)){
+            val scale=coordinateScale
+            val excluded=listOf(dialRect,artRect).map{Rect((it.left*scale).toInt(),(it.top*scale).toInt(),(it.right*scale).toInt(),(it.bottom*scale).toInt())}
+            contentTransition.change(exclude=excluded,update=apply)
+        }else apply()
         if(tick){detentFeedbackCount++;val now=SystemClock.uptimeMillis();if(now-lastTick>=35){
             val effect=if(android.os.Build.VERSION.SDK_INT>=34){if(now-lastTick<90)HapticFeedbackConstants.SEGMENT_FREQUENT_TICK else HapticFeedbackConstants.SEGMENT_TICK}else HapticFeedbackConstants.CLOCK_TICK
             performHapticFeedback(effect);lastTick=now
         }}
-        onPurpose?.invoke();invalidate()
     }
     private fun settleDial(){
         dialAnimator?.cancel()
         if(!ValueAnimator.areAnimatorsEnabled()){detents.visual(detents.selected.toFloat());invalidate();return}
-        dialAnimator=ValueAnimator.ofFloat(detents.position,detents.selected.toFloat()).apply{duration=110;interpolator=LinearInterpolator();addUpdateListener{detents.visual(it.animatedValue as Float);invalidate()};start()}
+        dialAnimator=ValueAnimator.ofFloat(detents.position,detents.selected.toFloat()).apply{duration=220;interpolator=LinearInterpolator();addUpdateListener{detents.visual(it.animatedValue as Float);invalidate()};start()}
     }
     private fun stepDial(delta:Int){if(delta==0)return;dialAnimator?.cancel();detents.begin(model.purpose);val from=detents.position;detents.move(delta.toFloat());selectPurpose(detents.index);detents.visual(from);settleDial()}
     val w get()=width/density
@@ -129,7 +135,8 @@ abstract class Dashboard(context:Context,val model:AppModel):View(context){
         };return true
     }
     override fun performClick():Boolean=super.performClick()
-    override fun onDetachedFromWindow(){dialAnimator?.cancel();pressAnimator?.cancel();super.onDetachedFromWindow()}
+    override fun onSizeChanged(w:Int,h:Int,oldw:Int,oldh:Int){contentTransition.clear();super.onSizeChanged(w,h,oldw,oldh)}
+    override fun onDetachedFromWindow(){contentTransition.clear();dialAnimator?.cancel();pressAnimator?.cancel();super.onDetachedFromWindow()}
 }
 
 class WeatherDashboard(context:Context,model:AppModel):Dashboard(context,model){
@@ -260,13 +267,9 @@ class NativePage(context:Context,val dashboard:Dashboard,val art:PixelArt):Frame
 
     override fun onLayout(changed:Boolean,l:Int,t:Int,r:Int,b:Int){
         super.onLayout(changed,l,t,r,b)
-        // Weather is genuinely full bleed. Only the observation page reserves
-        // readable system information, inside its own travelling page so swipes
-        // never resize the shared viewport halfway through a transition.
-        val status=if(dashboard is ObservationDashboard){
-            val insets=androidx.core.view.ViewCompat.getRootWindowInsets(this)
-            ((insets?.getInsetsIgnoringVisibility(androidx.core.view.WindowInsetsCompat.Type.statusBars())?.top?:0)-(context as MainActivity).root.paddingTop).coerceAtLeast(0)
-        }else 0
+        // Both pages fill the same viewport; system bars can be revealed by a
+        // system gesture without moving the instruments or adding a white strip.
+        val status=0
         dashboard.layout(0,status,width,height)
         // Artwork and dashboard use the same viewport-derived drawing scale.
         val bitmap=Bitmap.createBitmap(1,1,Bitmap.Config.ARGB_8888);dashboard.draw(Canvas(bitmap));bitmap.recycle()

@@ -28,12 +28,13 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
     private var contentAnimator:ValueAnimator?=null
     internal var adviceTextLayout:android.text.StaticLayout?=null;private set
     internal var adviceTextBounds=RectF();private set
-    val contentAnimating get()=contentAnimator?.isRunning==true
+    val contentAnimating get()=contentAnimator?.isRunning==true||contentTransition.running
     fun animatePurposeChange(){
-        val from=if(contentAnimating)max(.45f,contentProgress)else .45f
+        if(contentTransition.running){contentAnimator?.cancel();contentProgress=1f;return}
+        val from=if(contentAnimating)max(.72f,contentProgress)else .72f
         contentAnimator?.cancel()
         if(!ValueAnimator.areAnimatorsEnabled()){contentProgress=1f;invalidate();return}
-        contentAnimator=ValueAnimator.ofFloat(from,1f).apply{duration=150;interpolator=LinearInterpolator();addUpdateListener{contentProgress=it.animatedValue as Float;invalidate()};start()}
+        contentAnimator=ValueAnimator.ofFloat(from,1f).apply{duration=220;interpolator=LinearInterpolator();addUpdateListener{contentProgress=it.animatedValue as Float;invalidate()};start()}
     }
     override fun onDetachedFromWindow(){contentAnimator?.cancel();super.onDetachedFromWindow()}
     private fun v(k:String)=wx?.value(k,at)

@@ -42,7 +42,7 @@ class NativeFieldFeedbackTest {
     private fun await(timeout:Long=15000,condition:()->Boolean){val end=SystemClock.uptimeMillis()+timeout;while(SystemClock.uptimeMillis()<end){if(condition())return;SystemClock.sleep(100)};assertTrue("Timed out waiting for the native state",condition())}
     private fun capture(name:String){val image=i.uiAutomation.takeScreenshot()!!;File(ctx.getExternalFilesDir(null),name).outputStream().use{image.compress(Bitmap.CompressFormat.PNG,100,it)};image.recycle()}
     private fun texts(v:View):List<TextView> = (if(v is TextView)listOf(v)else emptyList())+(if(v is ViewGroup)(0 until v.childCount).flatMap{texts(v.getChildAt(it))}else emptyList())
-    @Test fun fullBleedWeatherAndReadableObservationSystemChrome(){
+    @Test fun bothMainPagesFillScreenWithoutStatusPlaceholders(){
         seed();ActivityScenario.launch(MainActivity::class.java).use{s->
             s.onActivity(::fixture);await{var ok=false;s.onActivity{ok=it.pager.weatherPage.art.renderedFrames>0};ok}
             for(rotation in 0..1){
@@ -50,7 +50,6 @@ class NativeFieldFeedbackTest {
             for(page in 0..1){
                 s.onActivity{a->a.model.page=page;a.redraw();assertTrue(WindowInsetsControllerCompat(a.window,a.window.decorView).isAppearanceLightStatusBars)}
                 SystemClock.sleep(500)
-                var top=0
                 s.onActivity{a->
                     val insets=a.window.decorView.rootWindowInsets
                     if(page==0){
@@ -59,13 +58,17 @@ class NativeFieldFeedbackTest {
                         assertEquals(0,a.root.paddingTop);assertEquals(board.width,art.right);assertEquals(board.height,art.bottom);assertEquals(0,board.left)
                         if(board.width>board.height)assertEquals(0,art.top)else assertEquals(0,art.left)
                     }else{
-                        top=insets.getInsets(android.view.WindowInsets.Type.statusBars()).top
-                        assertTrue(top>0);assertTrue(a.pager.observationPage.dashboard.top>=top)
+                        assertFalse(insets.isVisible(android.view.WindowInsets.Type.statusBars()))
+                        val page=a.pager.observationPage
+                        assertEquals(0,page.dashboard.top);assertEquals(page.height,page.dashboard.height)
                     }
                 }
-                val image=i.uiAutomation.takeScreenshot()!!;var light=0;var samples=0
-                for(y in 2 until top step 5)for(x in 10 until image.width-10 step 40){val color=image.getPixel(x,y);samples++;if(Color.red(color)>230&&Color.green(color)>230&&Color.blue(color)>225)light++}
-                if(page==1)assertTrue("Observation status icons need a bright background",light>samples*.7)
+                val image=i.uiAutomation.takeScreenshot()!!
+                if(page==1){
+                    var dark=0;var samples=0
+                    for(x in 10 until image.width-10 step 40){samples++;if(Color.red(image.getPixel(x,2))<30)dark++}
+                    assertTrue("Observation must begin with its own frame, without a white status strip",dark>samples*.7)
+                }
                 image.recycle();capture("field-system-${if(rotation==0)"landscape"else"portrait"}-page$page.png")
             }
             }

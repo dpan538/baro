@@ -84,13 +84,12 @@ class MainActivity:Activity(){
     private fun immersive(){WindowInsetsControllerCompat(window,window.decorView).apply{
         isAppearanceLightStatusBars=true;isAppearanceLightNavigationBars=true
         systemBarsBehavior=WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        if(model.page==0)hide(WindowInsetsCompat.Type.systemBars())
-        else{show(WindowInsetsCompat.Type.statusBars());hide(WindowInsetsCompat.Type.navigationBars())}
+        hide(WindowInsetsCompat.Type.systemBars())
     }}
     override fun onWindowFocusChanged(hasFocus:Boolean){super.onWindowFocusChanged(hasFocus);if(hasFocus)immersive()}
-    override fun onResume(){super.onResume();visible=true;immersive();refresh(true);if(devicePrefs.getBoolean("location_follow",false))startLocation();artLifecycle();main.removeCallbacks(ticker);main.post(ticker)
+    override fun onResume(){super.onResume();visible=true;settings.resumePresentation();immersive();refresh(true);if(devicePrefs.getBoolean("location_follow",false))startLocation();artLifecycle();main.removeCallbacks(ticker);main.post(ticker)
         if(updates.installing){updates.installing=false;settings.installPermissionReturned()}}
-    override fun onPause(){visible=false;touchInProgress=false;main.removeCallbacksAndMessages(null);repository.cancelWeather();refreshSchedule.paused();placeSearch?.cancel();placeDialog?.cancelSearch();feedback.cancel();settings.cancelRequests();stopLocation();artLifecycle();super.onPause()}
+    override fun onPause(){visible=false;touchInProgress=false;main.removeCallbacksAndMessages(null);pager.weatherPage.dashboard.contentTransition.clear();pager.observationPage.dashboard.contentTransition.clear();repository.cancelWeather();refreshSchedule.paused();placeSearch?.cancel();placeDialog?.cancelSearch();feedback.cancel();settings.cancelRequests();stopLocation();artLifecycle();super.onPause()}
     override fun onDestroy(){placeSearch?.cancel();placeDialog?.dismissFromHost();settings.dispose();weatherArt.dispose();observationArt.dispose();repository.close();super.onDestroy()}
     override fun onSaveInstanceState(out:Bundle){out.putDouble("weather_elapsed",weatherArt.elapsed);out.putDouble("observation_elapsed",observationArt.elapsed);super.onSaveInstanceState(out)}
     private val ticker=object:Runnable{override fun run(){
@@ -120,6 +119,10 @@ class MainActivity:Activity(){
             if(weather!=null)model.place=weather.place
             redraw()
         }
+    }
+    fun changeLanguage(language:String){
+        val board=if(model.page==0)pager.weatherPage.dashboard else pager.observationPage.dashboard
+        board.crossfadeContent{model.lang=language;redraw()}
     }
     fun redraw(){
         model.now=refreshSchedule.wall()

@@ -28,7 +28,7 @@ class SettingsToggle(context:Context,private val trackWidth:Int,private val trac
         if(!ready)return
         animator?.cancel();val target=if(value)1f else 0f
         if(changed&&isAttachedToWindow&&ValueAnimator.areAnimatorsEnabled()){
-            animator=ValueAnimator.ofFloat(fraction,target).apply{duration=180;interpolator=LinearInterpolator();addUpdateListener{fraction=it.animatedValue as Float;invalidate()};start()}
+            animator=ValueAnimator.ofFloat(fraction,target).apply{duration=300;interpolator=LinearInterpolator();addUpdateListener{fraction=it.animatedValue as Float;invalidate()};start()}
         }else{fraction=target;invalidate()}
     }
     override fun onDraw(c:Canvas){

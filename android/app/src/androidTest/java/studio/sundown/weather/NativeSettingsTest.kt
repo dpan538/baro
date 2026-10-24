@@ -24,6 +24,9 @@ class NativeSettingsTest {
     }
     private fun tap(s:ActivityScenario<MainActivity>,label:String){
         var rect=Rect()
+        val deadline=SystemClock.uptimeMillis()+4000;var ready=false
+        while(SystemClock.uptimeMillis()<deadline){s.onActivity{a->ready=find(a.settings,label)!=null&&!a.settings.contentTransition.running};if(ready)break;SystemClock.sleep(50)}
+        assertTrue("Control did not settle: $label",ready)
         s.onActivity{a->val v=find(a.settings,label)?:error("Missing control $label");assertTrue(v.height>=a.dp(56));v.requestRectangleOnScreen(Rect(0,0,v.width,v.height),true)}
         i.waitForIdleSync();SystemClock.sleep(100)
         s.onActivity{a->val v=find(a.settings,label)!!;assertTrue(v.getGlobalVisibleRect(rect));assertTrue(rect.height()>0)}
