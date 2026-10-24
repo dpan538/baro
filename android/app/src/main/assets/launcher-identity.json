@@ -1,0 +1,16 @@
+{
+  "selection": "G1b",
+  "master": "branding/icons/v10/G1b-darker/icon-4096.png",
+  "masterSha256": "fa58809a2b329c5d5107222e1c1e51cd038626486feed9de3ae4ba71d5cebc0f",
+  "foreground": "branding/icons/v8/S1a-refined-soft/foreground-4096.png",
+  "foregroundSha256": "2f045d9b6d541f27e2b9bca19cae7ed015ebd1eb892b216de16f4d05b1d685d8",
+  "adaptiveForegroundSha256": "7c09ef15fc2a2e806cba794a85f048873a17fc8baa16cc7213b4d6319e38aac7",
+  "legacyIconSha256": "6c26f94d35e0f2c7682c78096b04d64d4644a6de936f5dc617272d60b434f946",
+  "backgroundStops": [
+    "#252525",
+    "#1a1a1a",
+    "#121212"
+  ],
+  "imageGenerationUsed": false,
+  "artworkModified": false
+}

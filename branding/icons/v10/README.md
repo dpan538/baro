@@ -2,7 +2,7 @@
 
 Retain [G1](../v9/G1-graphite-diagonal/icon-4096.png), the preferred graphite direction, and compare three darker variants with a narrower tonal range in the [four-way board](preview.png). S1a remains the provisional cloud choice. Its native foreground is unchanged.
 
-Current decision: **G1b is the provisional primary icon; G1c is retained as an alternate.** Both keep all masters, exports and editable sources. The machine-readable [selection record](../selection.json) points to these existing assets without replacing them.
+Current decision: **G1b is the primary icon; G1c is retained as an alternate.** Both keep all masters, exports and editable sources. The machine-readable [selection record](../selection.json) points to these existing assets without replacing them.
 
 All candidates preserve G1's upper-left to lower-right gradient direction, middle stop at 48%, rounded frame and cloud placement. Only the neutral-grey stop values vary. The brightest stop is lowered and the darkest stop is brought closer to it, reducing the background's overall tonal spread.
 
@@ -17,4 +17,4 @@ Channel range is the difference between the highest and lowest 8-bit grey values
 
 `build.mjs` defines the editable native vector gradients. Each revision includes `background.svg`, a portable `icon.svg` embedding the exact S1a foreground, and 4096/2048/1024/512/192/48/32px PNGs. The native 4096px cloud is copied byte-for-byte from v8; the manifest records its hash and the unchanged G1 references. No image-generation output, new cloud shading or texture is used.
 
-Run `node branding/icons/v10/build.mjs` with Sharp installed. `BARO_ICON_RASTERIZER` may point at an external installed Sharp module. These remain design candidates, separate from live launcher resources. Export and visual checks do not establish device acceptance.
+Run `node branding/icons/v10/build.mjs` with Sharp installed. `BARO_ICON_RASTERIZER` may point at an external installed Sharp module. `scripts/prepare-native-icon.py` exports the selected G1b to the Android launcher resources, preserving the master and foreground hashes. Android's adaptive icon applies its system mask; the legacy export retains the exact selected PNG. Export checks alone do not establish device acceptance.

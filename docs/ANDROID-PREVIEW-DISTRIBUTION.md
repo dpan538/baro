@@ -6,6 +6,12 @@ The first user test build is `0.10.0-preview.1` (`versionCode 13`). It keeps
 network traffic, and uses this persistent local test signer. It is a prerelease,
 not a Play/store production signing identity. Never replace its key between tests.
 
+The launcher/installer uses the selected **G1b** cloud and graphite gradient,
+not the old sunrise line icon. `branding/icons/selection.json` identifies the
+unchanged original master. `scripts/prepare-native-icon.py` exports Android's
+adaptive/legacy resources; APK inspection compares the packaged PNG pixels to
+those selected resources. Check the actual launcher and installer too.
+
 Build with the Android toolchain described in `android/README.md`:
 
 ```sh

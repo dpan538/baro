@@ -13,7 +13,7 @@ Bilingual, built for the big screen. Data by Open-Meteo.
 
 ## App icon studies
 
-Current selection: **G1b is the provisional primary icon**, combining the S1a cloud with the darker graphite gradient. **G1c is retained as an alternate**, with its complete masters, exports and source preserved. See the [selection record](icons/selection.json) and [four-way background comparison](icons/v10/README.md). Both use the same native 4096px cloud, with no sun or lettering.
+Current selection: **G1b is the primary icon**, combining the S1a cloud with the darker graphite gradient. It is connected to the Android launcher and installer for the first preview. **G1c is retained as an alternate**, with its complete masters, exports and source preserved. See the [selection record](icons/selection.json) and [four-way background comparison](icons/v10/README.md). Both use the same native 4096px cloud, with no sun or lettering.
 
 The [graphite/navy exploration](icons/v9/README.md) and original G1 remain available. G1b/G1c lower G1's brightest values and narrow its tonal range while preserving the selected cloud.
 

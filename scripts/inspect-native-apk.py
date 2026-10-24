@@ -21,7 +21,19 @@ with zipfile.ZipFile(apk) as z:
  assert not any(n.endswith('index.html') for n in names),'Web UI unexpectedly bundled'
  for name in ('Inter.ttf','RobotoMono.ttf','MiSansVF.ttf'):assert any(n.endswith('fonts/'+name) for n in names)
  identity_asset=json.loads(z.read('assets/build-identity.json')) if 'assets/build-identity.json' in names else None
+ launcher_identity=json.loads(z.read('assets/launcher-identity.json')) if 'assets/launcher-identity.json' in names else None
+ if launcher_identity:
+  from PIL import Image
+  import io
+  assert launcher_identity['selection']=='G1b'
+  root=pathlib.Path(__file__).resolve().parents[1]
+  for suffix,source in [('baro_cloud_g1b.png','android/app/src/main/res/drawable-nodpi/baro_cloud_g1b.png'),('ic_launcher.png','branding/icons/v10/G1b-darker/icon-512.png')]:
+   entry=next(n for n in names if n.startswith('res/') and n.endswith('/'+suffix))
+   packaged=Image.open(io.BytesIO(z.read(entry))).convert('RGBA');expected=Image.open(root/source).convert('RGBA')
+   assert packaged.size==expected.size and packaged.tobytes()==expected.tobytes(),'Selected G1b launcher pixels differ in APK'
+  assert 'res/drawable/ic_launcher.xml' not in names,'Obsolete sunrise launcher remains'
 record=dict(sourceIdentity=identity_asset,packageName=package,versionCode=int(code),versionName=version,size=len(raw),sha256=digest,certificateSha256=cert,debuggable='application-debuggable' in meta,signatureVerified=True,productionSampleDataAbsent=True,publicDownloadVerified=False)
+if launcher_identity:record['launcherIdentity']=launcher_identity;record['selectedLauncherPixelsVerified']=True
 if identity_asset:
  assert identity_asset['packageName']==package and identity_asset['versionCode']==int(code) and identity_asset['versionName']==version
 if a.url:
