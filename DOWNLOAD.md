@@ -1,5 +1,7 @@
 # BARO Android 测试版下载
 
+新修复版 **0.10.0-preview.4 / 16** 已在本地准备并验证，尚未公开发布。以下公网链接仍为 preview.2。[本次更新与验收](docs/ANDROID-PREVIEW-4-CHANGES.md)。
+
 首个公开测试版：**0.10.0-preview.2（versionCode 14）**，使用选定的 **G1b** 图标。Android 10 及以上，安装包 20,469,240 字节（约 20.5 MB）。
 
 **[点击直接下载 APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.2/BARO-0.10.0-preview.2.apk)**

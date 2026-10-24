@@ -102,3 +102,8 @@ APK must have a full source commit and its own exact-package acceptance.
 `0.10.0-preview.3 / 15` is a local signed, non-debug follow-up from source `11bce1522448814b14893530795c4e29e8f58d2c`. Publication is pending explicit permission after automatic approval blocked the source push. The public download links above still refer to preview.2. [Changes and evidence](ANDROID-PREVIEW-3-CHANGES.md).
 
 The user’s latest display requirement supersedes the historical shared landscape status allowance for the native weather page: weather hides system bars, reserves no status-bar padding, removes the preview frame and fills the actual viewport. Observation reserves readable light status chrome inside its own page; the shared swipe viewport stays fixed. Display cutouts, caption bars and the IME retain their actual platform insets.
+
+
+## Current prepared follow-up: preview.4 (unpublished)
+
+`0.10.0-preview.4 / 16`, source `1e9cfe1`, includes the earlier full-bleed fixes and the user’s later refresh, typography and memory requirements. Frontend weather refreshes every 15 minutes while visible, retries failures after five minutes and has a 45-second deadline. Expired readings are removed rather than retained as offline fallback. The backend cache is 15 minutes; its code is tested locally and has no claimed public deployment. The signed APK is locally verified; public links still point to preview.2 pending publication permission. [Current changes and exact-package acceptance](ANDROID-PREVIEW-4-CHANGES.md).

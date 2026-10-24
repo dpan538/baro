@@ -1,0 +1,40 @@
+{
+  "sourceCommit": "1e9cfe1d789c919e515bb9ef59fbe9c4cee79403",
+  "apkSha256": "5f62793d7894bbfd99c2dd1720d547377460c22698f7884dda70e96892c46f5c",
+  "emulatorApi": 36,
+  "densityDpi": 320,
+  "physicalDeviceAcceptance": false,
+  "genuineProviderData": true,
+  "captures": [
+    {
+      "file": "native-preview-4-weather-zh.jpg",
+      "sourceFile": "preview-landscape-zh-page0.png",
+      "sourceDimensions": [
+        3408,
+        2272
+      ],
+      "sourceSha256": "90c4e5ea7eb687603c086c356c2fb5cfa9abb1122b42a0f4285ba5746c2857f7",
+      "sha256": "4df60421a88c524f082ae8ebe0f58b5e9c9c556ae72e43e300f71abefb93b2fc"
+    },
+    {
+      "file": "native-preview-4-observation-zh.jpg",
+      "sourceFile": "preview-landscape-zh-page1.png",
+      "sourceDimensions": [
+        3408,
+        2272
+      ],
+      "sourceSha256": "3bd7082eaa132522b5b6ca8c5c3302ea5c7e3b2a68e0530d991a9a79460e7bec",
+      "sha256": "69db130814f65719e5742e7867975af958af37895fda73c66fa07650a7234b8b"
+    },
+    {
+      "file": "native-preview-4-settings-portrait-zh.jpg",
+      "sourceFile": "preview-portrait-zh-appearance.png",
+      "sourceDimensions": [
+        2272,
+        3408
+      ],
+      "sourceSha256": "d4df1f534f9ebadbb64aaa3e8a76db5770338047ecdfcd62187b7ba28d0e812c",
+      "sha256": "e999a7ee62f40606edf17f43776880ab0e52493b98721f49a7975cade5336edc"
+    }
+  ]
+}

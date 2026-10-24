@@ -1,0 +1,396 @@
+{
+  "date": "2026-10-24",
+  "timezone": "Australia/Brisbane",
+  "channel": "local signed preview; unpublished",
+  "applicationSourceCommit": "1e9cfe1d789c919e515bb9ef59fbe9c4cee79403",
+  "versionName": "0.10.0-preview.4",
+  "versionCode": 16,
+  "packageName": "studio.sundown.weather",
+  "apk": {
+    "size": 20483468,
+    "sha256": "5f62793d7894bbfd99c2dd1720d547377460c22698f7884dda70e96892c46f5c",
+    "certificateSha256": "aac2bf88afcc1ce08009a9cf5e9f91eb0092b30bb280e16a0f9d095dbf338593",
+    "debuggable": false,
+    "signatureVerified": true,
+    "productionSampleDataAbsent": true,
+    "selectedLauncherPixelsVerified": true,
+    "publicDownloadVerified": false
+  },
+  "publication": {
+    "sourcePushed": false,
+    "releasePublished": false,
+    "publicDownloadVerified": false,
+    "preparedTag": "v0.10.0-preview.4",
+    "automaticApprovalBlocked": "GitHub source push requires explicit external-publication permission"
+  },
+  "checks": {
+    "previewUnitTests": 27,
+    "debugUnitTests": 27,
+    "backendTests": 15,
+    "sourceChecks": true,
+    "debugBuildLint": true,
+    "previewBuildLint": true,
+    "installedBytesMatched": true
+  },
+  "nativeDebugCacheAndHeartbeat": {
+    "distinctMethods": 10,
+    "logs": [
+      "cache-heartbeat.log",
+      "source-age-test.log"
+    ],
+    "passed": true,
+    "transport": "Actual loopback HTTP with recorded provider payloads and accelerated wall/elapsed clocks; debug variant permits only local cleartext.",
+    "branches": [
+      "15-minute automatic foreground request through the actual Handler heartbeat",
+      "new response replaces parsed memory and disk JSON",
+      "five-minute failed-request debounce and recovery",
+      "expired data removed from display/memory/selected-place disk",
+      "source-old response cannot renew freshness",
+      "request deadline and Activity loading watchdog recover",
+      "no background polling; resume refresh",
+      "cancellation, coalescing, sharing, cache/draft isolation"
+    ]
+  },
+  "nativeExactPreview": {
+    "stages": [
+      {
+        "log": "field-feedback.log",
+        "methods": 5,
+        "passed": true,
+        "seconds": 42.52
+      },
+      {
+        "log": "genuine-ui-matrix.log",
+        "methods": 1,
+        "passed": true,
+        "seconds": 114.05
+      }
+    ],
+    "distinctMethods": 6,
+    "emulatorApi": 36,
+    "densityDpi": 320,
+    "dimensions": [
+      [
+        3408,
+        2272
+      ],
+      [
+        2272,
+        3408
+      ]
+    ],
+    "languages": [
+      "zh",
+      "en"
+    ],
+    "controlledFieldInput": true,
+    "mockSystemGps": true,
+    "genuineProviderCaptureCount": 36,
+    "captures": [
+      {
+        "file": "preview-landscape-zh-page0.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "sha256": "90c4e5ea7eb687603c086c356c2fb5cfa9abb1122b42a0f4285ba5746c2857f7"
+      },
+      {
+        "file": "preview-landscape-zh-page1.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "sha256": "3bd7082eaa132522b5b6ca8c5c3302ea5c7e3b2a68e0530d991a9a79460e7bec"
+      },
+      {
+        "file": "preview-landscape-zh-appearance.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "sha256": "985bf68690cfc266594a6d299e4e2c56301762603c2303d4cc0aa27deadcbcd5"
+      },
+      {
+        "file": "preview-landscape-zh-appearance-scrolled.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "sha256": "908e26af7d12c670b29ffa0c11d181afbbcb4553449b59291573ffe78c9c1b73"
+      },
+      {
+        "file": "preview-landscape-zh-units.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "sha256": "382804866a29d58d6d614b7752c70df4c3a641081ccd292ac9e5c323f83f0c64"
+      },
+      {
+        "file": "preview-landscape-zh-about.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "sha256": "709d7afd608dc088e057f18dce6b3ff811ae82e718346d72788a96ad6d176d57"
+      },
+      {
+        "file": "preview-landscape-zh-update-live.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "sha256": "2df24e65d0f7df6fccf9fbd9c3b3a24662249058557578fc35a444a9170acb36"
+      },
+      {
+        "file": "preview-landscape-zh-update-long-notes.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": true,
+        "sha256": "ad1c22d44d4daa86ac511c49b6c5dd9a993389874dc29ac4a77e7c4c4c124a69"
+      },
+      {
+        "file": "preview-landscape-zh-credits.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "sha256": "2aa31077646b7815206a644f9eb0368900c508ee1024fec29fbb416e76de5c34"
+      },
+      {
+        "file": "preview-landscape-en-page0.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "sha256": "2f321bac6aee80d4f953cdac404a029231775826bc75920f5fbc0b78afe48553"
+      },
+      {
+        "file": "preview-landscape-en-page1.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "sha256": "e6eff4f2fa272cf032fb1c32aa70d504bd14fcbfed99370e6cf1c835facd8591"
+      },
+      {
+        "file": "preview-landscape-en-appearance.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "sha256": "bd20b9a6314b7d697f3d33d29a55b9c5e20b9d46dab476cf2563a260640dd6a6"
+      },
+      {
+        "file": "preview-landscape-en-appearance-scrolled.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "sha256": "9759cfa91a6a0665bdb18456457271c343a5f669d86b511c5ebcf9be7d1c2331"
+      },
+      {
+        "file": "preview-landscape-en-units.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "sha256": "6b4cd255a201a6d7baedfac1aafab16fee6b60984dd4ee04216ca7f5a2610074"
+      },
+      {
+        "file": "preview-landscape-en-about.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "sha256": "2e5cc734a2caf9f48f02f9dff3f001e61391ecb135a3226772a65759e92446ec"
+      },
+      {
+        "file": "preview-landscape-en-update-live.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "sha256": "3e648c2875b220bcf063fd8ece4764a9ba5bf3ea20952060852cb5925b543c61"
+      },
+      {
+        "file": "preview-landscape-en-update-long-notes.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": true,
+        "sha256": "0f3313679edc541274d60e53cb5900f4a429e16615f4c7582906106ffc391af2"
+      },
+      {
+        "file": "preview-landscape-en-credits.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "sha256": "fdb3733b2ba803e740abb92dd48202131e0bb3c7de634de580d54001a46796c4"
+      },
+      {
+        "file": "preview-portrait-zh-page0.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "sha256": "fdeb6cb60f67745e0d93eecac79a8b5f6cf8a1198a4030e10940c13ca22fe199"
+      },
+      {
+        "file": "preview-portrait-zh-page1.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "sha256": "743936ed2d05f19f103551f4340ed3de8a008244ef790633fe3deb2d91f53422"
+      },
+      {
+        "file": "preview-portrait-zh-appearance.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "sha256": "d4df1f534f9ebadbb64aaa3e8a76db5770338047ecdfcd62187b7ba28d0e812c"
+      },
+      {
+        "file": "preview-portrait-zh-appearance-scrolled.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "sha256": "463068929ba802155c6c69ed018a269a05b14057b3c6757763e26ca955e81fc1"
+      },
+      {
+        "file": "preview-portrait-zh-units.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "sha256": "5dd8ea8fd09d7df43b14501e428a81d503340b3192118810b5e2d3b4aa61b601"
+      },
+      {
+        "file": "preview-portrait-zh-about.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "sha256": "7163456f43215ffede9bbec721ea0cccfc2df02b8d6ede852478a09c2e293264"
+      },
+      {
+        "file": "preview-portrait-zh-update-live.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "sha256": "cfaf2d0414009f3dfdf03f80493ab3e0c08c44954c0b64c118a3a1e22ea37868"
+      },
+      {
+        "file": "preview-portrait-zh-update-long-notes.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": true,
+        "sha256": "06563080de72822732992be5f77544a899cb781844ebf50fa96697b7c19ee9b3"
+      },
+      {
+        "file": "preview-portrait-zh-credits.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "sha256": "68352c47e158150d39f86466833d69e6c1442953b086dc45cef6f96c09d76fb5"
+      },
+      {
+        "file": "preview-portrait-en-page0.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "sha256": "79b5a272bf915d6b19dcba2e19d5b7e371911c68ca105048dc083a9bfaa01a83"
+      },
+      {
+        "file": "preview-portrait-en-page1.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "sha256": "9f643e5d7b9804cc39289e3d6c58a7607ac574f83d7f92e8083d412cc41ee9ba"
+      },
+      {
+        "file": "preview-portrait-en-appearance.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "sha256": "3d0232bab4ddd8eb275518bbdfca043a56bb7e3b2873634181f4daddd2153f51"
+      },
+      {
+        "file": "preview-portrait-en-appearance-scrolled.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "sha256": "273bf1e72689b231174f5e15fa133242d45f38f3278e7d5bdb45dbb073c4effb"
+      },
+      {
+        "file": "preview-portrait-en-units.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "sha256": "b949f321989d37571e413892ff2993f0936653a1b1f1e90ec936c5522a9d6359"
+      },
+      {
+        "file": "preview-portrait-en-about.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "sha256": "9b7d59c456d4641bc4428d92d525f0c46aba58ce2f3bed335d7669d3571cee89"
+      },
+      {
+        "file": "preview-portrait-en-update-live.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "sha256": "c8349ab5d15117a847a007ba64152aeb09da5ef160e8287a34f0c1f49958789d"
+      },
+      {
+        "file": "preview-portrait-en-update-long-notes.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": true,
+        "sha256": "617a417293d7a4111d6f0087222dd1ffed92e2e6341d2e1e348dbf62bf9873ee"
+      },
+      {
+        "file": "preview-portrait-en-credits.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "sha256": "392615f9d0da0aea69e2d04db19b7def2fa41a3a18f6610229ef8070c4aff716"
+      }
+    ],
+    "providerResponses": [
+      {
+        "file": "preview-landscape-en-live.json",
+        "sha256": "225ce3d1d3a384cc52c1a4eff46fb182100d72b455fc9e8e3e0637dadc78dc6d"
+      },
+      {
+        "file": "preview-landscape-zh-live.json",
+        "sha256": "225ce3d1d3a384cc52c1a4eff46fb182100d72b455fc9e8e3e0637dadc78dc6d"
+      },
+      {
+        "file": "preview-portrait-en-live.json",
+        "sha256": "225ce3d1d3a384cc52c1a4eff46fb182100d72b455fc9e8e3e0637dadc78dc6d"
+      },
+      {
+        "file": "preview-portrait-zh-live.json",
+        "sha256": "225ce3d1d3a384cc52c1a4eff46fb182100d72b455fc9e8e3e0637dadc78dc6d"
+      }
+    ]
+  },
+  "policy": {
+    "foregroundHeartbeatSeconds": 1,
+    "foregroundRefreshSeconds": 900,
+    "failureRetrySeconds": 300,
+    "totalRequestDeadlineSeconds": 45,
+    "hardReadingExpirySeconds": 1800,
+    "maximumFreshPlaces": 24,
+    "expiredFallbackRetained": false,
+    "internalCacheLabelShown": false,
+    "backendCacheSeconds": 900,
+    "largeManagedHeapRequested": true
+  },
+  "priorEvidence": {
+    "record": "preview-0.10.0-preview.3.json",
+    "scope": "Earlier full-bleed/location/animation implementation has its own 72-capture two-density record; not relabelled as preview.4 validation."
+  },
+  "limits": [
+    "No new public APK delivery or public installer upgrade has been verified; existing preview.2 remains public.",
+    "The backend cache change is tested locally; no live public backend deployment is claimed.",
+    "Clock-accelerated tests establish scheduling/control flow, not a real 15-minute Xiaomi soak.",
+    "Xiaomi GPS, system bars, physical haptics, power and animation performance require user follow-up."
+  ],
+  "initialAttempt": {
+    "log": "backend-tests-sandbox.log",
+    "reason": "The restricted sandbox rejected the local HTTP socket bind; the complete 15-case suite passed with localhost access."
+  },
+  "localEvidence": "output/native-development/preview-4 (ignored; original logs, provider responses, screenshots, APK, manifest, checksums and staged publication files)",
+  "standaloneEmulatorMemory": {
+    "log": "standalone-memory.txt",
+    "profile": "Standalone launch after tests; API36 software GPU, motion preference off; not Xiaomi RAM/performance acceptance.",
+    "largerHeapFlagInstalled": true,
+    "totalPssKiB": 93870,
+    "totalRssKiB": 221948
+  }
+}

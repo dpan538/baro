@@ -11,7 +11,7 @@ Bilingual, built for the big screen. Data by Open-Meteo.
 [![Code license: MIT](https://img.shields.io/badge/code-MIT-4c6b5b)](LICENSE)
 ![Android 10+](https://img.shields.io/badge/Android-10%2B-4c6b5b)
 
-**待发布修复版：0.10.0-preview.3 / 15。** 首页已改为覆盖屏幕顶边，不保留系统栏白条或外框；同时修复定位、城市选择、降水网格和线性过渡。APK 已在本地准备，下面的公开下载入口仍为 preview.2。[修复与验收说明](docs/ANDROID-PREVIEW-3-CHANGES.md)。
+**待发布修复版：0.10.0-preview.4 / 16。** 已包含首页全屏、前台 15 分钟自动更新与过期数据清除、日出和降水排版修正，以及平板内存余量调整。新 APK 已本地验证，下面的公开下载入口仍为 preview.2。[修复与验收说明](docs/ANDROID-PREVIEW-4-CHANGES.md)。
 
 [**下载 Android 测试 APK / Download APK ↗**](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.2/BARO-0.10.0-preview.2.apk) · [下载与安装 / Install on your Pad](DOWNLOAD.md) · [版本说明 / Release notes](https://github.com/dpan538/baro/releases/tag/v0.10.0-preview.2) · [SHA-256](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.2/SHA256SUMS)
 

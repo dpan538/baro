@@ -39,3 +39,4 @@ android/verification/*
 !android/verification/acceptance.json
 !android/verification/preview-0.10.0-preview.2.json
 !android/verification/preview-0.10.0-preview.3.json
+!android/verification/preview-0.10.0-preview.4.json
