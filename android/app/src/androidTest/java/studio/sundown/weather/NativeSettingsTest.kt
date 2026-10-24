@@ -33,11 +33,13 @@ class NativeSettingsTest {
         seed();ActivityScenario.launch(MainActivity::class.java).use{s->s.onActivity{it.settings.open()};SystemClock.sleep(300)
             tap(s,"English");s.onActivity{assertEquals("en",it.model.lang)}
             tap(s,"Block");s.onActivity{assertTrue(it.model.block)}
+            tap(s,"Weather animation");s.onActivity{assertTrue(it.model.motion)}
+            tap(s,"Weather animation");s.onActivity{assertFalse(it.model.motion)}
             tap(s,"°F");s.onActivity{assertTrue(it.model.fahrenheit)}
             tap(s,"mph");s.onActivity{assertEquals("mph",it.model.wind)}
             tap(s,"···");tap(s,"Clear weather cache");tap(s,"Feedback")
             s.onActivity{a->assertNotNull(find(a.settings,"Submit feedback"));a.feedback.draft="Retained after settings close";a.settings.close();assertFalse(a.pager.overlayOpen)}
-            s.recreate();i.waitForIdleSync();s.onActivity{a->assertTrue(a.model.block);assertTrue(a.model.fahrenheit);assertEquals("mph",a.model.wind);assertEquals("Retained after settings close",a.feedback.draft)}
+            s.recreate();i.waitForIdleSync();s.onActivity{a->assertTrue(a.model.block);assertFalse(a.model.motion);assertTrue(a.model.fahrenheit);assertEquals("mph",a.model.wind);assertEquals("Retained after settings close",a.feedback.draft)}
         }
     }
     @Test fun closingSettingsCancelsUpdateAndDoesNotReopenCard(){
