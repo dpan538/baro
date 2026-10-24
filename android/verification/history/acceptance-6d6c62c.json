@@ -1,0 +1,678 @@
+{
+  "schema": 2,
+  "recordedAtUtc": "2026-10-24T02:13:58.764652+00:00",
+  "status": "scoped local functional/visual acceptance after complete 300-cycle run; software Fine background settling delay and emulator recovery retained, physical power/haptics and public production branches unverified",
+  "applicationSourceCommit": "6d6c62c488492b5752615a437955f6d0c3abb8c6",
+  "application": {
+    "packageName": "studio.sundown.weather",
+    "versionCode": 12,
+    "versionName": "0.10.0-native-preview",
+    "size": 22286887,
+    "sha256": "23456e710f48cb789561043c6d02c05ace378227a61b8739adfaab0687f358fd",
+    "certificateSha256": "aac2bf88afcc1ce08009a9cf5e9f91eb0092b30bb280e16a0f9d095dbf338593",
+    "debuggable": true,
+    "signatureVerified": true,
+    "productionSampleDataAbsent": true
+  },
+  "artifactFile": "BARO-0.10.0-native-preview-6d6c62c.apk",
+  "baseline": {
+    "tag": "ui-baseline-2026-10-23",
+    "tagObject": "2d8c2a35f5d6b29f1c722dc93b5dac9f45e562fc",
+    "commit": "2a503be74bec48327401ff7a6d76ac5ede0c4ff8",
+    "unchanged": true
+  },
+  "profile": {
+    "device": "dedicated disposable emulator",
+    "androidApi": 36,
+    "landscapePixels": [
+      3408,
+      2272
+    ],
+    "portraitPixels": [
+      2272,
+      3408
+    ],
+    "standardDensityDpi": 320,
+    "smallPortraitDensityDpi": 400,
+    "measuredXiaomiProfile": false
+  },
+  "tests": {
+    "domain": 20,
+    "backend": 14,
+    "nativeFlowLiveSettings": 33,
+    "nativeHighScaling": 1,
+    "updateFixture": 2,
+    "nativeSoakMethods": 1,
+    "nativeTotalDistinctMethods": 37,
+    "nativeSoakGroups": 300,
+    "glyphAuditCombinations": 200,
+    "debugAndReleaseAssembly": true,
+    "debugAndReleaseLint": true,
+    "sourceChecks": true,
+    "nativeProductCaptures": 56,
+    "nativeIncludesCompositorPresentation": true
+  },
+  "visual": {
+    "weatherCaptures": 4,
+    "observationCaptures": 48,
+    "highScalingTopBottomCaptures": 4,
+    "languages": [
+      "zh",
+      "en"
+    ],
+    "purposes": 12,
+    "pixels": "fine",
+    "provider": {
+      "source": "Open-Meteo live API",
+      "backend": "",
+      "pixels": "fine",
+      "validAt": 1792806300,
+      "fetchedAt": 1792806570
+    },
+    "smallProviderFetchedAt": 1792806977,
+    "allProductCapturesRequireCompletedRealApiRefresh": true,
+    "screenshotManifestSha256": "54c69b25581f7bcb55e4d921895f79bc9e2973e910a4d8d9a8e88099ab5d84e5",
+    "fonts": {
+      "Inter.ttf": "29160a80ff49ddcab2c97711247e08b1fab27a484a329ce8b813d820dc559031",
+      "MiSansVF.ttf": "0ddef90648998900175cfdca9a6f087a2544c182f130b0ad4f7e94a03a115e79",
+      "RobotoMono.ttf": "66a80e79d17e4c7cabd162e2916578a4cc08fd19eef6e2a643305eae9c567b2b"
+    },
+    "reviewed": [
+      "removed prototype navigation/sample entry points",
+      "native type roles and units",
+      "CCT caption rows in both languages and orientations",
+      "long WMO descriptions bounded before solar column",
+      "Moon focus label separation",
+      "full composed artwork after resize",
+      "high-scaling native scroll and dial ownership",
+      "magnified Chinese two-line dew caption has full glyph height and spacing before plot",
+      "measured asymmetric observation corners and all 16 weather-page corners",
+      "deeper observation blacks; paper/charcoal contrast 14.74 and regular dial labels 8.90",
+      "all twelve focus purposes in both languages and orientations",
+      "home/storage hints do not overlap headings, readings or charts",
+      "distant-view hint has its own left-column bounds",
+      "fractional dial, cancelled and committed page travel, native presses and moving settings indicator",
+      "primary gust ticks leave the direction footer clear",
+      "Final fresh real-provider sweep after all 300 groups: 33 native methods plus 400dpi portrait method passed",
+      "All twelve focus purposes in both languages/orientations inspected; complete headings/readings/units/source hints",
+      "Complete pressure endpoint digits and visible rotating dial words, without partial-letter previews",
+      "Weather header/units/conditions/solar column complete in both languages/orientations",
+      "Both higher-scaling scroll extents inspected; footer paragraphs, wrapped dew captions and LCL/CAPE fields complete",
+      "192 actual focus-card edges measured: maximum discrepancy0.875 physical pixels",
+      "Original font bytes and frozen geometry preserved; dynamic API data/time/artwork prevent whole-image static-pixel equality"
+    ],
+    "pixelIdenticalToStaticExample": false,
+    "differenceReason": "Actual API readings, timestamps, selected forecast windows and weather artwork intentionally replace historical examples.",
+    "visualReviewSha256": "a07e21156ebcece8e33a83b98aa7e3e988af4c6eb48e4dbf0610666aeaeeb85b",
+    "wholeGlyphCases": 200,
+    "wholeGlyphIssues": 0,
+    "measuredFocusEdges": 192,
+    "maximumEdgeErrorPhysicalPixels": 0.875,
+    "independentGeometryFiles": 53,
+    "baselineImageFormatNotice": "Original files with .png suffix decode as JPEG, without an embedded colour profile. Their hashes are preserved; comparison uses unchanged frozen CSS geometry and fresh PNG reference exports rather than claiming exact equality to lossy pixels."
+  },
+  "distribution": {
+    "localHttpCopyHashVerified": true,
+    "coldStartInstalledHashVerified": true,
+    "sameDevelopmentSignerSystemUpgrade": {
+      "fromSourceCommit": "6d6c62c488492b5752615a437955f6d0c3abb8c6",
+      "fromApkSha256": "23456e710f48cb789561043c6d02c05ace378227a61b8739adfaab0687f358fd",
+      "fromVersionCode": 12,
+      "toVersionCode": 13,
+      "installedApkSha256": "722d3a1cf3d95836004c91b5867f44b3141869e7217a1553dacc0a627b026936",
+      "signerSha256": "aac2bf88afcc1ce08009a9cf5e9f91eb0092b30bb280e16a0f9d095dbf338593",
+      "permissionDenialAndRetry": true,
+      "systemInstallerConfirmed": true,
+      "coldStart": true,
+      "privateCanaryPreserved": true,
+      "preferencesAndDraftPreserved": true,
+      "scope": "Controlled local fixture on dedicated emulator; no public update, historical signer, or Xiaomi installer claim."
+    },
+    "upgradeScope": "Current code-12 package to a controlled local code-13 fixture, followed by restoration and hash verification of the accepted package. Not a public update or historical-signer proof.",
+    "publicDownloadVerified": false,
+    "stableReleasePublished": false
+  },
+  "recordings": [
+    {
+      "mode": "fine",
+      "file": "native-weather-fine-60s.mp4",
+      "duration": 50.204033,
+      "encodedSize": [
+        1704,
+        1136
+      ],
+      "averageFrameRate": "690000/1506121",
+      "sha256": "65a5fbec58aabdc4aac132d4ccf3331adc6907df2b61c14bb1bab77658453931",
+      "providerFetchedAt": 1792806977,
+      "validAt": 1792806300,
+      "hardwarePerformanceClaim": false,
+      "composedScreenVerifiedBeforeStart": true,
+      "sampledNonblackFrames": 5,
+      "distinctSampledFrameHashes": 5,
+      "rejectedEarlierAttempt": "rejected-fine-recording-black-start/rejection.json"
+    },
+    {
+      "mode": "block",
+      "file": "native-weather-block-60s.mp4",
+      "duration": 59.982556,
+      "encodedSize": [
+        1704,
+        1136
+      ],
+      "averageFrameRate": "3483000/539843",
+      "sha256": "ecfb76e729d3ca680c279719aa6f3023eaea68e127f64e4557c21544f65fa48d",
+      "providerFetchedAt": 1792806977,
+      "validAt": 1792806300,
+      "hardwarePerformanceClaim": false
+    },
+    {
+      "mode": "interaction",
+      "file": "native-interaction-verification.mp4",
+      "duration": 108.288722,
+      "encodedSize": [
+        1704,
+        1136
+      ],
+      "averageFrameRate": "7686000/1949197",
+      "sha256": "e148b2e731d7f82bbf2e421886d4ca0896845225f3bae4815799e6cf998b9a01",
+      "hardwarePerformanceClaim": false
+    }
+  ],
+  "hostedCi": {
+    "runs": [
+      {
+        "conclusion": "success",
+        "databaseId": 40040342388,
+        "name": "Source and preview checks",
+        "status": "completed",
+        "url": "https://github.com/dpan538/baro/actions/runs/40040342388"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 40040342426,
+        "name": "Kotlin Android and BARO backend",
+        "status": "completed",
+        "url": "https://github.com/dpan538/baro/actions/runs/40040342426"
+      }
+    ],
+    "testSourceCommit": "e487c2fd672cb6485d857cb844da62643415fc69",
+    "scope": "Native UI gestures, loopback HTTP cache and typography with androidTest-only recorded UI input and suppressed GLES; product screenshots skipped. Full GLES/live acceptance is local.",
+    "hostedGpuAccepted": false
+  },
+  "rejectedEarlierEvidence": [
+    "7111a1e captures retained CCT overlap and a tiled panorama; not final acceptance.",
+    "e0767a0 capture gate failed; 16 other native cases passed; historical PNGs are not final evidence.",
+    "Earlier hosted GLES jobs had input-dispatch ANRs; the hosted lane does not claim GPU acceptance.",
+    "134aba9 automated tests and CI passed, but magnified high-scaling Chinese dew caption clipped its second line; final visual acceptance uses 9c780d3 instead.",
+    "a58ddcf passed automation and CI but expanded distant-view typography review found a caption/reading collision; final acceptance uses de57619.",
+    "Historical outer-level images from an ADB directory pull are excluded; round-one evidence is its sixteen fresh round1-screens images and matching response.",
+    "First 6d6c62c continuous attempt: 150 groups passed; ready-only group151 timed out while a genuine stale cache was visible. Preserved all 151 rows. New real-HTTP case proves deferred stale refresh semantics; replacement run records source status and requires two real refreshes. The incomplete attempt is excluded.",
+    "3b2099f: 186 functional cycles rejected visually for pressure/wheel clipping; not counted toward accepted 300.",
+    "Current APK first 32-test attempt had two live-readiness timeouts; unchanged-APK targeted retry passed both, then full 32 passed. Saved logs do not establish a definitive timeout cause.",
+    "Small viewport was initially invoked at incorrect 320 dpi and rejected by its setup assertion; accepted high-scaling run uses 400 dpi."
+  ],
+  "unverified": [
+    "public dedicated BARO HTTPS backend",
+    "BARO-only production feedback credential and public Issue receipt",
+    "public signed APK release/download",
+    "permanent production signing identity",
+    "historical Java-host signer upgrade compatibility",
+    "Xiaomi hardware insets, GPU performance, power and proprietary installer",
+    "physical detent vibration strength and target-tablet touch feel",
+    "real target-device GPS reception"
+  ],
+  "evidenceDigests": {
+    "native-regression.log": "78399bd828f6881e18e277f8c1b1cc50abce05196926ad8530c46c713f805a1c",
+    "small-regression.log": "d1c98b3381bbe9722123fd1eb6fb51e759bded59a11916be1c95978819a94346",
+    "update-fixture.log": "49f3e28942ffaaaa0db7d2cfdcbd8e4f4e3c7044dc3acf6c15897fe232fa8968",
+    "whole-glyph-final-build.log": "ad1d551c29e1593d2d6519fd5abdfcb2f6adc5781462fbc4407f35b4db9a85ea",
+    "backend-regression.log": "64ca7cae5b7b9c6891767ed45f501e0a99a6de1a7af3fb642e351700325cfbd3",
+    "source-regression.log": "f11abed838869c2c8b39df8cc0f8b13814716261bf87652913bdde9743812e83",
+    "local-system-upgrade.json": "0692b4c9c5bbde2558b403d68d84d0b391db67a155237e7b2ae4447de03f8c6a",
+    "page-presentation.json": "3fd52ff8009a4cdab8557ff924b76e950d7b1825723726c7586e807292bc0f96",
+    "text-audit.json": "e128517f7056aab976b602b0170b3c9f4dba8d8f4e5a9d0ee951860330dc5c85",
+    "measured-card-boundaries.json": "af3879fdea91e7ba2791b0968dc398cefa3ae19dfdc45124cb0a7dfd27466c2a",
+    "rounds.jsonl": "3f32dfcafe00a33878aaf00a94d2652725eff817700381f29dc0e16771b02523",
+    "rounds-chart.svg": "fbd0df2ec87fa1a0f0e9258f0c48827a314acb06ec6210136428932b889f3c61"
+  },
+  "recordingFrameChecks": [
+    {
+      "mode": "fine",
+      "sampledFrames": 5,
+      "distinctFrameHashes": 5
+    },
+    {
+      "mode": "block",
+      "sampledFrames": 5,
+      "distinctFrameHashes": 5
+    },
+    {
+      "mode": "interaction",
+      "sampledFrames": 5,
+      "distinctFrameHashes": 5
+    }
+  ],
+  "recordingInterruption": {
+    "interrupted": false,
+    "scope": "All three exact-source recordings completed and were decoded."
+  },
+  "galleryCheck": {
+    "decodedNativeCases": 56,
+    "decodedReferences": 8,
+    "decodedComparisonImages": 5,
+    "pageErrors": [],
+    "recordings": [
+      {
+        "duration": 108.288722,
+        "width": 1704,
+        "height": 1136
+      },
+      {
+        "duration": 50.204033,
+        "width": 1704,
+        "height": 1136
+      },
+      {
+        "duration": 59.982556,
+        "width": 1704,
+        "height": 1136
+      }
+    ],
+    "roundRows": 300,
+    "fineFilterRows": 60,
+    "failedFilterRows": 0
+  },
+  "rejectedRecordingAttempts": [
+    {
+      "scope": "Current-source first Fine weather recording",
+      "evidence": "rejected-fine-recording-black-start/rejection.json",
+      "accepted": false,
+      "reason": "Five-point decoded frame review found black frames at 4.6, 14.4 and 24.7 seconds. Recording duration alone was insufficient; preserve failed evidence and rerecord only after actual composed screen is verified.",
+      "causeEstablished": false
+    }
+  ],
+  "iterations": [
+    {
+      "round": 1,
+      "evidence": "output/native-development/iteration-r1",
+      "nativeInteractionPassed": 3,
+      "liveCaptures": 16,
+      "acceptedScreenshotDirectory": "round1-screens",
+      "cacheCases": 5,
+      "cacheFailures": 1,
+      "findings": [
+        "weather radii absent in export",
+        "settings indicator did not match",
+        "home/storage caption overlap",
+        "cancelled initial request stranded by cooldown"
+      ]
+    },
+    {
+      "round": 2,
+      "evidence": "output/native-development/iteration-r2",
+      "focusedNativePassed": 12,
+      "checkpointSource": "a58ddcffa72553aa5f73d2b56fffcd495e96f42b",
+      "fullNativePassed": 29,
+      "liveCaptures": 56,
+      "visualAcceptance": false,
+      "remainingFinding": "English distant-view hint overlapped reading despite original suite passing"
+    },
+    {
+      "round": 3,
+      "source": "cd93b5492f185ac717db5bfdefe88187f684f42b",
+      "fullNativePassed": 29,
+      "highScalingPassed": 1,
+      "compositorPresentationPassed": 1,
+      "visualAcceptance": false,
+      "remainingFinding": "gust compass ticks crossed direction footer"
+    },
+    {
+      "round": 4,
+      "source": "de57619672fa9471caeb64aa9b0340fc0631657d",
+      "windStrokeBoundaryRedThenGreen": true,
+      "fullNativePassed": 30,
+      "highScalingPassed": 1,
+      "updateFixturePassed": 2,
+      "liveCaptures": 56,
+      "visualAcceptance": true
+    },
+    {
+      "round": 5,
+      "source": "3b2099f56393172f271e38d26834106caf844474",
+      "functionalGroupsCompleted": 186,
+      "visualAcceptance": false,
+      "reason": "Manual portrait review found clipped pressure endpoint glyphs and rotating wheel previews; 186 groups excluded."
+    },
+    {
+      "round": 6,
+      "source": "6d6c62c488492b5752615a437955f6d0c3abb8c6",
+      "fullNativePassed": 33,
+      "highScalingPassed": 1,
+      "updateFixturePassed": 2,
+      "soakGroupsPassed": 300,
+      "wholeGlyphCombinations": 200,
+      "wholeGlyphIssues": 0,
+      "liveCaptures": 56,
+      "visualAcceptance": true
+    }
+  ],
+  "compositorPresentation": {
+    "presented": true,
+    "releaseToVerifiedCaptureMs": 2874,
+    "anchors": 3,
+    "device": "dedicated software-rendered emulator",
+    "targetHardwarePerformanceClaim": false
+  },
+  "haptics": {
+    "systemTickRequestsExercised": true,
+    "respectSystemPreference": true,
+    "minimumTickIntervalMs": 35,
+    "physicalIntensityMeasured": false,
+    "api34SegmentTick": true,
+    "frequentSegmentTickForFastTurns": true
+  },
+  "weatherReuse": {
+    "normalFreshSeconds": 1800,
+    "minimumManualOrFailureReadSeconds": 300,
+    "memoryPlaceLimit": 12,
+    "memoryIdleEvictionSeconds": 3600,
+    "offlineDiskMaximumSeconds": 86400,
+    "realHttpClockBoundaryTestsPassed": 6,
+    "interruptedInitialLoadCanResume": true
+  },
+  "testSourceCommit": "e487c2fd672cb6485d857cb844da62643415fc69",
+  "soak": {
+    "summary": {
+      "rounds": 300,
+      "passed": 300,
+      "source": "6d6c62c488492b5752615a437955f6d0c3abb8c6",
+      "processCount": 1,
+      "continuous": true,
+      "totalMeasuredCycleSeconds": 6777.996,
+      "foregroundPssMiB": {
+        "min": 106.44,
+        "median": 177.64,
+        "p95": 202.76,
+        "max": 210.3
+      },
+      "closedPssMiB": {
+        "min": 94.11,
+        "median": 127.00999999999999,
+        "p95": 164.97,
+        "max": 178.23
+      },
+      "launchToFirstArtMs": {
+        "min": 2842,
+        "median": 4851.0,
+        "p95": 8439,
+        "max": 27029
+      },
+      "postInteractionCpuPercent": {
+        "min": 1.39,
+        "median": 59.115,
+        "p95": 139.32,
+        "max": 177.7
+      },
+      "closedThreadsAllZero": true,
+      "first30ClosedPssMedianMiB": 116.6,
+      "last30ClosedPssMedianMiB": 131.925,
+      "maxClosedFdCount": 170,
+      "providerFetchTimestamps": [
+        1792798311,
+        1792800130,
+        1792802316,
+        1792804428
+      ],
+      "cacheByteMaximum": 14847,
+      "powerMeasured": false,
+      "powerLimitation": "Emulator charging battery and unsupported CPU/GPU energy counters cannot measure watts, mAh or hardware battery life.",
+      "instrumentationOverhead": "Round memory includes instrumentation and periodic screenshots. Production-only meminfo samples are separate. CPU sums all app threads, so >100% is possible.",
+      "matrix": {
+        "language": {
+          "zh": 150,
+          "en": 150
+        },
+        "orientation": {
+          "landscape": 150,
+          "portrait": 150
+        },
+        "purpose": {
+          "0": 25,
+          "1": 25,
+          "2": 25,
+          "3": 25,
+          "4": 25,
+          "5": 25,
+          "6": 25,
+          "7": 25,
+          "8": 25,
+          "9": 25,
+          "10": 25,
+          "11": 25
+        },
+        "pixels": {
+          "block": 240,
+          "fine": 60
+        },
+        "motion": {
+          "true": 150,
+          "false": 150
+        }
+      },
+      "checks": {
+        "usable-real-weather-and-gles-first-frame": 300,
+        "seeded-preferences-and-render-mode": 300,
+        "outward-page-and-dial-detent-ownership": 300,
+        "return-page-and-layer-reset": 300,
+        "gear-overlay-pauses-art-and-language-button-closes": 300,
+        "closed-activity-releases-render-workers": 300,
+        "cancelled-page-stays": 100,
+        "genuine-offline-cache-age-and-visible-disclosure": 26
+      },
+      "backgroundResumeGroups": 60,
+      "recreationGroups": 34,
+      "closedFdRange": [
+        127,
+        170
+      ],
+      "rssMiB": {
+        "min": 244.89,
+        "median": 320.42,
+        "p95": 345.67,
+        "max": 353.26
+      },
+      "providerFetchIntervalsSeconds": [
+        1819,
+        2186,
+        2112
+      ],
+      "providerResponseCount": 4,
+      "newProviderResponsesDuringCollection": 3,
+      "readingAgeSeconds": {
+        "min": 0.66,
+        "median": 910.0450000000001,
+        "p95": 1977.41,
+        "max": 2171.05
+      },
+      "weatherStates": {
+        "ready": 274,
+        "offline": 26
+      },
+      "memoryInterpretation": "First/last medians and descriptor counts describe this bounded run. They do not prove the absence of every possible memory leak."
+    },
+    "rawJsonlSha256": "3f32dfcafe00a33878aaf00a94d2652725eff817700381f29dc0e16771b02523",
+    "csvSha256": "deeb46695401ff14bcbca6e822213577b4d741558dafd1995770f8e2726c6ac1",
+    "chartSha256": "fbd0df2ec87fa1a0f0e9258f0c48827a314acb06ec6210136428932b889f3c61",
+    "providerResponses": [
+      {
+        "file": "soak-provider-1792798311-6eedc774e394.json",
+        "sha256": "6eedc774e3940fe5e6cd915e308805701e6e27281a796fb4fe81c7b4bf8e54f4",
+        "fetchedAt": 1792798311
+      },
+      {
+        "file": "soak-provider-1792800130-44643f7989dc.json",
+        "sha256": "44643f7989dcc23afa35f1a4cc44323e9c99d52d7a013c21ab590275ae783102",
+        "fetchedAt": 1792800130
+      },
+      {
+        "file": "soak-provider-1792802316-c3955129b8e6.json",
+        "sha256": "c3955129b8e69d356c1b95ad5737c75bc49557a2a9771c7a2b28333d973d7992",
+        "fetchedAt": 1792802316
+      },
+      {
+        "file": "soak-provider-1792804428-96ce06ea2dce.json",
+        "sha256": "96ce06ea2dceb2e46aa176e83fbd93cbf7f9ac2f94641bdd8c182a3b0bae7c3a",
+        "fetchedAt": 1792804428
+      }
+    ],
+    "groupsPerPurpose": 25,
+    "languages": {
+      "zh": 150,
+      "en": 150
+    },
+    "orientations": {
+      "landscape": 150,
+      "portrait": 150
+    },
+    "modeGroups": {
+      "fine": 60,
+      "block": 240
+    },
+    "motionGroups": {
+      "on": 150,
+      "off": 150
+    },
+    "cancelGroups": 100,
+    "backgroundResumeGroups": 60,
+    "recreationGroups": 34,
+    "coldProcessStartsInContinuousRun": 1,
+    "scope": "300 Activity launches/interactions/closes in one instrumentation process; not 300 force-stopped OS processes or 300 complete repetitions of every independent API failure test."
+  },
+  "productionResourceProfiles": {
+    "profiles": [
+      {
+        "name": "weather-fine-still",
+        "pssMiB": 116.7353515625,
+        "rssMiB": 241.55078125,
+        "foregroundCpuPercent": 0.0,
+        "backgroundCpuPercent": 0.0
+      },
+      {
+        "name": "weather-fine-motion",
+        "pssMiB": 114.21484375,
+        "rssMiB": 238.5078125,
+        "foregroundCpuPercent": 140.0381111829826,
+        "backgroundCpuPercent": 156.3371162170554
+      },
+      {
+        "name": "weather-block-still",
+        "pssMiB": 111.28515625,
+        "rssMiB": 235.27734375,
+        "foregroundCpuPercent": 0.0,
+        "backgroundCpuPercent": 0.0
+      },
+      {
+        "name": "weather-block-motion",
+        "pssMiB": 110.9189453125,
+        "rssMiB": 235.0234375,
+        "foregroundCpuPercent": 125.96296015555774,
+        "backgroundCpuPercent": 0.0
+      },
+      {
+        "name": "observation-fine-still",
+        "pssMiB": 121.7734375,
+        "rssMiB": 245.84375,
+        "foregroundCpuPercent": 3.367499546637899,
+        "backgroundCpuPercent": 0.0
+      },
+      {
+        "name": "observation-fine-motion",
+        "pssMiB": 119.48046875,
+        "rssMiB": 243.5390625,
+        "foregroundCpuPercent": 149.72927864830444,
+        "backgroundCpuPercent": 0.0
+      },
+      {
+        "name": "observation-block-still",
+        "pssMiB": 122.96484375,
+        "rssMiB": 247.08203125,
+        "foregroundCpuPercent": 2.9706285166644237,
+        "backgroundCpuPercent": 0.0
+      },
+      {
+        "name": "observation-block-motion",
+        "pssMiB": 122.833984375,
+        "rssMiB": 246.95703125,
+        "foregroundCpuPercent": 27.046593324163638,
+        "backgroundCpuPercent": 0.0
+      }
+    ],
+    "instrumentation": false,
+    "softwareEmulator": true,
+    "powerMeasured": false,
+    "limitation": "Emulator charging battery and unsupported CPU/GPU energy counters cannot measure watts, mAh or hardware battery life.",
+    "csvSha256": "f1c9dd358955a24263bc33404f788d9e38f0881487bc4ab8e4cafa19447ccb98",
+    "windowScope": "Foreground after ten-second warmup; background five-second window begins eight seconds after HOME and can include transition/in-flight rendering. See separate zero/eight/thirty/sixty-second activity-state timeline."
+  },
+  "backgroundSettling": {
+    "source": "6d6c62c488492b5752615a437955f6d0c3abb8c6",
+    "instrumentation": false,
+    "renderer": "swiftshader_indirect",
+    "cpuPercentSumsAllThreads": true,
+    "samples": [
+      {
+        "checkpointSeconds": 0,
+        "cpuPercent": 100.00728361224768,
+        "activityState": "PAUSED",
+        "sampleWallSeconds": 5.109627834521234
+      },
+      {
+        "checkpointSeconds": 8,
+        "cpuPercent": 186.97677869108776,
+        "activityState": "STOPPING",
+        "sampleWallSeconds": 5.0808448335155845
+      },
+      {
+        "checkpointSeconds": 30,
+        "cpuPercent": 39.767476580224,
+        "activityState": "STOPPED",
+        "sampleWallSeconds": 7.493560709059238
+      },
+      {
+        "checkpointSeconds": 60,
+        "cpuPercent": 0.3965581986704121,
+        "activityState": "STOPPED",
+        "sampleWallSeconds": 5.043395916931331
+      }
+    ],
+    "scope": "Separate real HOME transition after 20-second foreground warmup. The 8-second sample is not a settled-background or hardware-power claim.",
+    "targetHardwareClaim": false
+  },
+  "resourceMeasurementRecovery": {
+    "firstAttemptAccepted": false,
+    "firstAttempt": {
+      "status": "rejected incomplete resource profile attempt",
+      "completedProfiles": 1,
+      "failedProfile": "weather-fine-motion",
+      "failure": "Background /proc sampling via ADB timed out at 90s; finally force-stop also timed out at 90s. Separate get-state still connected while shell true timed out.",
+      "accepted": false,
+      "continuous300Affected": false
+    },
+    "sameAvdRestarted": true,
+    "sameGpuConfiguration": true,
+    "allEightRetryProfilesCompleted": true
+  },
+  "observedLimitations": [
+    "Software-emulator Fine weather animation remained CPU-active during the HOME transition: initial eight-second sampling reached 156.34%, and a separate timeline measured 186.98% at eight seconds, 39.77% at thirty seconds and 0.4% at sixty seconds. Activity state and raw counters are retained. No zero-background-cost or hardware-power claim.",
+    "The first independent resource sampling attempt lost emulator shell/transport responsiveness after twelve hours of emulator uptime; logs and host stack sample were preserved. Its partial results are excluded and the same-configuration retry completed.",
+    "Passing bounded functional/glyph cases does not establish pixel identity for dynamic API data or the absence of every possible defect."
+  ],
+  "about": {
+    "bothLanguagesPassed": true,
+    "directSourcesAndLicensesEntry": true,
+    "primarySettings": 7,
+    "groups": 3,
+    "runtimeDependencyEntries": 24,
+    "originalFontsAndLicensesUnchanged": true
+  }
+}

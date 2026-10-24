@@ -2,7 +2,51 @@
 
 Started 2026-10-23 (Australia/Brisbane). This ledger supersedes the old paused Android host status. The immutable `ui-baseline-2026-10-23` tag remains the reference. No Annota application code, service credentials or signing identity is used.
 
-## Current reviewed refinement — 2026-10-24
+## Current fixed-viewport refinement — 2026-10-24
+
+Application source `f5abafb3e1593193636c4d2075c3eb3b4ddfba01` and standard test source
+`8a73caec9dae46fb9a15f97d23e1855feebdb115` verify removal of every source/status
+badge over both illustrations. Existing weather condition and observation context
+areas retain availability/stale state, with attribution in About. Both main pages
+use fixed containers; observation fits one measured viewport at 320 and 400 dpi
+in either orientation. Drawing, artwork bounds and hit testing share the approved
+reference scale. Settings retain vertical scrolling. Original circles, semicircles,
+font/license bytes, larger figures, small corners and deeper contrast are retained.
+
+High-density capture readiness is checked again with test source
+`516d5c0ee5e0eb0d6546a68ec9f614729a7c968e`; its application bytes are unchanged.
+
+The source-bound development preview is `0.10.0-native-preview` / code 12,
+22,305,079 bytes, SHA-256 `8b69db63456454b83d67d0c33502e5c3c7b485b7a6803951317e8a272e825d93`. Actual package/signature,
+loopback download-copy identity, install/start, 20 domain, 14 backend, source
+checks, debug/release assembly/lint and 39 distinct native methods pass. The
+recorded dial test is a repeated invocation of one of those methods, not another
+distinct method. Initial diagnostics include six audit methods and an actual high-density
+window test, followed by the complete source-bound regression and focused
+high-density recollection after rejecting two stale-compositor captures.
+
+The current 68 genuine-provider captures comprise 52 standard views and sixteen
+400-dpi views. Actual high-density operation covers both languages/orientations
+and all twelve purposes: no main-page vertical movement, complete dashboard
+bounds, independent dial selection and horizontal toggles in either direction.
+The glyph audits cover 728 states, main-figure measurements total
+996 with a minimum of approximately 86%, and 1872 composed
+tiles show all four small corners. Source badges are also rejected in 32 drawn
+ready/stale/loading/missing page states. See [the refinement contract](NATIVE-VISUAL-REFINEMENT.md)
+and [source-bound acceptance](../android/verification/acceptance.json).
+
+Eight fresh application-only page/pixel/motion resource profiles report PSS
+109.48–124.38 MiB. Raw foreground, early-background and
+STOPPED/low-CPU samples remain separate. Software-emulator measurements do not
+establish actual watts, battery life, hardware frame rate or physical vibration.
+The local report contains current screenshots, dial video, resource chart and
+checks; the historical 300-group chart/CSV/JSONL is linked with its original
+`6d6c62c` source and is not counted as current-APK endurance. A previous a27b9bb
+resource collection encountered a guest reboot with undetermined cause; that
+rejected attempt remains preserved separately. Public service/release and target
+hardware branches are not inferred from local verification.
+
+## Historical 6d6c62c acceptance — 2026-10-24
 
 Application source `6d6c62c488492b5752615a437955f6d0c3abb8c6` and test source `e487c2fd672cb6485d857cb844da62643415fc69` supersede the earlier local previews. The development-signed package is `studio.sundown.weather`, `0.10.0-native-preview` / code 12, 22,286,887 bytes, SHA-256 `23456e710f48cb789561043c6d02c05ace378227a61b8739adfaab0687f358fd`. Its BARO development signer is unchanged. Downloaded and installed bytes, cold start and a controlled same-signer system-installer code-12 → code-13 upgrade/data-retention test are verified; the accepted code-12 package is restored afterward. This is not a stable public release.
 
@@ -28,13 +72,13 @@ Canonical units are Celsius, km/h, hPa, metres and Unix seconds. Local date/time
 
 The independent Python HTTP backend uses SQLite transactions for a bounded shared upstream cache, cross-process request leases, a persisted call budget and feedback request identity. Fixed upstream hosts and validated parameters avoid an arbitrary proxy. It can run via the supplied Docker image with a persistent volume. Public deployment, a BARO-only GitHub Issues credential and long-term production signing are separate external dependencies; a local real-upstream result will not be described as a public deployment.
 
-## Stages
+## Historical implementation stages through 6d6c62c
 
 | Stage | Scope | Acceptance / current evidence |
 | --- | --- | --- |
 | A | Architecture, field inventory, immutable baseline | This record; `NATIVE-DATA-SOURCES.md`; baseline tag retained |
 | B | Independent backend, live provider responses, failure/cache tests | 14 backend tests pass, including real local HTTP and shared-cache concurrency; live weather and air response recorded |
-| C | Kotlin domain/network/storage/location and all native UI | Current local build `6d6c62c`: 52 live-data views, four high-scaling views and presentation-confirmed page reviewed; historical example values/artwork intentionally differ |
+| C | Kotlin domain/network/storage/location and all native UI | Historical local build `6d6c62c`: 52 live-data views, four high-scaling views and presentation-confirmed page reviewed; historical example values/artwork intentionally differ |
 | D | Feedback receipt/draft and verified installer | Local HTTP failure/draft and real APK rejection tests pass; actual system permission denial/retry and controlled same-signer installer upgrade pass; public feedback receipt is unverified |
 | E | Business/backend tests, Gradle/lint and disposable-emulator instrumentation | 20 domain, 14 backend and 37 distinct native methods plus 300 groups pass; debug/release assembly and both lint profiles pass |
 | F | Installable preview identity, real copy, cold start and same-signer upgrade | Exact development-signed preview identity, actual loopback copy and installed-package cold-start hash verified; controlled code-12 → code-13 same-signer system upgrade preserves data; Xiaomi hardware is untested |

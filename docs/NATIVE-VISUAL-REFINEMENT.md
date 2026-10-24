@@ -22,7 +22,7 @@ foregrounds.
   font files or licenses are replaced. Data-dependent fills and needles may be
   short; their complete graduated instrument remains visible. Text-only scalar
   cards do not gain decorative figures to inflate this measurement.
-- Each instrument tile has at least 8dp corners, retaining the larger original
+- Each instrument tile has at least 8 reference-unit corners (8dp at the standard 320-dpi profile), retaining the larger original
   group-edge corners. A subtle neutral group surface makes the white tile
   corners visible. Assembly edges, columns and purpose-dial geometry remain.
 - Only observation uses the refined palette: page RGB 11/11/10, dark tile
@@ -93,3 +93,20 @@ detent implementation are unchanged by this follow-up. Fresh focused native
 regression and production-only resource profiles establish their separately
 recorded current scope. Emulator CPU/PSS and simulated battery counters do not
 establish Xiaomi hardware energy use or physical haptic quality.
+
+## Final fixed-viewport evidence
+
+Application source `f5abafb`, standard test source `8a73cae` and final high-density
+test source `516d5c0` pass 39 distinct native methods, 728 glyph
+states, 996 main-figure measurements (minimum approximately 86%), 1,872 composed
+tile corner checks, 68 genuine-provider captures and eight fresh application-only
+resource profiles. The two-round fixed-page diagnostic and final source-bound
+logs remain separate. This supersedes a27b9bb scrolling acceptance. The companion
+acceptance JSON identifies exact APK/signature hashes, measurements and limits.
+
+The explicit ready/stale long-condition matrix contains 56 combinations; the
+artwork badge matrix contains 32 drawn page states. These are separate from the
+728 glyph audit states and 39 distinct test methods. Two prematurely captured
+portrait weather files and the intermediate white-rim readiness failure remain
+rejected diagnostics. Final high-density captures require actual page-frame
+pixels, a settled translation and the expected model state.

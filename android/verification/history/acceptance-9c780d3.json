@@ -1,0 +1,203 @@
+{
+  "schema": 1,
+  "recordedAtUtc": "2026-10-23T18:03:00.787343+00:00",
+  "status": "accepted local development preview; external production branches remain unverified",
+  "applicationSourceCommit": "9c780d3fd70dc85f717ee230ddb655ead4cde2b1",
+  "application": {
+    "packageName": "studio.sundown.weather",
+    "versionCode": 12,
+    "versionName": "0.10.0-native-preview",
+    "size": 22248157,
+    "sha256": "5c96aa0baa322c15deeea7cc60a62e9fb9a1d91f6063c7586420cffc51302c30",
+    "certificateSha256": "aac2bf88afcc1ce08009a9cf5e9f91eb0092b30bb280e16a0f9d095dbf338593",
+    "debuggable": true,
+    "signatureVerified": true,
+    "productionSampleDataAbsent": true
+  },
+  "artifactFile": "BARO-0.10.0-native-preview-9c780d3.apk",
+  "baseline": {
+    "tag": "ui-baseline-2026-10-23",
+    "tagObject": "2d8c2a35f5d6b29f1c722dc93b5dac9f45e562fc",
+    "commit": "2a503be74bec48327401ff7a6d76ac5ede0c4ff8",
+    "unchanged": true
+  },
+  "profile": {
+    "device": "dedicated disposable emulator",
+    "androidApi": 36,
+    "landscapePixels": [
+      3408,
+      2272
+    ],
+    "portraitPixels": [
+      2272,
+      3408
+    ],
+    "standardDensityDpi": 320,
+    "smallPortraitDensityDpi": 400,
+    "measuredXiaomiProfile": false
+  },
+  "tests": {
+    "domain": 15,
+    "backend": 14,
+    "nativeFlowLiveSettings": 17,
+    "nativeHighScaling": 1,
+    "debugAndReleaseAssembly": true,
+    "debugAndReleaseLint": true,
+    "sourceChecks": true,
+    "nativeProductCaptures": 56
+  },
+  "visual": {
+    "weatherCaptures": 4,
+    "observationCaptures": 48,
+    "highScalingTopBottomCaptures": 4,
+    "languages": [
+      "zh",
+      "en"
+    ],
+    "purposes": 12,
+    "pixels": "fine",
+    "provider": {
+      "source": "Open-Meteo live API",
+      "backend": "",
+      "pixels": "fine",
+      "validAt": 1792777500,
+      "fetchedAt": 1792778011
+    },
+    "smallProviderFetchedAt": 1792777912,
+    "allProductCapturesRequireCompletedRealApiRefresh": true,
+    "screenshotManifestSha256": "2a148273072c10f2b1154e496e4aa32c1a50e522ca0bc1c58c823d4ef4625470",
+    "fonts": {
+      "Inter.ttf": "29160a80ff49ddcab2c97711247e08b1fab27a484a329ce8b813d820dc559031",
+      "MiSansVF.ttf": "0ddef90648998900175cfdca9a6f087a2544c182f130b0ad4f7e94a03a115e79",
+      "RobotoMono.ttf": "66a80e79d17e4c7cabd162e2916578a4cc08fd19eef6e2a643305eae9c567b2b"
+    },
+    "reviewed": [
+      "removed prototype navigation/sample entry points",
+      "native type roles and units",
+      "CCT caption rows in both languages and orientations",
+      "long WMO descriptions bounded before solar column",
+      "Moon focus label separation",
+      "full composed artwork after resize",
+      "high-scaling native scroll and dial ownership",
+      "magnified Chinese two-line dew caption has full glyph height and spacing before plot"
+    ],
+    "pixelIdenticalToStaticExample": false,
+    "differenceReason": "Actual API readings, timestamps, selected forecast windows and weather artwork intentionally replace historical examples."
+  },
+  "distribution": {
+    "localHttpCopyHashVerified": true,
+    "coldStartInstalledHashVerified": true,
+    "sameDevelopmentSignerSystemUpgrade": {
+      "fromVersionCode": 12,
+      "toVersionCode": 13,
+      "installedApkSha256": "722d3a1cf3d95836004c91b5867f44b3141869e7217a1553dacc0a627b026936",
+      "signerSha256": "aac2bf88afcc1ce08009a9cf5e9f91eb0092b30bb280e16a0f9d095dbf338593",
+      "permissionDenialAndRetry": true,
+      "systemInstallerConfirmed": true,
+      "coldStart": true,
+      "privateCanaryPreserved": true
+    },
+    "upgradeScope": "Controlled local code-12 to code-13 fixture; not a public update or historical Java-signer compatibility proof.",
+    "publicDownloadVerified": false,
+    "stableReleasePublished": false
+  },
+  "recordings": [
+    {
+      "mode": "fine",
+      "file": "native-weather-fine-50s.mp4",
+      "duration": 48.101878,
+      "encodedSize": [
+        1704,
+        1136
+      ],
+      "averageFrameRate": "180000/254657",
+      "sha256": "55906b8ae0c8f0c161c466ae39d4c4cde1b2fe14e798413318546eb183dcd7f6",
+      "hardwarePerformanceClaim": false
+    },
+    {
+      "mode": "block",
+      "file": "native-weather-block-50s.mp4",
+      "duration": 49.838467,
+      "encodedSize": [
+        1704,
+        1136
+      ],
+      "averageFrameRate": "4965000/747577",
+      "sha256": "e6d718e9de4f578645b68df30e9a2ec5cf2e48cb2c122e587efa99e1a1788651",
+      "hardwarePerformanceClaim": false
+    }
+  ],
+  "hostedCi": {
+    "runs": [
+      {
+        "conclusion": "success",
+        "databaseId": 39998342265,
+        "status": "completed",
+        "url": "https://github.com/dpan538/baro/actions/runs/39998342265",
+        "workflowName": "Source and preview checks"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 39998342187,
+        "status": "completed",
+        "url": "https://github.com/dpan538/baro/actions/runs/39998342187",
+        "workflowName": "Kotlin Android and BARO backend"
+      }
+    ],
+    "scope": "Native UI gestures with androidTest-only recorded input and suppressed GLES; product screenshots explicitly skipped. Full GLES/live acceptance is local.",
+    "hostedGpuAccepted": false
+  },
+  "rejectedEarlierEvidence": [
+    "7111a1e captures retained CCT overlap and a tiled panorama; not final acceptance.",
+    "e0767a0 capture gate failed; 16 other native cases passed; historical PNGs are not final evidence.",
+    "Earlier hosted GLES jobs had input-dispatch ANRs; the hosted lane does not claim GPU acceptance.",
+    "134aba9 automated tests and CI passed, but magnified high-scaling Chinese dew caption clipped its second line; final visual acceptance uses 9c780d3 instead."
+  ],
+  "unverified": [
+    "public dedicated BARO HTTPS backend",
+    "BARO-only production feedback credential and public Issue receipt",
+    "public signed APK release/download",
+    "permanent production signing identity",
+    "historical Java-host signer upgrade compatibility",
+    "Xiaomi hardware insets, GPU performance, power and proprietary installer"
+  ],
+  "evidenceDigests": {
+    "final-build-9c780d3.log": "a1f17afdbec0f5fa98a265b9fae256e5832de9d94e77287df08ef5d4626f4660",
+    "final-native-9c780d3.log": "0300f88b7236483974c1f5b60f5253a0902454e5439a5921d97b71a63857f62a",
+    "final-small-9c780d3.log": "ec96266ece18e07c0e7b5f2ff3e923bbaaad25abbd16a3ed3fb201d8ab29875e",
+    "backend-tests-final.log": "889040188e79044802524bd2b123327039ee7a451bbbfb194f00d7e38ca55fc5",
+    "source-checks-final.log": "f11abed838869c2c8b39df8cc0f8b13814716261bf87652913bdde9743812e83"
+  },
+  "recordingFrameChecks": [
+    {
+      "mode": "fine",
+      "sampledFrames": 5,
+      "distinctFrameHashes": 5
+    },
+    {
+      "mode": "block",
+      "sampledFrames": 5,
+      "distinctFrameHashes": 5
+    }
+  ],
+  "recordingInterruption": {
+    "interrupted": false,
+    "scope": "Both final-source recordings completed successfully."
+  },
+  "galleryCheck": {
+    "decodedNativeCases": 56,
+    "pageErrors": [],
+    "recordings": [
+      {
+        "duration": 48.101878,
+        "width": 1704,
+        "height": 1136
+      },
+      {
+        "duration": 49.838467,
+        "width": 1704,
+        "height": 1136
+      }
+    ]
+  }
+}

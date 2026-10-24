@@ -1,0 +1,332 @@
+{
+  "schema": 1,
+  "recordedAtUtc": "2026-10-23T19:47:36.485839+00:00",
+  "status": "accepted local development preview after four measured iterations; physical hardware and external production branches remain unverified",
+  "applicationSourceCommit": "de57619672fa9471caeb64aa9b0340fc0631657d",
+  "application": {
+    "packageName": "studio.sundown.weather",
+    "versionCode": 12,
+    "versionName": "0.10.0-native-preview",
+    "size": 22281025,
+    "sha256": "8a946779ebb908357c131f2cdd920cd6c32820bbc64064c61f2ad4be7b2a4929",
+    "certificateSha256": "aac2bf88afcc1ce08009a9cf5e9f91eb0092b30bb280e16a0f9d095dbf338593",
+    "debuggable": true,
+    "signatureVerified": true,
+    "productionSampleDataAbsent": true
+  },
+  "artifactFile": "BARO-0.10.0-native-preview-de57619.apk",
+  "baseline": {
+    "tag": "ui-baseline-2026-10-23",
+    "tagObject": "2d8c2a35f5d6b29f1c722dc93b5dac9f45e562fc",
+    "commit": "2a503be74bec48327401ff7a6d76ac5ede0c4ff8",
+    "unchanged": true
+  },
+  "profile": {
+    "device": "dedicated disposable emulator",
+    "androidApi": 36,
+    "landscapePixels": [
+      3408,
+      2272
+    ],
+    "portraitPixels": [
+      2272,
+      3408
+    ],
+    "standardDensityDpi": 320,
+    "smallPortraitDensityDpi": 400,
+    "measuredXiaomiProfile": false
+  },
+  "tests": {
+    "domain": 20,
+    "backend": 14,
+    "nativeFlowLiveSettings": 30,
+    "nativeHighScaling": 1,
+    "updateFixture": 2,
+    "nativeTotal": 33,
+    "debugAndReleaseAssembly": true,
+    "debugAndReleaseLint": true,
+    "sourceChecks": true,
+    "nativeProductCaptures": 56,
+    "nativeIncludesCompositorPresentation": true
+  },
+  "visual": {
+    "weatherCaptures": 4,
+    "observationCaptures": 48,
+    "highScalingTopBottomCaptures": 4,
+    "languages": [
+      "zh",
+      "en"
+    ],
+    "purposes": 12,
+    "pixels": "fine",
+    "provider": {
+      "source": "Open-Meteo live API",
+      "backend": "",
+      "pixels": "fine",
+      "validAt": 1792782900,
+      "fetchedAt": 1792783589
+    },
+    "smallProviderFetchedAt": 1792783980,
+    "allProductCapturesRequireCompletedRealApiRefresh": true,
+    "screenshotManifestSha256": "6a74c5962e5d0179d7e8a4327bee304d211386a1137454a7d0a782a8424aeba6",
+    "fonts": {
+      "Inter.ttf": "29160a80ff49ddcab2c97711247e08b1fab27a484a329ce8b813d820dc559031",
+      "MiSansVF.ttf": "0ddef90648998900175cfdca9a6f087a2544c182f130b0ad4f7e94a03a115e79",
+      "RobotoMono.ttf": "66a80e79d17e4c7cabd162e2916578a4cc08fd19eef6e2a643305eae9c567b2b"
+    },
+    "reviewed": [
+      "removed prototype navigation/sample entry points",
+      "native type roles and units",
+      "CCT caption rows in both languages and orientations",
+      "long WMO descriptions bounded before solar column",
+      "Moon focus label separation",
+      "full composed artwork after resize",
+      "high-scaling native scroll and dial ownership",
+      "magnified Chinese two-line dew caption has full glyph height and spacing before plot",
+      "measured asymmetric observation corners and all 16 weather-page corners",
+      "deeper observation blacks; paper/charcoal contrast 14.74 and regular dial labels 8.90",
+      "all twelve focus purposes in both languages and orientations",
+      "home/storage hints do not overlap headings, readings or charts",
+      "distant-view hint has its own left-column bounds",
+      "fractional dial, cancelled and committed page travel, native presses and moving settings indicator",
+      "primary gust ticks leave the direction footer clear"
+    ],
+    "pixelIdenticalToStaticExample": false,
+    "differenceReason": "Actual API readings, timestamps, selected forecast windows and weather artwork intentionally replace historical examples.",
+    "visualReviewSha256": "096c0fb3601b57f715c697bacf8aaa68e97431bfbfc97822acd8a4e45d7f3061"
+  },
+  "distribution": {
+    "localHttpCopyHashVerified": true,
+    "coldStartInstalledHashVerified": true,
+    "sameDevelopmentSignerSystemUpgrade": {
+      "fromSourceCommit": "de57619672fa9471caeb64aa9b0340fc0631657d",
+      "fromApkSha256": "8a946779ebb908357c131f2cdd920cd6c32820bbc64064c61f2ad4be7b2a4929",
+      "fromVersionCode": 12,
+      "toVersionCode": 13,
+      "installedApkSha256": "722d3a1cf3d95836004c91b5867f44b3141869e7217a1553dacc0a627b026936",
+      "signerSha256": "aac2bf88afcc1ce08009a9cf5e9f91eb0092b30bb280e16a0f9d095dbf338593",
+      "permissionDenialAndRetry": true,
+      "systemInstallerConfirmed": true,
+      "coldStart": true,
+      "privateCanaryPreserved": true,
+      "preferencesAndDraftPreserved": true,
+      "scope": "Controlled local fixture on dedicated emulator; no public update, historical signer, or Xiaomi installer claim."
+    },
+    "upgradeScope": "Current code-12 package to a controlled local code-13 fixture, followed by restoration and hash verification of the accepted package. Not a public update or historical-signer proof.",
+    "publicDownloadVerified": false,
+    "stableReleasePublished": false
+  },
+  "recordings": [
+    {
+      "mode": "fine",
+      "file": "native-weather-fine-60s.mp4",
+      "duration": 56.920433,
+      "encodedSize": [
+        1704,
+        1136
+      ],
+      "averageFrameRate": "63000/128071",
+      "sha256": "f8a73ba8505678f6f3b08698077b96b56f641eb1a41cbad3b7c45419a0e1ca16",
+      "providerFetchedAt": 1792784237,
+      "validAt": 1792783800,
+      "hardwarePerformanceClaim": false
+    },
+    {
+      "mode": "block",
+      "file": "native-weather-block-60s.mp4",
+      "duration": 59.884989,
+      "encodedSize": [
+        1704,
+        1136
+      ],
+      "averageFrameRate": "36990000/5389649",
+      "sha256": "a60fec9b71dfe2006cd4b4ba096b032c7414fca83587a40d9001645e3483754e",
+      "providerFetchedAt": 1792784237,
+      "validAt": 1792783800,
+      "hardwarePerformanceClaim": false
+    },
+    {
+      "mode": "interaction",
+      "file": "native-interaction-final.mp4",
+      "duration": 100.4675,
+      "encodedSize": [
+        1704,
+        1136
+      ],
+      "averageFrameRate": "159200/40187",
+      "sha256": "a78ca1b1dc9b6fbe78345282d17bb06a74860837c5cb73af46f35400178a3b2e",
+      "hardwarePerformanceClaim": false
+    }
+  ],
+  "hostedCi": {
+    "runs": [
+      {
+        "conclusion": "success",
+        "databaseId": 40010846832,
+        "name": "Source and preview checks",
+        "status": "completed",
+        "url": "https://github.com/dpan538/baro/actions/runs/40010846832"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 40010846844,
+        "name": "Kotlin Android and BARO backend",
+        "status": "completed",
+        "url": "https://github.com/dpan538/baro/actions/runs/40010846844"
+      }
+    ],
+    "scope": "Native UI gestures, loopback HTTP cache and typography with androidTest-only recorded UI input and suppressed GLES; product screenshots skipped. Full GLES/live acceptance is local.",
+    "hostedGpuAccepted": false
+  },
+  "rejectedEarlierEvidence": [
+    "7111a1e captures retained CCT overlap and a tiled panorama; not final acceptance.",
+    "e0767a0 capture gate failed; 16 other native cases passed; historical PNGs are not final evidence.",
+    "Earlier hosted GLES jobs had input-dispatch ANRs; the hosted lane does not claim GPU acceptance.",
+    "134aba9 automated tests and CI passed, but magnified high-scaling Chinese dew caption clipped its second line; final visual acceptance uses 9c780d3 instead.",
+    "a58ddcf passed automation and CI but expanded distant-view typography review found a caption/reading collision; final acceptance uses de57619.",
+    "Historical outer-level images from an ADB directory pull are excluded; round-one evidence is its sixteen fresh round1-screens images and matching response."
+  ],
+  "unverified": [
+    "public dedicated BARO HTTPS backend",
+    "BARO-only production feedback credential and public Issue receipt",
+    "public signed APK release/download",
+    "permanent production signing identity",
+    "historical Java-host signer upgrade compatibility",
+    "Xiaomi hardware insets, GPU performance, power and proprietary installer",
+    "physical detent vibration strength and target-tablet touch feel",
+    "real target-device GPS reception"
+  ],
+  "evidenceDigests": {
+    "native-regression.log": "f2c9fb887bfa635946c8d4f53e394d7032b7f852e4ca6b25d6b589a8ff706949",
+    "small-regression.log": "35ae565d47ca0a8f1404b6e8537b4e9679c32a30885b994a3b5d8d4091cf1298",
+    "update-fixture.log": "e83deb830af57cc28bd9cb605bfc7ab3d2db81f2b1b966209fd2da65bb6b5246",
+    "final-build-de57619.log": "3d79ca52ccc695ac8de872178abc82825ec3a6ac70c47b7171fbcf83e12e1e5b",
+    "backend-regression.log": "321a823ed72b6c140c1c2612b9fc299517a4a9f643a37e300206f94d5dada643",
+    "source-regression.log": "f11abed838869c2c8b39df8cc0f8b13814716261bf87652913bdde9743812e83",
+    "local-system-upgrade.json": "88d3c7ce067a3ea1490ba4713550dd5fd4745d25e24b6c09c1340b5fbaf0c9d0",
+    "page-presentation.json": "f5b35afaf92314cf1be000ccfb423e91f5c727a577591c079c80d8fa59abe011"
+  },
+  "recordingFrameChecks": [
+    {
+      "mode": "fine",
+      "sampledFrames": 5,
+      "distinctFrameHashes": 4
+    },
+    {
+      "mode": "block",
+      "sampledFrames": 5,
+      "distinctFrameHashes": 5
+    },
+    {
+      "mode": "interaction",
+      "sampledFrames": 5,
+      "distinctFrameHashes": 5
+    }
+  ],
+  "recordingInterruption": {
+    "interrupted": false,
+    "scope": "All three exact-source recordings completed and were decoded."
+  },
+  "galleryCheck": {
+    "decodedNativeCases": 56,
+    "decodedReferences": 8,
+    "decodedComparisonImages": 7,
+    "pageErrors": [],
+    "recordings": [
+      {
+        "duration": 100.4675,
+        "width": 1704,
+        "height": 1136
+      },
+      {
+        "duration": 56.920433,
+        "width": 1704,
+        "height": 1136
+      },
+      {
+        "duration": 59.884989,
+        "width": 1704,
+        "height": 1136
+      }
+    ]
+  },
+  "rejectedRecordingAttempts": [
+    {
+      "reason": "The 50-second wall-clock Fine recording contained only 44.445278 seconds through its last presented frame; duration gate rejected it.",
+      "firstFile": "rejected/native-weather-fine-44s.mp4",
+      "firstDuration": 44.445278,
+      "retryWallSeconds": 60,
+      "currentAnrObserved": false,
+      "deviceRebootObserved": false,
+      "hardwarePerformanceClaim": false
+    }
+  ],
+  "iterations": [
+    {
+      "round": 1,
+      "evidence": "output/native-development/iteration-r1",
+      "nativeInteractionPassed": 3,
+      "liveCaptures": 16,
+      "acceptedScreenshotDirectory": "round1-screens",
+      "cacheCases": 5,
+      "cacheFailures": 1,
+      "findings": [
+        "weather radii absent in export",
+        "settings indicator did not match",
+        "home/storage caption overlap",
+        "cancelled initial request stranded by cooldown"
+      ]
+    },
+    {
+      "round": 2,
+      "evidence": "output/native-development/iteration-r2",
+      "focusedNativePassed": 12,
+      "checkpointSource": "a58ddcffa72553aa5f73d2b56fffcd495e96f42b",
+      "fullNativePassed": 29,
+      "liveCaptures": 56,
+      "visualAcceptance": false,
+      "remainingFinding": "English distant-view hint overlapped reading despite original suite passing"
+    },
+    {
+      "round": 3,
+      "source": "cd93b5492f185ac717db5bfdefe88187f684f42b",
+      "fullNativePassed": 29,
+      "highScalingPassed": 1,
+      "compositorPresentationPassed": 1,
+      "visualAcceptance": false,
+      "remainingFinding": "gust compass ticks crossed direction footer"
+    },
+    {
+      "round": 4,
+      "source": "de57619672fa9471caeb64aa9b0340fc0631657d",
+      "windStrokeBoundaryRedThenGreen": true,
+      "fullNativePassed": 30,
+      "highScalingPassed": 1,
+      "updateFixturePassed": 2,
+      "liveCaptures": 56,
+      "visualAcceptance": true
+    }
+  ],
+  "compositorPresentation": {
+    "presented": true,
+    "releaseToVerifiedCaptureMs": 2420,
+    "anchors": 3,
+    "device": "dedicated software-rendered emulator",
+    "targetHardwarePerformanceClaim": false
+  },
+  "haptics": {
+    "systemTickRequestsExercised": true,
+    "respectSystemPreference": true,
+    "minimumTickIntervalMs": 35,
+    "physicalIntensityMeasured": false
+  },
+  "weatherReuse": {
+    "normalFreshSeconds": 1800,
+    "minimumManualOrFailureReadSeconds": 300,
+    "memoryPlaceLimit": 12,
+    "memoryIdleEvictionSeconds": 3600,
+    "offlineDiskMaximumSeconds": 86400,
+    "realHttpClockBoundaryTestsPassed": 5,
+    "interruptedInitialLoadCanResume": true
+  }
+}
