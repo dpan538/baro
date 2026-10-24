@@ -107,17 +107,87 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         line(b.left,b.bottom,b.right,b.bottom,if(dark)0xff888880.toInt() else 0xffb4b4a9.toInt())
         points.forEach{(epoch,value)->if(value!=null){val x=b.left+(epoch-at)/7200f*b.width();val y=b.bottom-((value-min)/(max-min)).toFloat()*b.height();line(x,b.bottom,x,y,color,max(2f,b.width()/45))}}
     }
+    private fun inkBounds(content:String,size:Float,font:Typeface):Rect {
+        p.reset();p.typeface=font;p.textSize=size
+        return Rect().also{p.getTextBounds(content,0,content.length,it)}
+    }
+    private fun inkText(content:String,left:Float,top:Float,size:Float,fg:Int,font:Typeface):RectF {
+        val ink=inkBounds(content,size,font)
+        p.isAntiAlias=true;p.color=fg
+        c!!.drawText(content,left-ink.left,top-ink.top,p)
+        return RectF(left,top,left+ink.width(),top+ink.height())
+    }
     private fun wind(b:RectF,primary:Boolean=false){
-        val kind=if(primary)heading("阵风","Wind gust") else heading("风速","Wind")
-        val body=base(b,kind,true,if(primary)CORAL else null);val dark=!primary
-        val gauge=graphRect(RectF(body.right-body.height()*.75f,body.top,body.right,body.bottom-42))
-        if(primary)gauge.bottom=min(gauge.bottom,body.bottom-43)
-        val cx=gauge.centerX();val cy=gauge.centerY();val r=min(gauge.width(),gauge.height())*.43f
-        repeat(72){i->val a=i*PI/36;val outer=if(i%6==0)r*.8f else r*.89f;line(cx+cos(a).toFloat()*outer,cy+sin(a).toFloat()*outer,cx+cos(a).toFloat()*r,cy+sin(a).toFloat()*r,if(dark)0xffa5a59a.toInt() else INK,.8f)}
-        arrow(cx,cy,r*.7f,v("wind_direction_10m"),if(dark)PAPER else INK)
-        value(RectF(body.left,body.top,gauge.left-8,body.bottom-42),model.speed(v(if(primary)"wind_gusts_10m" else "wind_speed_10m")),model.windUnit,if(primary)58f else 44f,dark)
-        text((if(primary)heading("风速","Mean")else heading("阵风","Gust"))+" "+model.speed(v(if(primary)"wind_speed_10m"else "wind_gusts_10m"))+" "+model.windUnit,body.left,body.bottom-35,18f,if(dark)PAPER else INK)
-        text(heading("来向","From")+" "+n("wind_direction_10m")+"°",body.right,body.bottom-35,18f,if(dark)PAPER else INK,chinese,Paint.Align.RIGHT)
+        val m=metrics!!;val dark=!primary;val fg=if(dark)PAPER else INK
+        val bg=if(primary)CORAL else CHARCOAL
+        base(b,"",dark,bg)
+        val headingKey="$activeId:heading"
+        val left=m.rect(headingKey).left
+        val side=left-b.left
+        // A full-height compass and an independent text lane. Captions never take
+        // height away from the instrument, and no type is reduced to fit the lane.
+        val radius=b.height()*.43f
+        val cx=b.right-side-radius;val cy=b.centerY()
+        val textRight=cx-radius-12
+        val textWidth=textRight-left
+        val inset=b.height()*.085f
+        val rowGap=5f
+        fun rows(content:String,size:Float,font:Typeface):List<String>{
+            p.reset();p.typeface=font;p.textSize=size
+            val result=mutableListOf<String>();var row=""
+            for(word in content.split(' ')){
+                val candidate=if(row.isEmpty())word else "$row $word"
+                if(row.isNotEmpty()&&p.measureText(candidate)>textWidth){result.add(row);row=word}else row=candidate
+            }
+            if(row.isNotEmpty())result.add(row)
+            return result
+        }
+        fun height(lines:List<String>,size:Float,font:Typeface)=lines.sumOf{inkBounds(it,size,font).height().toDouble()}.toFloat()+rowGap*(lines.size-1)
+        fun drawRows(lines:List<String>,top:Float,size:Float,font:Typeface,color:Int=fg){var y=top;for(row in lines){y=inkText(row,left,y,size,color,font).bottom+rowGap}}
+        val kind=if(primary)heading("阵风","Wind gust")else heading("风速","Wind")
+        val headingFont=Typeface.create(chinese,m.weight(headingKey),false)
+        val headingSize=m.size(headingKey)
+        val titleRows=rows(kind,headingSize,headingFont)
+        val titleBottom=b.top+inset+height(titleRows,headingSize,headingFont)
+        val headingColor=m.node(headingKey)?.optString("color")?.let{color(it,fg)}?:fg
+        drawRows(titleRows,b.top+inset,headingSize,headingFont,headingColor)
+        val mean=(if(primary)heading("风速","Mean")else heading("阵风","Gust"))+" "+model.speed(v(if(primary)"wind_speed_10m"else "wind_gusts_10m"))+" "+model.windUnit
+        val direction=heading("来向","From")+" "+n("wind_direction_10m")+"°"
+        val noteSize=18f
+        val meanFont=languageFont(mean);val fromFont=languageFont(direction)
+        val meanRows=rows(mean,noteSize,meanFont);val fromRows=rows(direction,noteSize,fromFont)
+        val meanTop=b.bottom-inset-height(meanRows,noteSize,meanFont)
+        val fromTop=meanTop-10-height(fromRows,noteSize,fromFont)
+        drawRows(meanRows,meanTop,noteSize,meanFont)
+        drawRows(fromRows,fromTop,noteSize,fromFont)
+
+        val number=model.speed(v(if(primary)"wind_gusts_10m"else "wind_speed_10m"))
+        val numberSize=m.size("$activeId:reading");val unitSize=m.size("$activeId:unit")
+        val ni=inkBounds(number,numberSize,inter);val ui=inkBounds(model.windUnit,unitSize,inter)
+        p.typeface=inter;p.textSize=numberSize;val numberAdvance=p.measureText(number)
+        p.textSize=unitSize;val unitAdvance=p.measureText(model.windUnit)
+        val inline=numberAdvance+6+unitAdvance<=textWidth
+        val unitShift=numberSize*.12f
+        val groupTop=if(inline)min(ni.top.toFloat(),ui.top-unitShift)else ni.top.toFloat()
+        val groupBottom=if(inline)max(ni.bottom.toFloat(),ui.bottom-unitShift)else ni.bottom+6f+ui.height()
+        val readingTop=titleBottom+10
+        val readingBottom=fromTop-10
+        val baseline=(readingTop+readingBottom-(groupBottom-groupTop))/2-groupTop
+        p.reset();p.isAntiAlias=true;p.typeface=inter;p.textSize=numberSize;p.color=fg
+        c!!.drawText(number,left-ni.left,baseline,p)
+        p.textSize=unitSize
+        if(inline)c!!.drawText(model.windUnit,left-ni.left+numberAdvance+6,baseline-unitShift,p)
+        else c!!.drawText(model.windUnit,left-ui.left,baseline+ni.bottom+6-ui.top,p)
+
+        val tickColor=if(dark)0xffa5a59a.toInt()else INK
+        repeat(72){i->
+            val a=i*PI/36
+            val major=i%6==0;val half=i%3==0
+            val inner=radius*(if(major).82f else if(half).89f else .94f)
+            line(cx+cos(a).toFloat()*inner,cy+sin(a).toFloat()*inner,cx+cos(a).toFloat()*radius,cy+sin(a).toFloat()*radius,tickColor,if(major)1.25f else if(half).95f else .7f)
+        }
+        arrow(cx,cy,radius*.7f,v("wind_direction_10m"),fg)
+        if(v("wind_direction_10m")!=null){circle(cx,cy,2.8f,fg);circle(cx,cy,1.1f,bg)}
     }
     private fun pressure(b:RectF){
         val body=base(b,heading("气压","Pressure"),true)
