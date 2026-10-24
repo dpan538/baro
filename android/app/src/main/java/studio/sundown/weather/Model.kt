@@ -72,9 +72,8 @@ class AppModel(context:Context){
     }
     fun source():String {
         val w=weather
-        if(w==null)return tr(if(status=="loading")"正在获取天气…" else "天气不可用 · 点击地点重试",if(status=="loading")"Loading weather…" else "Unavailable · tap place to retry")
-        val stale=w.stale(System.currentTimeMillis()/1000)||status=="offline"
-        return tr(if(stale)"过期缓存 · Open-Meteo" else "Open-Meteo 模型",if(stale)"STALE · Open-Meteo" else "Open-Meteo")+" · "+w.clock(w.validAt)
+        if(w==null)return tr(if(status=="loading")"正在更新天气…" else "天气暂不可用 · 自动重试中",if(status=="loading")"Updating weather…" else "Weather unavailable · retrying")
+        return tr("Open-Meteo 模型","Open-Meteo")+" · "+w.clock(w.validAt)
     }
 }
 

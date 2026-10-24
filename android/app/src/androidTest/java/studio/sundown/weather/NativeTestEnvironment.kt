@@ -26,7 +26,12 @@ object NativeTestEnvironment {
             override fun onActivityResumed(activity:Activity){}
             override fun onActivityPostResumed(activity:Activity){
                 if(activity !is MainActivity)return
-                activity.repository.cancelWeather();activity.model.weather=WeatherJson.parse(raw,activity.model.place);activity.model.status="offline";activity.redraw()
+                activity.repository.cancelWeather()
+                val now=System.currentTimeMillis()/1000;val original=WeatherJson.parse(raw,activity.model.place);val shift=now-original.validAt
+                activity.model.weather=original.copy(fetchedAt=now,validAt=now,hourly=original.hourly.copy(times=original.hourly.times.map{it+shift}))
+                val schedule=WeatherRefreshSchedule({now},{0L}).apply{started()}
+                MainActivity::class.java.getDeclaredField("refreshSchedule").apply{isAccessible=true}.set(activity,schedule)
+                activity.model.status="ready";activity.redraw()
             }
             override fun onActivityStarted(activity:Activity){}
             override fun onActivityPaused(activity:Activity){}

@@ -31,7 +31,7 @@ class MainActivity:Activity(){
     private lateinit var observationArt:PixelArt
     private var visible=false
     private var locating=false
-    private var lastWeatherAttempt=0L
+    private var refreshSchedule=WeatherRefreshSchedule({System.currentTimeMillis()/1000},{SystemClock.elapsedRealtime()/1000})
     private var layoutKey=""
     private var pageTransition=false
     private var touchInProgress=false
@@ -88,31 +88,41 @@ class MainActivity:Activity(){
         else{show(WindowInsetsCompat.Type.statusBars());hide(WindowInsetsCompat.Type.navigationBars())}
     }}
     override fun onWindowFocusChanged(hasFocus:Boolean){super.onWindowFocusChanged(hasFocus);if(hasFocus)immersive()}
-    override fun onResume(){super.onResume();visible=true;immersive();refresh();if(devicePrefs.getBoolean("location_follow",false))startLocation();artLifecycle();main.post(ticker)
+    override fun onResume(){super.onResume();visible=true;immersive();refresh(true);if(devicePrefs.getBoolean("location_follow",false))startLocation();artLifecycle();main.removeCallbacks(ticker);main.post(ticker)
         if(updates.installing){updates.installing=false;settings.installPermissionReturned()}}
-    override fun onPause(){visible=false;touchInProgress=false;main.removeCallbacksAndMessages(null);repository.cancelWeather();placeSearch?.cancel();placeDialog?.cancelSearch();feedback.cancel();settings.cancelRequests();stopLocation();artLifecycle();super.onPause()}
+    override fun onPause(){visible=false;touchInProgress=false;main.removeCallbacksAndMessages(null);repository.cancelWeather();refreshSchedule.paused();placeSearch?.cancel();placeDialog?.cancelSearch();feedback.cancel();settings.cancelRequests();stopLocation();artLifecycle();super.onPause()}
     override fun onDestroy(){placeSearch?.cancel();placeDialog?.dismissFromHost();settings.dispose();weatherArt.dispose();observationArt.dispose();repository.close();super.onDestroy()}
     override fun onSaveInstanceState(out:Bundle){out.putDouble("weather_elapsed",weatherArt.elapsed);out.putDouble("observation_elapsed",observationArt.elapsed);super.onSaveInstanceState(out)}
     private val ticker=object:Runnable{override fun run(){
         if(!visible)return
-        val wx=model.weather;val before=wx?.let{model.window(it)}
-        model.now=System.currentTimeMillis()/1000
-        if(wx!=null&&model.window(wx)!=before)redraw()else if(model.page==1&&!pager.overlayOpen)pager.observationPage.dashboard.invalidate()
-        if((wx==null||wx.stale(model.now))&&model.status!="loading"&&model.now-lastWeatherAttempt>=MIN_READ_SECONDS)refresh()
+        weatherHeartbeat()
         main.postDelayed(this,1000)
     }}
+    private fun weatherHeartbeat(){
+        if(!visible)return
+        val wx=model.weather;val before=wx?.let{model.window(it)}
+        model.now=refreshSchedule.wall()
+        if(wx?.stale(model.now)==true){model.weather=null;repository.cached(model.place);refreshSchedule.invalidate();redraw()}
+        else if(wx!=null&&model.window(wx)!=before)redraw()else if(model.page==1&&!pager.overlayOpen)pager.observationPage.dashboard.invalidate()
+        if(refreshSchedule.timedOut()){
+            repository.cancelWeather();model.status="offline";refreshSchedule.finished(model.weather,true);redraw()
+        }
+        if(refreshSchedule.due())refresh(true)
+    }
     fun refresh(force:Boolean=false){
         if(!visible)return
-        lastWeatherAttempt=System.currentTimeMillis()/1000
+        if(model.weather?.stale(refreshSchedule.wall())==true)model.weather=null
+        refreshSchedule.started()
         model.status="loading";redraw();val place=model.place
         repository.refresh(place,force){weather,error->
-            model.weather=weather;model.status=if(error==null)"ready" else "offline"
+            model.weather=weather?.takeUnless{it.stale(refreshSchedule.wall())};model.status=if(error==null&&model.weather!=null)"ready" else "offline"
+            refreshSchedule.finished(model.weather,error!=null||model.weather==null)
             if(weather!=null)model.place=weather.place
             redraw()
         }
     }
     fun redraw(){
-        model.now=System.currentTimeMillis()/1000
+        model.now=refreshSchedule.wall()
         pager.syncPage();immersive();root.setBackgroundColor(PAPER);pager.weatherPage.updateState();pager.observationPage.updateState()
         val enabled=model.motion&&android.animation.ValueAnimator.areAnimatorsEnabled()
         weatherArt.updateScene(model.weather,null,model.block,enabled)

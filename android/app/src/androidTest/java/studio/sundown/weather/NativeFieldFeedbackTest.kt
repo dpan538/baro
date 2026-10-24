@@ -34,7 +34,10 @@ class NativeFieldFeedbackTest {
         ctx.getSharedPreferences("sundown-device",Context.MODE_PRIVATE).edit().putBoolean("location_follow",false).commit()
     }
     private fun fixture(a:MainActivity){
-        a.repository.cancelWeather();a.model.weather=WeatherJson.parse(i.context.assets.open("live-brisbane.json").bufferedReader().use{it.readText()},a.model.place);a.model.status="ready";a.redraw()
+        a.repository.cancelWeather();val now=System.currentTimeMillis()/1000
+        val original=WeatherJson.parse(i.context.assets.open("live-brisbane.json").bufferedReader().use{it.readText()},a.model.place)
+        val shift=now-original.validAt
+        a.model.weather=original.copy(fetchedAt=now,validAt=now,hourly=original.hourly.copy(times=original.hourly.times.map{it+shift}));a.model.status="ready";a.redraw()
     }
     private fun await(timeout:Long=15000,condition:()->Boolean){val end=SystemClock.uptimeMillis()+timeout;while(SystemClock.uptimeMillis()<end){if(condition())return;SystemClock.sleep(100)};assertTrue("Timed out waiting for the native state",condition())}
     private fun capture(name:String){val image=i.uiAutomation.takeScreenshot()!!;File(ctx.getExternalFilesDir(null),name).outputStream().use{image.compress(Bitmap.CompressFormat.PNG,100,it)};image.recycle()}

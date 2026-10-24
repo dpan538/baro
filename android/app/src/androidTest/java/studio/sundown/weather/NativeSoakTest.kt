@@ -69,9 +69,9 @@ class NativeSoakTest {
                 var a:MainActivity?=null;s.onActivity{a=it;assertEquals(lang,it.model.lang);assertEquals(purpose,it.model.purpose);assertEquals(0,it.model.page);assertNull(it.pager.weatherPage.art.error);row.put("orientation",if(it.resources.configuration.orientation==2)"landscape"else "portrait").put("providerFetchedAt",it.model.weather!!.fetchedAt).put("cacheBytes",it.repository.bytes())
                     row.put("weatherState",it.model.status)
                     if(it.model.status=="offline"){
-                        assertTrue("Cache is older than the documented offline maximum",System.currentTimeMillis()/1000-it.model.weather!!.fetchedAt<86400)
-                        assertTrue("Cached state must be visibly disclosed",it.model.source().contains(if(lang=="zh")"过期缓存"else "STALE"))
-                        checks.put("genuine-offline-cache-age-and-visible-disclosure")
+                        assertFalse("Expired readings must never survive a failed refresh",it.model.weather!!.stale(System.currentTimeMillis()/1000))
+                        assertFalse("Internal cache labels must stay out of the interface",it.model.source().contains(if(lang=="zh")"过期缓存"else "STALE"))
+                        checks.put("still-valid-reading-without-internal-cache-label")
                     }
                     val raw=it.repository.rawFor(it.model.place)!!;val hash=java.security.MessageDigest.getInstance("SHA-256").digest(raw.toByteArray()).joinToString(""){b->"%02x".format(b.toInt()and 255)}
                     val name="soak-provider-${it.model.weather!!.fetchedAt}-${hash.take(12)}.json";val file=File(i.targetContext.getExternalFilesDir(null),name);if(!file.exists())file.writeText(raw);row.put("providerResponseSha256",hash).put("providerResponseFile",name)

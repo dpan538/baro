@@ -194,8 +194,7 @@ class WeatherDashboard(context:Context,model:AppModel):Dashboard(context,model){
         val icon=when(scene){"clear"->"sun";"night"->"moon";"dawn"->"sunrise";"sunset"->"sunset";else->scene}
         svg(icon,m.rect("#condition-icon"),stroke=stroke)
         val condition=when{
-            wx==null->if(model.status=="loading")tr("正在获取天气…","Loading weather…")else tr("暂无天气 · 点击地点重试","Unavailable · tap place")
-            wx.stale(System.currentTimeMillis()/1000)||model.status=="offline"->tr("过期缓存 · ","Stale · ")+model.conditionName(wx)
+            wx==null->if(model.status=="loading")tr("正在更新天气…","Updating weather…")else tr("天气暂不可用 · 自动重试中","Weather unavailable · retrying")
             else->model.conditionName(wx)
         }
         css("#condition-primary",condition,maxRight=m.rect("#solar-event-time").left-24)
@@ -204,10 +203,6 @@ class WeatherDashboard(context:Context,model:AppModel):Dashboard(context,model){
         val solarClock=if(model.lang=="en")solar?.format(java.time.format.DateTimeFormatter.ofPattern("h:mm",java.util.Locale.US))?:"—"else wx?.clock(event?.second)?:"—"
         css("#solar-event-time",solarClock)
         if(model.lang=="en"&&solar!=null)css("#solar-period",if(solar.hour>=12)"pm"else "am")
-        if(solar!=null&&stamp!=null&&solar.toLocalDate()!=stamp.toLocalDate()){
-            val sr=m.rect("#solar-event-time");val heroBounds=m.rect(".weather-hero")
-            text(tr("次日","Tomorrow"),sr.left,min(sr.bottom+2,heroBounds.bottom-20),16f,0xff67716a.toInt(),languageFont(tr("次日","Tomorrow")))
-        }
         if(event!=null)svg(if(event.first)"solarSunrise"else "solarSunset",m.rect("#solar-icon"),172f,100f,stroke)
         val hero=m.rect(".weather-hero");line(info.left,hero.bottom-1,info.right,hero.bottom-1,0xffbec6b8.toInt())
         val facts=listOf(tr("体感温度","FEELS LIKE"),tr("风速","WIND SPEED"))
@@ -221,11 +216,16 @@ class WeatherDashboard(context:Context,model:AppModel):Dashboard(context,model){
         val labels=listOf(tr("紫外线指数","UV INDEX"),tr("相对湿度","HUMIDITY"),tr("降水概率","PRECIP CHANCE"),tr("能见度","VISIBILITY"))
         for(i in 0..3){val r=m.rect(".condition",i);css(".condition .label-primary",labels[i],i)
             val vr=m.rect(".condition p",i);val valueWidth=css(".condition p",values[i],i)
-            val sub=when(i){0->{val uv=wx?.value("uv_index");if(uv==null)""else if(uv>=11)tr("极高","Extreme")else if(uv>=8)tr("很高","Very high")else if(uv>=6)tr("高","High")else if(uv>=3)tr("中等","Moderate")else tr("低","Low")};1->"%";2->"% "+(chance?.let{wx!!.clock(it.first-3600).take(2).toInt().toString()+"–"+wx.clock(it.first).take(2).toInt()+(if(model.lang=="zh")"时"else "h") }?:"");else->"km"}
+            val sub=when(i){0->{val uv=wx?.value("uv_index");if(uv==null)""else if(uv>=11)tr("极高","Extreme")else if(uv>=8)tr("很高","Very high")else if(uv>=6)tr("高","High")else if(uv>=3)tr("中等","Moderate")else tr("低","Low")};1,2->"%";else->"km"}
             val subSize=m.size(".condition p",i)*(if(i==0).44f else .65f)
             p.reset();p.isAntiAlias=true;p.color=nativeInk;p.textSize=subSize;p.typeface=if(sub.any{it.code in 0x3400..0x9fff})chinese else inter
             val baseline=vr.top+(m.line(".condition p",i)-(p.fontMetrics.descent-p.fontMetrics.ascent))/2-p.fontMetrics.ascent
             c!!.drawText(sub,vr.left+valueWidth+6,baseline,p)
+            if(i==2&&chance!=null){
+                val period=wx!!.clock(chance.first-3600).take(2).toInt().toString()+"–"+wx.clock(chance.first).take(2).toInt()+(if(model.lang=="zh")"时"else "h")
+                val x=vr.left+valueWidth+6+p.measureText(sub)+max(14f,subSize*.6f)
+                p.typeface=languageFont(period);c!!.drawText(period,x,baseline,p)
+            }
             val g=m.rect(".condition .gauge",i)
             val colors=when(i){0->intArrayOf(ORANGE,YELLOW,0xffc1d6eb.toInt(),BLUE);1->intArrayOf(BLUE,0xff9dc5ec.toInt(),0xfff4f8fd.toInt());2->intArrayOf(0xff0878e8.toInt(),0xffa6c5df.toInt(),YELLOW);else->intArrayOf(YELLOW,0xffd1dfeb.toInt(),BLUE)}
             p.shader=LinearGradient(g.left,g.top,g.left,g.bottom,colors,null,Shader.TileMode.CLAMP);c!!.drawRoundRect(g,g.width()/2,g.width()/2,p);p.shader=null

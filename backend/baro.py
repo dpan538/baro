@@ -27,7 +27,7 @@ HOURLY = ("weather_code,is_day,cloud_cover,temperature_2m,relative_humidity_2m,d
           "convective_inhibition,soil_moisture_0_to_1cm,soil_temperature_0cm,"
           "direct_radiation_instant,diffuse_radiation_instant,uv_index")
 REPO = "dpan538/baro"
-TTL = 1800
+TTL = 900
 
 
 class Failure(Exception):
@@ -102,8 +102,10 @@ class Store:
             with self.db() as db:
                 db.execute("BEGIN IMMEDIATE")
                 row = db.execute("SELECT at,body FROM cache WHERE k=?", (key,)).fetchone()
-                if row and now-row[0] < TTL:
+                if row and 0 <= now-row[0] < TTL:
                     return json.loads(row[1]), row[0], False
+                if row:
+                    db.execute("DELETE FROM cache WHERE k=?", (key,))
                 lease = db.execute("SELECT until FROM leases WHERE k=?", (key,)).fetchone()
                 acquired = not lease or lease[0] < now
                 if acquired:
@@ -120,10 +122,6 @@ class Store:
                 db.execute("INSERT OR REPLACE INTO cache VALUES(?,?,?)", (key, now, json.dumps(result, allow_nan=False)))
                 db.execute("DELETE FROM cache WHERE k IN (SELECT k FROM cache ORDER BY at DESC LIMIT -1 OFFSET 256)")
             return result, now, False
-        except Failure:
-            if row and now-row[0] < 86400:
-                return json.loads(row[1]), row[0], True
-            raise
         finally:
             with self.db() as db:
                 db.execute("DELETE FROM leases WHERE k=?", (key,))

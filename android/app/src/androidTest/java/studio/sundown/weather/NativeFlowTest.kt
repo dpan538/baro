@@ -57,7 +57,7 @@ class NativeFlowTest {
                 a.model.weather=recorded.copy(fetchedAt=now,validAt=now,serverStale=stale,current=recorded.current+("weather_code" to code.toDouble()))
                 val board=WeatherDashboard(a,a.model);val width=if(portrait)1136 else 1704;val height=if(portrait)1704 else 1136;val d=a.resources.displayMetrics.density
                 board.layout(0,0,(width*d).toInt(),(height*d).toInt());val canvas=TextCanvas();board.draw(canvas)
-                val expected=(if(stale)a.model.tr("过期缓存 · ","Stale · ")else "")+a.model.conditionName(a.model.weather)
+                val expected=a.model.conditionName(a.model.weather)
                 val run=canvas.runs.single{it.text==expected}
                 val metrics=DesignMetrics(a,"weather-${if(portrait)"portrait"else "landscape"}-$lang");metrics.configure(width.toFloat(),height.toFloat(),0f)
                 assertTrue("$lang $code overlaps the solar column",run.right+16<=metrics.rect("#solar-event-time").left)

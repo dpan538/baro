@@ -43,12 +43,17 @@ class BackendTest(unittest.TestCase):
         def request(_):return baro.Store(self.store.path).cached('same',load)[0]
         with concurrent.futures.ThreadPoolExecutor(max_workers=8) as pool:results=list(pool.map(request,range(8)))
         self.assertEqual(count,1);self.assertTrue(all(x=={'v':12} for x in results))
-    def test_stale_if_error_has_original_timestamp(self):
+    def test_failed_refresh_removes_expired_cache_instead_of_serving_it(self):
         old=time.time()-4000
         with self.store.db() as db:db.execute('INSERT INTO cache VALUES(?,?,?)',('x',old,'{"v":1}'))
         def fail():raise baro.Failure(502,'down')
-        value,at,stale=self.store.cached('x',fail)
-        self.assertTrue(stale);self.assertEqual(at,old);self.assertEqual(value,{'v':1})
+        with self.assertRaises(baro.Failure):self.store.cached('x',fail)
+        with self.store.db() as db:self.assertEqual(db.execute('SELECT COUNT(*) FROM cache WHERE k=?',('x',)).fetchone()[0],0)
+    def test_shared_cache_refreshes_after_fifteen_minutes(self):
+        old=time.time()-901
+        with self.store.db() as db:db.execute('INSERT INTO cache VALUES(?,?,?)',('x',old,'{"v":1}'))
+        value,at,stale=self.store.cached('x',lambda:{'v':2})
+        self.assertEqual(value,{'v':2});self.assertGreater(at,old);self.assertFalse(stale)
     def test_expired_cache_is_not_promoted(self):
         with self.store.db() as db:db.execute('INSERT INTO cache VALUES(?,?,?)',('x',time.time()-90000,'{}'))
         with self.assertRaises(baro.Failure):self.store.cached('x',lambda:(_ for _ in ()).throw(baro.Failure(502,'down')))

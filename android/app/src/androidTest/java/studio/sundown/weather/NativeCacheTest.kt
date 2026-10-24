@@ -68,13 +68,14 @@ class NativeCacheTest {
             }finally{i.runOnMainSync{repo.clear();repo.close()}}
         }
     }
-    @Test fun offlineKeepsTheLastReadingAndDebouncesFailures(){
+    @Test fun failedRefreshKeepsOnlyStillValidReadingsAndExpiresOldDiskData(){
         val clock=Clock();server(clock).use{server->val repo=repository(server,clock)
             try{
-                i.runOnMainSync{repo.clear()};val first=read(repo).first;clock.advance(1800);server.status=503
-                val failed=read(repo);assertSame(first,failed.first);assertNotNull(failed.second);assertEquals(2,server.requests.get())
+                i.runOnMainSync{repo.clear()};val first=read(repo).first;clock.advance(900);server.status=503
+                val failed=read(repo,true);assertSame(first,failed.first);assertNotNull(failed.second);assertEquals(2,server.requests.get())
                 repeat(8){assertSame(first,read(repo,true).first)};assertEquals(2,server.requests.get())
-                clock.advance(300);server.status=200;assertNull(read(repo).second);assertEquals(3,server.requests.get())
+                clock.advance(900);assertNull(read(repo).first);assertEquals(0L,repo.bytes());assertEquals(3,server.requests.get())
+                clock.advance(300);server.status=200;val recovered=read(repo);assertNotNull(recovered.first);assertNull(recovered.second);assertEquals(4,server.requests.get())
             }finally{i.runOnMainSync{repo.clear();repo.close()}}
         }
     }
@@ -99,20 +100,47 @@ class NativeCacheTest {
             }finally{i.runOnMainSync{repo.clear();repo.close()}}
         }
     }
-    @Test fun interruptedStaleRefreshKeepsDisclosedCacheAndTheReadLimit(){
+    @Test fun interruptedExpiredRefreshKeepsTheReadLimitWithoutOldReadings(){
         val clock=Clock();server(clock).use{server->val repo=repository(server,clock);val resumed=repository(server,clock)
             try{
                 i.runOnMainSync{repo.clear()};val first=read(repo).first!!;clock.advance(1800)
                 val gate=CountDownLatch(1);server.gate=gate
                 i.runOnMainSync{repo.refresh(place){_,_->fail("Stopped owner received a refresh")}}
                 awaitRequest(server,2);i.runOnMainSync{repo.cancelWeather()};server.gate=null;gate.countDown()
-                val fallback=read(resumed);assertSame(first,fallback.first);assertEquals("refresh_interval",fallback.second)
+                val fallback=read(resumed);assertNull(fallback.first);assertEquals("refresh_interval",fallback.second)
                 assertTrue(first.stale(clock.wall.get()));assertEquals(2,server.requests.get())
                 val model=AppModel(i.targetContext).apply{weather=fallback.first;status="offline"}
-                for(language in listOf("zh","en")){model.lang=language;assertTrue(model.source().contains(if(language=="zh")"过期缓存"else "STALE"))}
-                clock.advance(299);assertSame(first,read(resumed).first);assertEquals(2,server.requests.get())
+                for(language in listOf("zh","en")){model.lang=language;assertFalse(model.source().contains(if(language=="zh")"过期缓存"else "STALE"))}
+                clock.advance(299);assertNull(read(resumed).first);assertEquals(2,server.requests.get())
                 clock.advance(1);val fresh=read(resumed);assertNull(fresh.second);assertNotSame(first,fresh.first);assertEquals(3,server.requests.get())
             }finally{i.runOnMainSync{repo.clear();repo.close();resumed.close()}}
+        }
+    }
+    @Test fun totalRequestDeadlineCompletesAndAllowsRecovery(){
+        val clock=Clock();server(clock).use{server->
+            lateinit var repo:WeatherRepository
+            i.runOnMainSync{repo=WeatherRepository(i.targetContext,server.origin,{clock.wall.get()},{clock.monotonic.get()},500);repo.clear()}
+            try{
+                val gate=CountDownLatch(1);server.gate=gate;val failed=read(repo)
+                assertNull(failed.first);assertEquals("request_timeout",failed.second);assertEquals(1,server.requests.get())
+                server.gate=null;gate.countDown();clock.advance(300)
+                val fresh=read(repo);assertNotNull(fresh.first);assertNull(fresh.second);assertEquals(2,server.requests.get())
+            }finally{i.runOnMainSync{repo.clear();repo.close()}}
+        }
+    }
+    @Test fun aNewFetchCannotRenewAnExpiredProviderTimestamp(){
+        val clock=Clock();var oldSource=false
+        val raw=i.context.assets.open("live-brisbane.json").bufferedReader().use{it.readText()}
+        Server{JSONObject(raw).put("fetchedAt",clock.wall.get()).apply{
+            getJSONObject("forecast").getJSONObject("current").put("time",clock.wall.get()-if(oldSource)3600 else 0)
+        }.toString()}.use{server->val repo=repository(server,clock)
+            try{
+                i.runOnMainSync{repo.clear()};val first=read(repo).first!!
+                oldSource=true;clock.advance(900);val rejected=read(repo,true)
+                assertSame(first,rejected.first);assertEquals("source_timestamp",rejected.second)
+                clock.advance(900);val expired=read(repo,true);assertNull(expired.first);assertEquals("source_timestamp",expired.second);assertEquals(0L,repo.bytes())
+                oldSource=false;clock.advance(300);val fresh=read(repo,true);assertNotNull(fresh.first);assertNull(fresh.second);assertEquals(clock.wall.get(),fresh.first!!.validAt)
+            }finally{i.runOnMainSync{repo.clear();repo.close()}}
         }
     }
 }

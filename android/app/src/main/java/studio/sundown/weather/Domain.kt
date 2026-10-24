@@ -7,6 +7,27 @@ import kotlin.math.*
 const val CACHE_SECONDS = 1800L
 const val MEMORY_IDLE_SECONDS = 3600L
 const val MIN_READ_SECONDS = 300L
+const val WEATHER_REFRESH_SECONDS = 900L
+const val WEATHER_REQUEST_SECONDS = 45L
+const val MAX_CACHED_PLACES = 24
+
+/** Foreground scheduling uses elapsed time, independently of civil-clock changes. */
+class WeatherRefreshSchedule(val wall:()->Long,val elapsed:()->Long){
+    private var nextAt:Long?=null
+    private var startedAt:Long?=null
+    fun due()=startedAt==null&&(nextAt==null||elapsed()>=nextAt!!)
+    fun timedOut()=startedAt?.let{elapsed()-it>=WEATHER_REQUEST_SECONDS}?:false
+    fun started(){startedAt=elapsed()}
+    fun finished(weather:Weather?,failed:Boolean){
+        startedAt=null
+        val remaining=if(!failed&&weather!=null&&!weather.stale(wall()))
+            (WEATHER_REFRESH_SECONDS-(wall()-weather.fetchedAt).coerceAtLeast(0)).coerceAtLeast(0)
+        else MIN_READ_SECONDS
+        nextAt=elapsed()+remaining
+    }
+    fun paused(){startedAt=null}
+    fun invalidate(){if(startedAt==null)nextAt=null}
+}
 
 /** Continuous travel with hysteresis at each tooth, including wraparound and reversal. */
 class DialDetents(initial:Int=0){
@@ -29,7 +50,7 @@ class DialDetents(initial:Int=0){
 }
 
 /** Process memory only; persisted JSON remains the separately bounded offline layer. */
-class ForecastMemory(private val capacity:Int=12){
+class ForecastMemory(private val capacity:Int=MAX_CACHED_PLACES){
     data class Entry(val weather:Weather,val raw:String,var usedAt:Long)
     private val entries=LinkedHashMap<String,Entry>(16,.75f,true)
     private val attempts=LinkedHashMap<String,Long>()
@@ -48,6 +69,7 @@ class ForecastMemory(private val capacity:Int=12){
     }
     @Synchronized fun abandonInitial(key:String,attempt:Long){if(entries[key]==null&&attempts[key]==attempt)attempts.remove(key)}
     @Synchronized fun clear(){entries.clear();attempts.clear()}
+    @Synchronized fun remove(key:String){entries.remove(key)}
     @Synchronized fun count()=entries.size
 }
 
@@ -75,7 +97,7 @@ data class Weather(val place: Place, val fetchedAt: Long, val validAt: Long, val
     val zone: ZoneId get() = ZoneId.of(place.zone)
     fun value(key: String, at: Long = validAt): Double? = if (at == validAt && current.containsKey(key)) current[key] else hourly.at(key, at)
     fun today(at: Long = validAt) = days.find { it.date == Instant.ofEpochSecond(at).atZone(zone).toLocalDate() }
-    fun stale(now: Long) = (serverStale || now - fetchedAt >= CACHE_SECONDS || now - validAt > 7200 || fetchedAt > now + 300)
+    fun stale(now: Long) = (serverStale || now - fetchedAt >= CACHE_SECONDS || now - validAt >= CACHE_SECONDS || fetchedAt > now + 300 || validAt > now + 300)
     fun clock(at: Long?) = at?.let { DateTimeFormatter.ofPattern("HH:mm").format(Instant.ofEpochSecond(it).atZone(zone)) } ?: "—"
     fun nextSolar(at: Long = validAt): Pair<Boolean, Long>? = days.flatMap { listOfNotNull(it.sunrise?.let { t -> true to t }, it.sunset?.let { t -> false to t }) }.filter { it.second > at }.minByOrNull { it.second }
     fun precip(at: Long = validAt) = hourly.ending("precipitation_probability", at)

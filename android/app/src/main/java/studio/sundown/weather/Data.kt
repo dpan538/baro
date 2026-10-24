@@ -80,7 +80,8 @@ class NetworkJob {
 
 class WeatherRepository(context:Context,backendOrigin:String=BuildConfig.BACKEND_URL,
                         private val clock:()->Long={System.currentTimeMillis()/1000},
-                        private val elapsed:()->Long={SystemClock.elapsedRealtime()/1000}) {
+                        private val elapsed:()->Long={SystemClock.elapsedRealtime()/1000},
+                        private val requestDeadlineMs:Long=WEATHER_REQUEST_SECONDS*1000) {
     companion object { private val memory=ForecastMemory() }
     private val context=context.applicationContext
     val pool=Executors.newFixedThreadPool(3)
@@ -91,51 +92,60 @@ class WeatherRepository(context:Context,backendOrigin:String=BuildConfig.BACKEND
     private var weatherJob: NetworkJob?=null
     private var inFlightKey:String?=null
     private var attemptAt=0L
+    private var weatherTimeout:Runnable?=null
+    private var initialRead=false
     private val listeners=mutableListOf<(Weather?,String?)->Unit>()
     private fun key(place:Place)="$backend|${place.key}"
     fun cached(place:Place):Weather?{
         val k=key(place);val hot=memory.get(k,elapsed())
-        if(hot!=null&&clock()-hot.weather.fetchedAt<86400){
+        if(hot!=null&&!hot.weather.stale(clock())){
             val weather=hot.weather
             return if(weather.place==place.copy(zone=weather.place.zone))weather else weather.copy(place=place.copy(zone=weather.place.zone))
         }
+        if(hot!=null){memory.remove(k);File(cache,place.key+".json").delete();return null}
         return runCatching{
-            val raw=File(cache,place.key+".json").readText();val weather=WeatherJson.parse(raw,place)
-            if(clock()-weather.fetchedAt>=86400)null else weather.also{memory.put(k,it,raw,elapsed())}
+            val file=File(cache,place.key+".json");val raw=file.readText();val weather=WeatherJson.parse(raw,place)
+            if(weather.stale(clock())){file.delete();null}else weather.also{memory.put(k,it,raw,elapsed())}
         }.getOrNull()
     }
     fun rawFor(place:Place):String?{if(cached(place)==null)return null;return memory.get(key(place),elapsed())?.raw}
-    fun cancelWeather(){generation++;weatherJob?.cancel();if(weatherJob!=null)inFlightKey?.let{memory.abandonInitial(it,attemptAt)};weatherJob=null;inFlightKey=null;listeners.clear()}
+    fun cancelWeather(){generation++;weatherTimeout?.let(main::removeCallbacks);weatherTimeout=null;weatherJob?.cancel();if(weatherJob!=null&&initialRead)inFlightKey?.let{memory.abandonInitial(it,attemptAt)};weatherJob=null;inFlightKey=null;listeners.clear()}
     private fun weatherDirectories()=context.cacheDir.listFiles()?.filter{it.isDirectory&&(it.name=="weather"||Regex("weather-[a-f0-9]{12}").matches(it.name))}?:emptyList()
     fun clear(){cancelWeather();memory.clear();weatherDirectories().forEach{folder->folder.listFiles()?.forEach{it.delete()}}}
     fun bytes()=weatherDirectories().sumOf{folder->folder.listFiles()?.sumOf{it.length()}?:0L}
     fun refresh(place: Place, force: Boolean=false, callback: (Weather?,String?)->Unit) {
         val k=key(place)
         if(inFlightKey!=null&&inFlightKey!=k)cancelWeather()
-        val cached=cached(place)
-        if(cached!=null&&!cached.stale(clock())&&(!force||clock()-cached.fetchedAt<MIN_READ_SECONDS)){callback(cached,null);return}
+        val hadReading=memory.get(k,elapsed())!=null||File(cache,place.key+".json").exists()
+        val available=cached(place)
+        if(available!=null&&(!force||clock()-available.fetchedAt<MIN_READ_SECONDS)){callback(available,null);return}
         if(inFlightKey==k&&weatherJob?.cancelled==false){listeners.add(callback);return}
         cancelWeather();val g=generation
-        if(!memory.mayRead(k,elapsed())){callback(cached,if(cached!=null&&!cached.stale(clock()))null else "refresh_interval");return}
+        if(!memory.mayRead(k,elapsed())){callback(available,"refresh_interval");return}
         attemptAt=elapsed();memory.attempted(k,attemptAt);listeners.add(callback);inFlightKey=k
-        val job=NetworkJob();weatherJob=job
+        val job=NetworkJob();weatherJob=job;initialRead=!hadReading
         fun complete(weather:Weather?,error:String?){
             if(g!=generation||job.cancelled)return
+            weatherTimeout?.let(main::removeCallbacks);weatherTimeout=null
             weatherJob=null;inFlightKey=null;val pending=listeners.toList();listeners.clear()
             pending.forEach{it(weather,error)}
         }
+        weatherTimeout=Runnable{if(g==generation&&!job.cancelled){complete(cached(place),"request_timeout");job.cancel()}}
+        main.postDelayed(weatherTimeout!!,requestDeadlineMs)
         job.future=pool.submit {
             try {
                 val body=if(backend.isNotEmpty())job.request("$backend/v1/weather?lat=${place.latitude}&lon=${place.longitude}") else direct(job,place)
                 val weather=WeatherJson.parse(body,place)
+                require(!weather.stale(clock())){"source_timestamp"}
                 if(job.cancelled)return@submit
                 main.post { if(g==generation&&!job.cancelled){
+                    if(weather.stale(clock())){complete(cached(place),"source_timestamp");return@post}
                     memory.put(k,weather,body,elapsed())
                     runCatching{val target=File(cache,place.key+".json");val tmp=File(cache,place.key+".tmp");tmp.writeText(body);if(!tmp.renameTo(target))tmp.delete()}
-                    cache.listFiles()?.filter { it.extension=="json" }?.sortedByDescending { it.lastModified() }?.drop(12)?.forEach { it.delete() }
+                    cache.listFiles()?.filter { it.extension=="json" }?.sortedByDescending { it.lastModified() }?.drop(MAX_CACHED_PLACES)?.forEach { it.delete() }
                     complete(weather,null)
                 } };return@submit
-            }catch(e:Exception){if(!job.cancelled)main.post{complete(cached,e.message?:"Network unavailable")}}
+            }catch(e:Exception){if(!job.cancelled)main.post{complete(cached(place),e.message?:"Network unavailable")}}
         }
     }
     private fun direct(job: NetworkJob, place: Place): String {
