@@ -95,3 +95,10 @@ Internal refinement retained its failed first card-placement gate, the second
 36-capture pass, and a third 36-capture pass plus the real IME/GLES test. Those
 working-tree candidates are not public distribution artifacts. The signed final
 APK must have a full source commit and its own exact-package acceptance.
+
+
+## Prepared Pad follow-up (not yet published)
+
+`0.10.0-preview.3 / 15` is a local signed, non-debug follow-up from source `11bce1522448814b14893530795c4e29e8f58d2c`. Publication is pending explicit permission after automatic approval blocked the source push. The public download links above still refer to preview.2. [Changes and evidence](ANDROID-PREVIEW-3-CHANGES.md).
+
+The user’s latest display requirement supersedes the historical shared landscape status allowance for the native weather page: weather hides system bars, reserves no status-bar padding, removes the preview frame and fills the actual viewport. Observation reserves readable light status chrome inside its own page; the shared swipe viewport stays fixed. Display cutouts, caption bars and the IME retain their actual platform insets.

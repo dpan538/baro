@@ -1,0 +1,817 @@
+{
+  "date": "2026-10-24",
+  "timezone": "Australia/Brisbane",
+  "channel": "local signed preview; not published",
+  "versionName": "0.10.0-preview.3",
+  "versionCode": 15,
+  "packageName": "studio.sundown.weather",
+  "applicationSourceCommit": "11bce1522448814b14893530795c4e29e8f58d2c",
+  "fieldTestSourceCommit": "11bce1522448814b14893530795c4e29e8f58d2c",
+  "captureTestSourceCommit": "dbc3746638134515bb8561c0398285c475338e73",
+  "apk": {
+    "size": 20479900,
+    "sha256": "fd3960beae64bc344eb7aeb69bd2c9683a8376c47f6dc573da44a423373ba76d",
+    "certificateSha256": "aac2bf88afcc1ce08009a9cf5e9f91eb0092b30bb280e16a0f9d095dbf338593",
+    "debuggable": false,
+    "signatureVerified": true,
+    "productionSampleDataAbsent": true,
+    "selectedLauncherPixelsVerified": true,
+    "publicDownloadVerified": false
+  },
+  "publication": {
+    "sourcePushed": false,
+    "releasePublished": false,
+    "publicDownloadVerified": false,
+    "preparedTag": "v0.10.0-preview.3",
+    "preparedReadmeAndDownload": true,
+    "blockedAction": "git push origin main",
+    "blockReason": "Automatic approval review requires explicit permission to publish source to the remote GitHub repository."
+  },
+  "checks": {
+    "previewUnitTests": 22,
+    "previewBuild": true,
+    "previewLint": true,
+    "sourceChecks": true,
+    "installedApkBytesMatched": true
+  },
+  "nativeAcceptance": {
+    "emulatorApi": 36,
+    "dimensions": [
+      [
+        3408,
+        2272
+      ],
+      [
+        2272,
+        3408
+      ]
+    ],
+    "densitiesDpi": [
+      320,
+      400
+    ],
+    "languages": [
+      "zh",
+      "en"
+    ],
+    "fieldFeedback": {
+      "passed": true,
+      "cases": 5,
+      "seconds": 45.41,
+      "controlledInput": true,
+      "physicalDeviceClaim": false,
+      "source": "exact signed preview APK; installed bytes matched",
+      "sourceCommit": "11bce1522448814b14893530795c4e29e8f58d2c",
+      "apkSha256": "fd3960beae64bc344eb7aeb69bd2c9683a8376c47f6dc573da44a423373ba76d"
+    },
+    "stages": [
+      {
+        "log": "gpu-lifecycle-fine.log",
+        "methods": 1,
+        "passed": true,
+        "seconds": 25.67
+      },
+      {
+        "log": "interaction-regression.log",
+        "methods": 12,
+        "passed": true,
+        "seconds": 185.02
+      },
+      {
+        "log": "matrix-320.log",
+        "methods": 1,
+        "passed": true,
+        "seconds": 127.5
+      },
+      {
+        "log": "matrix-400.log",
+        "methods": 1,
+        "passed": true,
+        "seconds": 137.1
+      },
+      {
+        "log": "small-viewport.log",
+        "methods": 1,
+        "passed": true,
+        "seconds": 135.82
+      }
+    ],
+    "additionalBlockLifecyclePassed": true,
+    "distinctMethods": 20,
+    "successfulInvocations": 22,
+    "captureCount": 72,
+    "captures": [
+      {
+        "file": "preview-landscape-zh-page0.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "059c4942cf585e354b37b4852c28b0f241115d6afb095e64cb5b6f8f88df3a32"
+      },
+      {
+        "file": "preview-landscape-zh-page1.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "8de89867b60403246c75c447b804e8a497f7de10b8e65ca989ec0d48cf94636d"
+      },
+      {
+        "file": "preview-landscape-zh-appearance.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "985bf68690cfc266594a6d299e4e2c56301762603c2303d4cc0aa27deadcbcd5"
+      },
+      {
+        "file": "preview-landscape-zh-appearance-scrolled.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "908e26af7d12c670b29ffa0c11d181afbbcb4553449b59291573ffe78c9c1b73"
+      },
+      {
+        "file": "preview-landscape-zh-units.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "051a912e65dc887f7329d4628fc248c5824062eb9d71c7ee54f3896958044e9b"
+      },
+      {
+        "file": "preview-landscape-zh-about.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "f0de20d4e56c7c546f27cb11ceea342c8cd7316ff6ab9a4878356498f21e5fd4"
+      },
+      {
+        "file": "preview-landscape-zh-update-live.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "744c33e169254697c154d3f45bed4572c218f01f68531b34440750dd3caebdb7"
+      },
+      {
+        "file": "preview-landscape-zh-update-long-notes.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": true,
+        "densityDpi": 320,
+        "sha256": "6085cc822cf462c3a7d30656ba37fb3ddce51c0e5542a952bf2bc352c669aefe"
+      },
+      {
+        "file": "preview-landscape-zh-credits.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "2aa31077646b7815206a644f9eb0368900c508ee1024fec29fbb416e76de5c34"
+      },
+      {
+        "file": "preview-landscape-en-page0.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "7a35dcfabecfd4a069aa0c9e375327c086a3893094d591b7481be13a39f8aac5"
+      },
+      {
+        "file": "preview-landscape-en-page1.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "745305f358c7bf18b729ba953898b765ee12d2a8ca1ff59879f97ce0312b5114"
+      },
+      {
+        "file": "preview-landscape-en-appearance.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "bd20b9a6314b7d697f3d33d29a55b9c5e20b9d46dab476cf2563a260640dd6a6"
+      },
+      {
+        "file": "preview-landscape-en-appearance-scrolled.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "9759cfa91a6a0665bdb18456457271c343a5f669d86b511c5ebcf9be7d1c2331"
+      },
+      {
+        "file": "preview-landscape-en-units.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "e7962af7ec2079f183d1756cafdb65c54ee72e31e9d04a2908eeed6a9e88eef4"
+      },
+      {
+        "file": "preview-landscape-en-about.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "313e23bcd50d733fdaee6a108e02cbbb2d9b9ed9b8a0f732dd2d6bfd4916cb4f"
+      },
+      {
+        "file": "preview-landscape-en-update-live.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "71333c1a5f2563f3215f8356d4bbb8d3a4b643b7e52ec5ea6bbb208d75af9108"
+      },
+      {
+        "file": "preview-landscape-en-update-long-notes.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": true,
+        "densityDpi": 320,
+        "sha256": "0ceb96fbd77b0f534d040d611a2bc55ef3a8e06c290883556186c8398ccb53f5"
+      },
+      {
+        "file": "preview-landscape-en-credits.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "fdb3733b2ba803e740abb92dd48202131e0bb3c7de634de580d54001a46796c4"
+      },
+      {
+        "file": "preview-portrait-zh-page0.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "e27889955dc941543b62e27ad49c9a5c38f2102a37c66a5e74affde0d3e3a580"
+      },
+      {
+        "file": "preview-portrait-zh-page1.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "be6636b15d88cf823e9ed5ba357cb32b180dd230598011a42c2011e9e4bbd1ed"
+      },
+      {
+        "file": "preview-portrait-zh-appearance.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "d4df1f534f9ebadbb64aaa3e8a76db5770338047ecdfcd62187b7ba28d0e812c"
+      },
+      {
+        "file": "preview-portrait-zh-appearance-scrolled.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "463068929ba802155c6c69ed018a269a05b14057b3c6757763e26ca955e81fc1"
+      },
+      {
+        "file": "preview-portrait-zh-units.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "bf8f8cecd30ff3590c815aa22ddd05223f4dee7288280c43eb84d3320ecd14de"
+      },
+      {
+        "file": "preview-portrait-zh-about.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "f2798332e3195f023a72802dd877f35d85875bb2dfa1fb17206ed061a85eee35"
+      },
+      {
+        "file": "preview-portrait-zh-update-live.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "e372d39fd3149e7055c5688aeeffc884bbd733de82dc7c0c273d01341fcf7c62"
+      },
+      {
+        "file": "preview-portrait-zh-update-long-notes.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": true,
+        "densityDpi": 320,
+        "sha256": "107e42026b583c2568bf46f7e6520713534ee9cc7c2a24d493960e9b5e2ce5ac"
+      },
+      {
+        "file": "preview-portrait-zh-credits.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "68352c47e158150d39f86466833d69e6c1442953b086dc45cef6f96c09d76fb5"
+      },
+      {
+        "file": "preview-portrait-en-page0.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "0149bd65007e7428205c757e884f251572ee26a5875244d286fb9d1cfa95c848"
+      },
+      {
+        "file": "preview-portrait-en-page1.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "03ecc57a1b307685a76398d598f4a19eeabcf371a917df6046505f4edc380559"
+      },
+      {
+        "file": "preview-portrait-en-appearance.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "3d0232bab4ddd8eb275518bbdfca043a56bb7e3b2873634181f4daddd2153f51"
+      },
+      {
+        "file": "preview-portrait-en-appearance-scrolled.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "273bf1e72689b231174f5e15fa133242d45f38f3278e7d5bdb45dbb073c4effb"
+      },
+      {
+        "file": "preview-portrait-en-units.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "4456a4bfddd46fcbd64772a1740cf950c18f8ff11232c9bdcdf84bcb53e99d60"
+      },
+      {
+        "file": "preview-portrait-en-about.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "f159704ea4bc1307f08ffefcaa8ccc5f9cb562c7885e4de4fe33167cb77aa7cb"
+      },
+      {
+        "file": "preview-portrait-en-update-live.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "ec94c11b61cc9317653611386f5eef2da701080827fbfdf41f0a1bff12c1bb1e"
+      },
+      {
+        "file": "preview-portrait-en-update-long-notes.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": true,
+        "densityDpi": 320,
+        "sha256": "a4333ebeb9a6f550d68b0f309c94de898bc26f114d179d7f1f2f6bcba21a21b2"
+      },
+      {
+        "file": "preview-portrait-en-credits.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 320,
+        "sha256": "392615f9d0da0aea69e2d04db19b7def2fa41a3a18f6610229ef8070c4aff716"
+      },
+      {
+        "file": "preview-landscape-zh-page0.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "3196d74d9e23cbc9d09b58501e1d2f944b1b603d8ef93b5767d989d3f570cdeb"
+      },
+      {
+        "file": "preview-landscape-zh-page1.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "503cae3d7e6d46f4b0977d598cf98efc38525860a17447df9fddcf5c4f361548"
+      },
+      {
+        "file": "preview-landscape-zh-appearance.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "793d530b61bbcd8f8c212734ffbb3b06ca08e86c31b55628cd4c5358969feb34"
+      },
+      {
+        "file": "preview-landscape-zh-appearance-scrolled.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "0e609bf430c1ad74626127a152a775e5133d25b5a6f5d5a5df49b8efcc439f53"
+      },
+      {
+        "file": "preview-landscape-zh-units.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "5075b0fad5115f2dbd4d5fb8bb255bdca86a6f08a4518e31b64b6bc0fb7c4d64"
+      },
+      {
+        "file": "preview-landscape-zh-about.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "78249019766b2aa252f1486b5a4ee3f40e26814d9a1c348d37b93c097fce1ccb"
+      },
+      {
+        "file": "preview-landscape-zh-update-live.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "a6386047e6bfc29a3820366224702f55ddad362f96e71475734e44b114169d81"
+      },
+      {
+        "file": "preview-landscape-zh-update-long-notes.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": true,
+        "densityDpi": 400,
+        "sha256": "2fd43a598066bc8e751857fb5062bed36c8f6d49204fe82e90924079bab5edca"
+      },
+      {
+        "file": "preview-landscape-zh-credits.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "af21ea2a8672f1f857d6a35dd91098f5519dd35891209d020b6b3f847ec0ee1c"
+      },
+      {
+        "file": "preview-landscape-en-page0.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "6bfc7e5dcb77f398921feaf44a8fb5fdff60d9cd1c951e2f059bfc28c8c0ee4e"
+      },
+      {
+        "file": "preview-landscape-en-page1.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "3ebc1aa32207d7ed5b74855240c9d48d5ef863e943cf685e75c549ae699ed6f2"
+      },
+      {
+        "file": "preview-landscape-en-appearance.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "0fd0ffefb5ed9e5c3ccce2065f389529b5edf8dfb275dd32257f2e5b9c0142e7"
+      },
+      {
+        "file": "preview-landscape-en-appearance-scrolled.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "78d304f7c5b3282146322393e01cc7cf3710d03ee05023a89d69a51344692d29"
+      },
+      {
+        "file": "preview-landscape-en-units.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "9ba67992e08b2432575b956f7fe4e758b0357a3322f1f617d2332b7eae03a1ff"
+      },
+      {
+        "file": "preview-landscape-en-about.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "5c141fd295af1ec315c84fd0388fd14e716b218bbeaaa75143db95322370e1ee"
+      },
+      {
+        "file": "preview-landscape-en-update-live.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "defba7750ff1d0bfc301f04879516aec3a72ede281d53b2029c91b82a9bc7edf"
+      },
+      {
+        "file": "preview-landscape-en-update-long-notes.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": true,
+        "densityDpi": 400,
+        "sha256": "9f277059120c9df13ff47dcafa8c4740d0f89869ff7f961e9a1e778dd25e4044"
+      },
+      {
+        "file": "preview-landscape-en-credits.png",
+        "width": 3408,
+        "height": 2272,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "76b3b0045587d6e74db53d6c942f8d27074d71c29283fee0f206ac546d03e8b2"
+      },
+      {
+        "file": "preview-portrait-zh-page0.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "b54fc0f6e1f301e0885dee0bfa49fe2950a80ca04468ef7e963c5b46fa0de40d"
+      },
+      {
+        "file": "preview-portrait-zh-page1.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "cd83b66e0d7d436d242caa36d9398001b4b90426b124b6d615e68d6a1634f743"
+      },
+      {
+        "file": "preview-portrait-zh-appearance.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "cf472cd95f9b19860f875b7c24ec109a283723ae48437cbd0ebe1bdd8f1841f4"
+      },
+      {
+        "file": "preview-portrait-zh-appearance-scrolled.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "a79a4c43f076fbfde6ddf60b9059db24bb5a1c194c28e4ee5cef427b421eb768"
+      },
+      {
+        "file": "preview-portrait-zh-units.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "e9dfd399d0a0c96dc68c6e80990b5f46398c8c5960dcd7108d4c4416cf1bd8a7"
+      },
+      {
+        "file": "preview-portrait-zh-about.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "892cbed175e8726b1c11471e226e09ed1d81627a0f3e225e4d3792e1449e7311"
+      },
+      {
+        "file": "preview-portrait-zh-update-live.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "bcc04f194702ed6da0fd02aa590abaa80477cdbfad4a894ad3f049b9c91ed771"
+      },
+      {
+        "file": "preview-portrait-zh-update-long-notes.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": true,
+        "densityDpi": 400,
+        "sha256": "11d8bb55e8db91d4f558188fe350dbc0c0ba0bb4b4cc177e496702a805c60a11"
+      },
+      {
+        "file": "preview-portrait-zh-credits.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "c4e5808233dc7819e057426c790bac1378459bce75a066cd92e2f384ebc2132d"
+      },
+      {
+        "file": "preview-portrait-en-page0.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "e828eeef3af303d97d4ade35a56367042a1243c6a3fc8e70257fcf7d616d8a23"
+      },
+      {
+        "file": "preview-portrait-en-page1.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "1f0832117935e64716bafa52aa138793f6261a996707238d909b1a9871cb327a"
+      },
+      {
+        "file": "preview-portrait-en-appearance.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "7a1e93d4e6a4bbf08ff19ac0addd60a9ae687eb39573c9ee0ddad14415d72269"
+      },
+      {
+        "file": "preview-portrait-en-appearance-scrolled.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "1c70e3fb670c895b7ac149b5aadb4443357bcf576d144a43428e2a1e332fc6be"
+      },
+      {
+        "file": "preview-portrait-en-units.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "09fe070a438c7e57507093b19b7d3ee3f833d5493ce402323f8df488c86696f2"
+      },
+      {
+        "file": "preview-portrait-en-about.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "dfbf64200a2e689fa975a33acb5a815faa0b75070627d582969b744fc8cb64aa"
+      },
+      {
+        "file": "preview-portrait-en-update-live.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "4c68db46ebcc389e0fc17006cdaa7abf019734199af145e62dbb6db3bbe9f590"
+      },
+      {
+        "file": "preview-portrait-en-update-long-notes.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": true,
+        "densityDpi": 400,
+        "sha256": "4bfc2090f937916752d57ffc7a5ded329fa9fa6373bb1e4237317732ea7a3c32"
+      },
+      {
+        "file": "preview-portrait-en-credits.png",
+        "width": 2272,
+        "height": 3408,
+        "controlledLongNotes": false,
+        "densityDpi": 400,
+        "sha256": "d16390ff563d3f167730660940e2e3b6d5bc4a834a54b6942407f4999f629ead"
+      }
+    ],
+    "genuineProviderResponses": [
+      {
+        "file": "density-320/preview-landscape-en-live.json",
+        "sha256": "f528d0a28d9009f52434b82e931d78456ba67c19a2f0db570f30115f184071d3"
+      },
+      {
+        "file": "density-320/preview-landscape-zh-live.json",
+        "sha256": "f528d0a28d9009f52434b82e931d78456ba67c19a2f0db570f30115f184071d3"
+      },
+      {
+        "file": "density-320/preview-portrait-en-live.json",
+        "sha256": "f528d0a28d9009f52434b82e931d78456ba67c19a2f0db570f30115f184071d3"
+      },
+      {
+        "file": "density-320/preview-portrait-zh-live.json",
+        "sha256": "f528d0a28d9009f52434b82e931d78456ba67c19a2f0db570f30115f184071d3"
+      },
+      {
+        "file": "density-400/preview-landscape-en-live.json",
+        "sha256": "f528d0a28d9009f52434b82e931d78456ba67c19a2f0db570f30115f184071d3"
+      },
+      {
+        "file": "density-400/preview-landscape-zh-live.json",
+        "sha256": "f528d0a28d9009f52434b82e931d78456ba67c19a2f0db570f30115f184071d3"
+      },
+      {
+        "file": "density-400/preview-portrait-en-live.json",
+        "sha256": "f528d0a28d9009f52434b82e931d78456ba67c19a2f0db570f30115f184071d3"
+      },
+      {
+        "file": "density-400/preview-portrait-zh-live.json",
+        "sha256": "f528d0a28d9009f52434b82e931d78456ba67c19a2f0db570f30115f184071d3"
+      }
+    ],
+    "scope": "5 field methods + 1 lifecycle method in fine and block modes + 12 interaction methods + one capture matrix at two densities + one all-purpose high-density viewport method. No physical-device or 300-cycle claim.",
+    "highDensityViewportEvidence": [
+      {
+        "file": "viewport-400/small-live-response.json",
+        "sha256": "525d0957a43b9a7a20ae7ad56ed0dd1dec4d8b14125b3d644dbffa81ec3a8daa"
+      },
+      {
+        "file": "viewport-400/small-landscape-zh.png",
+        "sha256": "a0db7d50bb623ca1b8037d138945ed30141f4d214338dde3746a3d12ae4766f1"
+      },
+      {
+        "file": "viewport-400/small-landscape-zh-purpose-2.png",
+        "sha256": "b6b27521d3ddeba69d089e2603ff6e9d9e3971477b14d42690a61ac69db364d9"
+      },
+      {
+        "file": "viewport-400/small-landscape-zh-purpose-11.png",
+        "sha256": "b7a13152bb3c0f58e672f17701df6619eac54d5f3d3127886837d689b3c68470"
+      },
+      {
+        "file": "viewport-400/small-weather-landscape-zh.png",
+        "sha256": "285a55631a4e0a2119ad66efa8747c23f6ad8409e1302f0bf7e8c8f083d153db"
+      },
+      {
+        "file": "viewport-400/small-landscape-en.png",
+        "sha256": "9e1214fa6a122a263a0fc577b254b64f5b87fb6ad86bd1aa075dbbc6ce5fa92d"
+      },
+      {
+        "file": "viewport-400/small-landscape-en-purpose-2.png",
+        "sha256": "cd5cf701bec309aa5fbcf175094da341c310a2321324c4c837970204d45a3370"
+      },
+      {
+        "file": "viewport-400/small-landscape-en-purpose-11.png",
+        "sha256": "34e54a12e289eaa2dec467761d68cd8748f09c5c5f5f798cbe6dede8d397de0a"
+      },
+      {
+        "file": "viewport-400/small-weather-landscape-en.png",
+        "sha256": "694655c22af4559d3f1b28792380136509bf47086976643853110422659d913e"
+      },
+      {
+        "file": "viewport-400/small-portrait-zh.png",
+        "sha256": "14b06ed1418149debba2c8304faab5c3618605b2dc72fcca3a5b0b707ff40b67"
+      },
+      {
+        "file": "viewport-400/small-portrait-zh-purpose-2.png",
+        "sha256": "6d53b7b7a2719d77836504221c66a1d5f726f4ff851f2ba65881d3c8d6daba61"
+      },
+      {
+        "file": "viewport-400/small-portrait-zh-purpose-11.png",
+        "sha256": "d4a57aad856bf910be9aaf06145de5ca16298f83e8ca7265a2fc76a9f48f8471"
+      },
+      {
+        "file": "viewport-400/small-weather-portrait-zh.png",
+        "sha256": "a2d5f17ec83dc79e1093494d9b341bec5caf5e195080bb33264b655cedbcba9c"
+      },
+      {
+        "file": "viewport-400/small-portrait-en.png",
+        "sha256": "ceff37457d2d94f8683843a85686ff74007cc00c11ac2da2474654fbf37d4113"
+      },
+      {
+        "file": "viewport-400/small-portrait-en-purpose-2.png",
+        "sha256": "49f526ea63d46fdb80450eb81fac43790253c172d433afa79da25166190b2636"
+      },
+      {
+        "file": "viewport-400/small-portrait-en-purpose-11.png",
+        "sha256": "42d8b3b3299f41475e8c3b6d1ec5e46091b22fc8b3048abe9dd94b258553522e"
+      },
+      {
+        "file": "viewport-400/small-weather-portrait-en.png",
+        "sha256": "c71ef8d449cbda15cab8e057db056a97650807597bac46be74a6844845658861"
+      }
+    ]
+  },
+  "initialFailures": [
+    {
+      "log": "field-run-r4.log",
+      "reason": "Portrait artwork intentionally begins below the information panel; the edge assertion incorrectly expected landscape top=0. Corrected the orientation-specific test, leaving app geometry unchanged."
+    },
+    {
+      "log": "initial-interaction-regression.log",
+      "reason": "Combined fine-mode GPU lifecycle group ended in an input-focus ANR on the software-rendered emulator. Isolated fine-mode and block-mode lifecycle runs subsequently passed. No Xiaomi stability claim or asserted root cause."
+    },
+    {
+      "log": "permission-precondition-regression.log",
+      "reason": "Android terminated instrumentation when the denial test revoked a previously granted runtime permission inside its own process. The host now revokes permissions before instrumentation; the unmodified denial/recovery test passes."
+    },
+    {
+      "log": "initial-matrix-320.log",
+      "reason": "The former compositor probe sampled the portrait sky boundary where the removed frame had been. Test-only source dbc3746 samples inside the paper information panel; actual status/art-edge assertions remain."
+    }
+  ],
+  "remainingBoundaries": [
+    "No new GitHub release or public preview.3 download has been published/verified.",
+    "The existing public preview.2 remains available; no public preview.2-to-preview.3 system-installer test is claimed.",
+    "Foreground GPS test uses an explicit mock system provider, not physical Xiaomi GPS/network location.",
+    "Xiaomi system bars, device location, physical haptics, animation performance and power need user follow-up testing.",
+    "Public feedback/backend deployment and production-store signing remain separate."
+  ],
+  "localRawEvidence": "output/native-development/preview-3 (ignored; includes failures, original screenshots, provider responses, logs and prepared release assets)",
+  "supersededCandidate": {
+    "reason": "Human review rejected the earlier visible white system-bar strip on weather. The final APK hides weather system bars and reserves no status placeholder.",
+    "retainedLocalCapture": "output/native-development/preview-3/field-system-page0.png"
+  }
+}

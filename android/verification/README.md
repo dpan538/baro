@@ -1,5 +1,7 @@
 # Native evidence
 
+The prepared **0.10.0-preview.3 / 15** is still local and unpublished. Its [exact-package record](preview-0.10.0-preview.3.json) covers the full-bleed Pad fixes, 22 unit tests, 20 distinct native methods (22 successful invocations including repeated modes/densities) and 72 screenshot-matrix captures. It preserves initial failures and does not claim public preview.3 delivery or Xiaomi acceptance.
+
 The published **0.10.0-preview.2 / 14** has its own [source-bound record](preview-0.10.0-preview.2.json): public APK byte/signature verification, 72 native captures across two languages/orientations/densities, update-safety and Settings/IME/GLES checks. Its application source is `149482a`; the historical records below are retained with their original scope.
 
 Raw screenshots, provider responses, comparison overlays and logs are local ignored output. The tracked acceptance record must identify the exact APK, source revision, emulator dimensions/density and which branches were actually exercised.

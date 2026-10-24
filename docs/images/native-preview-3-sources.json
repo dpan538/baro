@@ -1,0 +1,57 @@
+{
+  "applicationSourceCommit": "11bce1522448814b14893530795c4e29e8f58d2c",
+  "testSourceCommit": "dbc3746638134515bb8561c0398285c475338e73",
+  "apkSha256": "fd3960beae64bc344eb7aeb69bd2c9683a8376c47f6dc573da44a423373ba76d",
+  "densityDpi": 320,
+  "physicalDeviceAcceptance": false,
+  "captures": [
+    {
+      "file": "native-preview-3-weather-zh.jpg",
+      "sourceFile": "preview-landscape-zh-page0.png",
+      "sourceDimensions": [
+        3408,
+        2272
+      ],
+      "dimensions": [
+        1600,
+        1067
+      ],
+      "sourceSha256": "059c4942cf585e354b37b4852c28b0f241115d6afb095e64cb5b6f8f88df3a32",
+      "sha256": "b08509b74b5fb43c0d35352a01ceb079da3f14db2f33cb01b4a26adfe656d16f",
+      "genuineProviderData": true,
+      "emulator": true
+    },
+    {
+      "file": "native-preview-3-observation-zh.jpg",
+      "sourceFile": "preview-landscape-zh-page1.png",
+      "sourceDimensions": [
+        3408,
+        2272
+      ],
+      "dimensions": [
+        1600,
+        1067
+      ],
+      "sourceSha256": "8de89867b60403246c75c447b804e8a497f7de10b8e65ca989ec0d48cf94636d",
+      "sha256": "0b0293f88b6b973f6ff1b5a45e0512a3428e058a950d09aad1fa3a0a97764538",
+      "genuineProviderData": true,
+      "emulator": true
+    },
+    {
+      "file": "native-preview-3-settings-portrait-zh.jpg",
+      "sourceFile": "preview-portrait-zh-appearance.png",
+      "sourceDimensions": [
+        2272,
+        3408
+      ],
+      "dimensions": [
+        1067,
+        1600
+      ],
+      "sourceSha256": "d4df1f534f9ebadbb64aaa3e8a76db5770338047ecdfcd62187b7ba28d0e812c",
+      "sha256": "e999a7ee62f40606edf17f43776880ab0e52493b98721f49a7975cade5336edc",
+      "genuineProviderData": true,
+      "emulator": true
+    }
+  ]
+}
