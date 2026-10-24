@@ -40,9 +40,9 @@ class NativeUpdateFlowTest {
         val signer = sha256(info.signingInfo!!.apkContentsSigners.single().toByteArray())
         return file to Release(info.longVersionCode, info.versionName!!, fileHash(file), signer, file.length(), base + "candidate.apk", "Controlled download", true)
     }
-    private fun published(release: Release, name: String = "baro-update.json", draft: Boolean = false, preview: Boolean = true): JSONObject =
+    private fun published(release: Release, name: String = "baro-update.json", draft: Boolean = false, preview: Boolean = true, hasManifest: Boolean = true): JSONObject =
         JSONObject().put("draft", draft).put("prerelease", preview).put("body", "Release notes").put("assets", JSONArray()
-            .put(JSONObject().put("name", name).put("browser_download_url", base + name))
+            .put(JSONObject().put("name", if(hasManifest) "baro-update.json" else "README.md").put("browser_download_url", base + name))
             .put(JSONObject().put("name", "candidate.apk").put("browser_download_url", release.url)))
     private fun checked(updates: Updates, preview: Boolean = true): Pair<Release?, String> {
         val latch = CountDownLatch(1);var result: Release? = null;var status = ""
@@ -62,7 +62,7 @@ class NativeUpdateFlowTest {
             text(endpoint, JSONArray().put(published(release, draft = true)).toString())
             assertEquals("current", checked(updates).second)
             text(endpoint, "[]");assertEquals("empty", checked(updates).second)
-            text(endpoint, JSONArray().put(published(release, "README.md")).toString())
+            text(endpoint, JSONArray().put(published(release, "README.md", hasManifest = false)).toString())
             assertEquals("unversioned", checked(updates).second)
             text(endpoint, JSONArray().put(published(release, "broken.json")).toString())
             assertTrue(checked(updates).second.startsWith("error:"))
