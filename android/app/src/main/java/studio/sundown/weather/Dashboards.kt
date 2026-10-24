@@ -85,10 +85,11 @@ abstract class Dashboard(context:Context,val model:AppModel):View(context){
         val fitted=if(width>maxWidth&&width>0)size*maxWidth.coerceAtLeast(1f)/width else size
         text(s,x,y,fitted,color,font)
     }
-    protected fun paragraph(s:String,b:RectF,size:Float,color:Int=INK,maxLines:Int=4){
+    protected fun paragraph(s:String,b:RectF,size:Float,color:Int=INK,maxLines:Int=4):StaticLayout{
         val tp=TextPaint(Paint.ANTI_ALIAS_FLAG).apply{this.color=color;textSize=size;typeface=languageFont(s)}
         val layout=StaticLayout.Builder.obtain(s,0,s.length,tp,max(1,b.width().toInt())).setAlignment(Layout.Alignment.ALIGN_NORMAL).setIncludePad(false).setMaxLines(maxLines).setEllipsize(android.text.TextUtils.TruncateAt.END).build()
         c!!.save();c!!.clipRect(b);c!!.translate(b.left,b.top);layout.draw(c);c!!.restore()
+        return layout
     }
     protected fun rect(r:RectF,color:Int,radius:Float=0f){p.reset();p.isAntiAlias=true;p.color=color;c!!.drawRoundRect(r,radius,radius,p)}
     protected fun line(x:Float,y:Float,xx:Float,yy:Float,color:Int=INK,stroke:Float=1f){p.reset();p.isAntiAlias=true;p.color=color;p.strokeWidth=stroke;c!!.drawLine(x,y,xx,yy,p)}

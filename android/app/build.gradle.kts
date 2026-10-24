@@ -2,8 +2,8 @@ import java.net.URI
 
 plugins { id("com.android.application"); id("org.jetbrains.kotlin.android") }
 val sourceCommit = providers.gradleProperty("baroSourceCommit").orElse(providers.exec { workingDir(rootProject.projectDir.parentFile); isIgnoreExitValue = true; commandLine("git", "rev-parse", "HEAD") }.standardOutput.asText.map { it.trim().ifEmpty { "unversioned" } }).get()
-val appVersionCode = providers.gradleProperty("baroVersionCode").orElse("16").get().toInt()
-val appVersionName = providers.gradleProperty("baroVersionName").orElse("0.10.0-preview.4").get()
+val appVersionCode = providers.gradleProperty("baroVersionCode").orElse("17").get().toInt()
+val appVersionName = providers.gradleProperty("baroVersionName").orElse("0.10.0-preview.5").get()
 val backendOrigin = providers.gradleProperty("baroBackendUrl").orElse("").get()
 if (backendOrigin.isNotEmpty()) {
     val origin = URI(backendOrigin)

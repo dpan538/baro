@@ -26,6 +26,8 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
     private var lunarEvents:Pair<String,List<Pair<Long,Boolean>>>?=null
     private var contentProgress=1f
     private var contentAnimator:ValueAnimator?=null
+    internal var adviceTextLayout:android.text.StaticLayout?=null;private set
+    internal var adviceTextBounds=RectF();private set
     val contentAnimating get()=contentAnimator?.isRunning==true
     fun animatePurposeChange(){
         val from=if(contentAnimating)max(.45f,contentProgress)else .45f
@@ -407,12 +409,20 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
     private fun bearing(b:RectF){
         val name=heading("太阳方位","Solar azimuth");base(b,"",color=pale)
         val az=wx?.let{Astronomy.sun(at,it.place).azimuth}
-        val offset=20f;val radius=sqrt((b.height()*.43f).pow(2)+offset*offset)
-        val cx=b.right+offset;val cy=b.centerY();val gr=figure(b,radius-offset)
+        val radius=b.height()*.43f
+        val cx=b.right-12-radius;val cy=b.centerY();val gr=RectF(cx-radius,cy-radius,cx+radius,cy+radius)
         figureColumn(b,gr,name,Units.number(az),"°")
         circle(cx,cy,radius,CORAL)
-        for(i in -18..18){val a=PI+i*PI/72;val outer=radius*.98f;val inner=radius*(if(i%6==0).80f else if(i%3==0).86f else .93f)
-            line(cx+cos(a).toFloat()*inner,cy+sin(a).toFloat()*inner,cx+cos(a).toFloat()*outer,cy+sin(a).toFloat()*outer,ink,if(i%6==0)1f else .6f)}
+        repeat(72){i->val a=i*PI/36;val outer=radius*.97f;val inner=radius*(if(i%18==0).77f else if(i%6==0).84f else .92f)
+            line(cx+cos(a).toFloat()*inner,cy+sin(a).toFloat()*inner,cx+cos(a).toFloat()*outer,cy+sin(a).toFloat()*outer,ink,if(i%6==0)1f else .65f)}
+        listOf("N","E","S","W").forEachIndexed{i,label->val a=i*PI/2-PI/2
+            val x=cx+cos(a).toFloat()*radius*.61f;val y=cy+sin(a).toFloat()*radius*.61f
+            val bounds=inkBounds(label,16f,inter);inkText(label,x-bounds.width()/2,y-bounds.height()/2,16f,ink,inter)}
+        if(az!=null){
+            val a=Math.toRadians(az-90);val dx=cos(a).toFloat();val dy=sin(a).toFloat()
+            val needle=Path().apply{moveTo(cx+dx*radius*.88f,cy+dy*radius*.88f);lineTo(cx-dy*5,cy+dx*5);lineTo(cx-dx*radius*.23f,cy-dy*radius*.23f);lineTo(cx+dy*5,cy-dx*5);close()}
+            p.reset();p.isAntiAlias=true;p.color=ink;c!!.drawPath(needle,p);circle(cx,cy,3f,paper)
+        }
     }
 
     private fun radiation(b:RectF){
@@ -420,8 +430,16 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         val direct=v("direct_radiation_instant");val diffuse=v("diffuse_radiation_instant");val total=if(direct!=null&&diffuse!=null)direct+diffuse else null
         val reading=Units.number(direct)+" / "+Units.number(diffuse);val size=if(portrait)30f else 32f
         val gr=columnFigure(b,name,b.width()*.44f,reading,size)
-        val day=total!=null&&total>0;val f=if(day)diffuse!!/total!! else 0.0
-        val caption=if(total==null)heading("模型暂无数据","Model unavailable")else if(day)heading("漫射占比 ","Diffuse share ")+Units.number(f*100)+"%"else heading("夜间 · 无太阳短波辐射","Night · no solar flux")
+        val light=radiationState(direct,diffuse,wx?.let{Astronomy.sun(at,it.place).elevation})
+        val day=total!=null&&total>0;val f=light.diffuseShare?:0.0
+        val caption=when(light.kind){
+            "missing"->heading("模型暂无数据","Model unavailable")
+            "night"->heading("夜间无太阳短波","No solar flux at night")
+            "zero"->heading("模型短波为零","Model solar flux is zero")
+            "direct"->heading("直射主导 · 硬光","Direct-led · hard light")
+            "diffuse"->heading("漫射主导 · 柔光","Diffuse-led · soft light")
+            else->heading("混合光 · 留意云隙","Mixed light · watch cloud gaps")
+        }
         figureColumn(b,gr,name,reading,"W/m²",listOf(caption),true,readingSize=size)
         val ground=gr.bottom-6
         line(gr.left,ground,gr.right,ground,0xffaba99a.toInt(),.9f)
@@ -508,9 +526,27 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         val sec=target?.epoch?.minus(now)?.coerceAtLeast(0)
         val count=sec?.let{String.format(java.util.Locale.US,"%02d:%02d:%02d",it/3600,(it%3600)/60,it%60)}?:"—"
         val phase=when(target?.kind){"blue"->heading("蓝调时段","Blue hour");"dawn"->heading("晨光时段","Dawn window");"end"->heading("时段结束","Window ends");"golden"->heading("黄金时刻","Golden hour");else->heading("无对应事件","No event")}
-        text(count,b.left+12,b.bottom-47,32f,ink,inter)
+        text(count,b.left+12,b.bottom-63,32f,ink,inter)
         text(phase,b.right-12,b.top+12,16f,ink,languageFont(phase),Paint.Align.RIGHT)
-        text((w?.clock(target?.epoch)?:"—")+" ≈",b.right-12,b.bottom-30,16f,ink,mono,Paint.Align.RIGHT)
+        text((w?.clock(target?.epoch)?:"—")+" ≈",b.right-12,b.bottom-52,16f,ink,mono,Paint.Align.RIGHT)
+        val rail=RectF(b.left+16,b.bottom-16,b.right-120,b.bottom-12)
+        rect(rail,0xffd5d5ca.toInt(),2f)
+        // A labelled, fixed interval: progress belongs to the light window, not
+        // to an arbitrary countdown duration that resets on every redraw.
+        val selected=w?.let{model.window(it)}
+        val span=when{
+            target==null||w==null->null
+            model.purpose in 4..6&&selected?.available==true&&now>=selected.start->selected.start to selected.end
+            else->(target.epoch-3600) to target.epoch
+        }
+        if(span!=null&&span.second>span.first){
+            val fraction=((now-span.first).toDouble()/(span.second-span.first)).coerceIn(0.0,1.0).toFloat()
+            val x=rail.left+rail.width()*fraction
+            rect(RectF(rail.left,rail.top,x,rail.bottom),if(model.purpose==6)0xff2459ff.toInt()else CORAL,2f)
+            circle(x,rail.centerY(),4f,ink)
+        }
+        val scale=if(target?.kind=="end")heading("时段进度","Window")else heading("前 1 小时","Final hour")
+        text(if(target==null)heading("暂无时段","No window")else scale,b.right-12,b.bottom-25,16f,ink,languageFont(scale),Paint.Align.RIGHT)
     }
     private fun forecastChart(gr:RectF,key:String,maximum:Double,dark:Boolean){
         val fg=if(dark)paper else ink;val muted=if(dark)0xff77776c.toInt()else 0xffb4b1a5.toInt()
@@ -666,13 +702,16 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
         }
         draw("ins-optical"){
             if(model.purpose in 4..6){
+                val hint=whiteBalanceHint(wx,at,model.lang)
                 if(it.height()<96){
                     base(it,"",color=pale)
-                    titleText(heading("色温","CCT"),it.left+12,it.top+5,24f)
-                    text("— K",it.right-12,it.top+5,24f,ink,inter,Paint.Align.RIGHT)
-                    fit(heading("未测量","Unmeasured"),it.left+12,it.bottom-22,it.width()-24,16f)
+                    titleText(heading("色温补偿","WB offset"),it.left+12,it.top+5,24f)
+                    text(hint.direction,it.right-12,it.top+9,18f,ink,languageFont(hint.direction),Paint.Align.RIGHT)
+                    paragraph(hint.note,RectF(it.left+12,it.bottom-24,it.right-12,it.bottom-3),16f,ink,1)
                 }else{
-                    val body=base(it,heading("色温","CCT"),color=pale);value(body,"—","K",27f);note(heading("未测量","Unmeasured"),body)
+                    val body=base(it,heading("色温补偿","WB offset"),color=pale)
+                    paragraph(hint.direction,RectF(body.left,body.top+8,body.right,body.top+60),24f,ink,2)
+                    paragraph(hint.note,RectF(body.left,body.bottom-48,body.right,body.bottom),16f,ink,2)
                 }
             }else if(portrait){val body=base(it,"PM2.5",color=pale);value(body,Units.number(wx?.pm25),"μg/m³",30f);note(wx?.airAt?.let{epoch->"CAMS · "+wx!!.clock(epoch)}?:heading("空气模型暂无数据","Air model unavailable"),body)}
             else scalar(it,"PM2.5",Units.number(wx?.pm25),"μg/m³")
@@ -696,7 +735,14 @@ class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,mod
             value(RectF(body.left,body.top,body.right,body.bottom-26),if(isVpd)Units.number(mv,2)else model.temp(mv,1,isTrend),if(isVpd)"kPa"else model.tempUnit+if(isTrend)"/h"else "",38f)
             note(if(isTrend)heading("2h 温变均值","2h mean change")else if(isVpd)heading("由气温、湿度计算","From air temp. + RH")else heading("Stull 近似","Stull approximation"),body)
         }
-        draw("ins-advice"){val body=base(it,heading("环境解读","Conditions summary"),color=0xfff0f0e8.toInt());val content=interpretation(model,wx,at);val textRect=(m.rect("ins-advice:advice").takeUnless{it.isEmpty}?:body).apply{right=body.right;bottom=body.bottom};paragraph(content,textRect,if(w>=1500)22f else 20f,ink,4)}
+        draw("ins-advice"){
+            val body=base(it,heading("环境解读","Conditions summary"),color=0xfff0f0e8.toInt())
+            val content=interpretation(model,wx,at)
+            // Use the full body below the shared heading gutter. The prototype's
+            // text-sized rectangle wastes a line of space with richer copy.
+            adviceTextBounds=RectF(body)
+            adviceTextLayout=paragraph(content,body,if(w>=1500)22f else 20f,ink,4)
+        }
         wheel(r("ins-wheel"))
         // The approved paper groups use short inset rules rather than card outlines.
         for(name in listOf("ins-clouds","ins-column","ins-soil","ins-stage","ins-lunar")){val b=r(name);val half=min(168f,b.width()*.66f)/2;line(b.centerX()-half,b.top-3,b.centerX()+half,b.top-3,0xff9d9d90.toInt(),.7f)}
