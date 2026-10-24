@@ -35,7 +35,7 @@ class NativePresentationTest {
                 val b=a.pager.observationPage.dashboard;val d=a.resources.displayMetrics.density;val loc=IntArray(2);b.getLocationOnScreen(loc)
                 val m=DesignMetrics(a,"observation-landscape-zh-0");m.configure(b.w,b.h,a.root.paddingTop/d)
                 val wind=m.rect("ins-wind");val assembly=m.rect("ins-assembly");val wheel=m.rect("ins-wheel")
-                for((xx,yy,color)in listOf(Triple(wind.left+wind.width()*.35f,wind.top+wind.height()*.55f,CHARCOAL),Triple(assembly.left+4,assembly.centerY(),PAPER),Triple(wheel.centerX(),wheel.top+50,0xff181817.toInt())))anchors.add(Triple(loc[0]+(xx*d).roundToInt(),loc[1]+(yy*d).roundToInt(),color))
+                for((xx,yy,color)in listOf(Triple(wind.left+wind.width()*.35f,wind.top+wind.height()*.55f,Color.rgb(24,24,23)),Triple(assembly.left+4,assembly.centerY(),Color.rgb(232,232,224)),Triple(wheel.centerX(),wheel.top+50,Color.rgb(14,14,13))))anchors.add(Triple(loc[0]+(xx*d).roundToInt(),loc[1]+(yy*d).roundToInt(),color))
             }
             var presented=false;var last:Bitmap?=null;val until=SystemClock.uptimeMillis()+10000
             while(!presented&&SystemClock.uptimeMillis()<until){

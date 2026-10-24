@@ -1,0 +1,74 @@
+# Native instrument refinement — 24 October 2026
+
+This follow-up supersedes the earlier small-figure acceptance. The user explicitly
+requires each main figure, excluding text, to occupy at least 85% of its card's
+height. Preserve circles and semicircles; redistribute neighbouring card heights
+when the original aspect ratio cannot fit. Original typography must remain
+readable instead of being reduced to make space. The latest request additionally
+authorizes small corners on individual tiles, deeper dark surfaces and brighter
+foregrounds.
+
+## Composition
+
+- Wind circles use 86% of card height. Direction has its own text lane above
+  Mean/Gust. Heading and bottom fact have equal margins measured from glyph ink.
+  Long units wrap while retaining their original size.
+- Pressure remains a semicircle. Landscape pressure donates surplus height to
+  dew-point spread. Standard portrait redistributes a smaller amount in the same
+  column; the readable scrolling fallback retains its taller cards. The
+  landscape Moon/upper-wind boundary also follows the full-height figure budget.
+- Humidity, cloud layers, column water, soil, solar angle, bearing, radiation,
+  Moon, upper wind and precipitation use taller authored plots. No image assets,
+  font files or licenses are replaced. Data-dependent fills and needles may be
+  short; their complete graduated instrument remains visible. Text-only scalar
+  cards do not gain decorative figures to inflate this measurement.
+- Each instrument tile has at least 8dp corners, retaining the larger original
+  group-edge corners. A subtle neutral group surface makes the white tile
+  corners visible. Assembly edges, columns and purpose-dial geometry remain.
+- Only observation uses the refined palette: page RGB 11/11/10, dark tile
+  24/24/23, dial 14/14/13, light tile 255/255/251. Main light/dark contrast is
+  approximately 17.73:1, previously 14.74:1. Regular dial text increases from
+  approximately 8.90:1 to 12.19:1. Intentionally faded edge labels are a separate
+  state and are not covered by that regular-text ratio.
+
+## Iterations and evidence
+
+Local raw output is retained under `output/native-development/refinement-full-height/`.
+
+1. The red audit reproduced small wind figures and unequal actual text margins
+   on the previously accepted application. R1 restored the full wind circle and
+   original type; 32 wind combinations and the then-current 200 glyph cases
+   passed. Twelve genuine-provider native captures were retained.
+2. R2 rebuilt the other instrument plots and adjacent layouts. All 664 main
+   figure measurements passed. Its 200-case text audit found twelve English
+   portrait dew-point overlaps; that iteration was rejected. Twenty actual
+   native captures and the failures are preserved.
+3. R3 resolves the portrait overlap through card redistribution, adds the small
+   corners and refines contrast. The expanded audit covers normal landscape,
+   normal portrait and the narrow readable scroll composition: 296 text cases
+   with no glyph clipping/ellipsis/meaningful text intersections; 996 main-figure
+   measurements, minimum 85.99995%; 1,872 composed tile checks with all four
+   corners visibly distinct from the tile surface. A wind test initially
+   assumed a single-line English heading; its correction checks the complete
+   wrapped heading without reducing the required type size.
+
+The interrupted R3 collection did not finish and is not acceptance evidence.
+After restoring the same disposable AVD, one product capture was rejected for
+a visible Android System UI ANR dialog. Its screenshot and log remain separate;
+no obscured capture is accepted. This records the observed system failure,
+without asserting an application or emulator-driver cause.
+
+The final source-bound APK, native regression results and reviewed captures must
+be identified in the companion acceptance record. Working R1/R2/R3 labels are
+iteration diagnostics, not final reproducible source identities.
+
+## Scope of historical endurance evidence
+
+The previous 300-cycle launch/interact/close collection and its CSV, JSONL, PNG/SVG
+chart and searchable HTML belong to source `6d6c62c`. They remain historical
+evidence of that exact APK. They must not be relabelled as a 300-cycle run of
+this visual refinement. Network cadence, caching, two-page gestures and haptic
+detent implementation are unchanged by this follow-up. Fresh focused native
+regression and production-only resource profiles establish their separately
+recorded current scope. Emulator CPU/PSS and simulated battery counters do not
+establish Xiaomi hardware energy use or physical haptic quality.
