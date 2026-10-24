@@ -1,0 +1,114 @@
+{
+  "date": "2026-10-24",
+  "timezone": "Australia/Brisbane",
+  "channel": "public prerelease",
+  "versionName": "0.10.0-preview.2",
+  "versionCode": 14,
+  "packageName": "studio.sundown.weather",
+  "applicationSourceCommit": "149482a00622d815582c257c6b61763958b574ce",
+  "testSourceCommit": "93589ca1de026451c199bbc5e64a898b64d52278",
+  "apk": {
+    "size": 20469240,
+    "sha256": "04b99a675cbd2d8b549c9369f5656e04c2063f244cec4d3c29ddeb258b86e13a",
+    "certificateSha256": "aac2bf88afcc1ce08009a9cf5e9f91eb0092b30bb280e16a0f9d095dbf338593",
+    "debuggable": false,
+    "signatureVerified": true,
+    "publicDownloadVerified": true,
+    "downloadCopyVerified": true,
+    "downloadUrl": "https://github.com/dpan538/baro/releases/download/v0.10.0-preview.2/BARO-0.10.0-preview.2.apk",
+    "selectedLauncherPixelsVerified": true
+  },
+  "releaseUrl": "https://github.com/dpan538/baro/releases/tag/v0.10.0-preview.2",
+  "updateManifestUrl": "https://github.com/dpan538/baro/releases/download/v0.10.0-preview.2/baro-update.json",
+  "checksumsUrl": "https://github.com/dpan538/baro/releases/download/v0.10.0-preview.2/SHA256SUMS",
+  "nativeAcceptance": {
+    "stages": [
+      {
+        "log": "update-flow.log",
+        "methods": 4,
+        "passed": true,
+        "elapsedSeconds": 80.002
+      },
+      {
+        "log": "settings-regression.log",
+        "methods": 11,
+        "passed": true,
+        "elapsedSeconds": 209.483
+      },
+      {
+        "log": "composition-ime.log",
+        "methods": 1,
+        "passed": true,
+        "elapsedSeconds": 214.257
+      },
+      {
+        "log": "matrix-320.log",
+        "methods": 1,
+        "passed": true,
+        "elapsedSeconds": 132.428
+      },
+      {
+        "log": "matrix-400.log",
+        "methods": 1,
+        "passed": true,
+        "elapsedSeconds": 131.711
+      }
+    ],
+    "invocations": 18,
+    "distinctMethods": 17,
+    "note": "The same one-method screenshot matrix runs at two densities; invocations and distinct methods are not interchangeable. No 300-cycle claim for this APK.",
+    "captureCount": 72,
+    "densities": [
+      320,
+      400
+    ],
+    "orientations": [
+      "landscape",
+      "portrait"
+    ],
+    "languages": [
+      "zh",
+      "en"
+    ],
+    "dimensions": [
+      [
+        3408,
+        2272
+      ],
+      [
+        2272,
+        3408
+      ]
+    ],
+    "settingsIme": {
+      "publicFeedbackSent": false,
+      "framesBeforeSettings": 26,
+      "framesUnderSettings": 90,
+      "exposedSkyActive": true,
+      "realImeVisible": true,
+      "editorIdentityRetained": true,
+      "draftRetainedDuringIme": true,
+      "paneBounds": "[17,13][2256,1336]",
+      "rootBounds": "[0,0][2272,3408]",
+      "draftRetainedAfterRecreation": true
+    },
+    "allCaptureHashesVerified": true,
+    "initialOperatorInterruptionRetained": true
+  },
+  "publicSystemUpgrade": {
+    "status": "not accepted; native recovery attempt timed out",
+    "fromVersionCode": 12,
+    "toVersionCode": 14,
+    "attemptTimeoutSeconds": 300,
+    "observation": "ADB shell remained responsive while compositor capture stalled. The attempt is retained, not counted as successful native public discovery or system installation.",
+    "rawEvidence": "output/native-development/preview-2-final/readme-handoff/rejected-public-update-attempt.json",
+    "scope": "Disposable software-rendered emulator only; no hardware claim"
+  },
+  "scopeLimits": [
+    "Persistent BARO test signer, not a store production signing identity.",
+    "Public feedback/backend relay unconfigured; direct public weather APIs remain available.",
+    "Xiaomi hardware power, haptics, GPS and vendor installer remain unverified.",
+    "Historical endurance and resource measurements remain bound to their recorded APK."
+  ],
+  "localEvidence": "output/native-development/preview-2-final/"
+}

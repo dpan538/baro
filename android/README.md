@@ -1,6 +1,6 @@
 # BARO native Kotlin Android
 
-Kotlin Activity, native Canvas dashboards and native settings, OpenGL ES 3 artwork hosted in TextureView. No WebView, webpage wrapper or JavaScript runtime is shipped as the UI. The original shader programs are extracted by `scripts/prepare-native-assets.py`; measured native layout specifications preserve the frozen browser design. The application ID stays `studio.sundown.weather`, min SDK 29, compile/target SDK 36, JVM 17. Current user-test candidate: **0.10.0-preview.2 / versionCode 14**, with the selected G1b icon and source-aligned half-screen portrait Settings. See [preview distribution](../docs/ANDROID-PREVIEW-DISTRIBUTION.md).
+Kotlin Activity, native Canvas dashboards and native settings, OpenGL ES 3 artwork hosted in TextureView. No WebView, webpage wrapper or JavaScript runtime is shipped as the UI. The original shader programs are extracted by `scripts/prepare-native-assets.py`; measured native layout specifications preserve the frozen browser design. The application ID stays `studio.sundown.weather`, min SDK 29, compile/target SDK 36, JVM 17. Current public user-test build: **0.10.0-preview.2 / versionCode 14**, with the selected G1b icon and source-aligned half-screen portrait Settings. [Download the test APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.2/BARO-0.10.0-preview.2.apk) · [Pad installation](../DOWNLOAD.md) · [preview distribution](../docs/ANDROID-PREVIEW-DISTRIBUTION.md).
 
 ```sh
 # JDK 17/21 and SDK 36 via JAVA_HOME / ANDROID_HOME or ignored local.properties
@@ -35,6 +35,6 @@ Visual acceptance is separate from successful tests/builds: compare real native 
 
 Hosted CI performs native UI/gesture checks with test-only recorded input and GLES surfaces suppressed because the CPU-only hosted renderer hit input-dispatch ANRs. It intentionally skips product captures and records this scope in its artifacts. Full-resolution Fine/live-data screenshots, both pixel modes, GPU lifecycle and cleanup remain local emulator checks. No hosted profile or fixture is bundled in the application APK.
 
-## Reviewed local preview
+## Earlier reviewed local baseline
 
 Application source `f5abafb` and final test source `8a73cae` pass 20 domain, 14 backend and 39 distinct native methods, both build/lint profiles and 68 full-resolution genuine-provider product captures. The reviewed APK identity, exact local download copy, fixed single-viewport/high-density checks and remaining boundaries are recorded in [acceptance.json](verification/acceptance.json). The 300 actual launch/run groups, controlled same-signer system upgrade and hosted workflow results remain explicitly bound to their historical source in [the 6d6c62c record](verification/history/acceptance-6d6c62c.json); they are not current-APK claims. Earlier 9c780d3 acceptance remains in [its history record](verification/history/acceptance-9c780d3.json). APKs, raw captures, provider responses and recordings remain local ignored artifacts; the tracked record contains hashes and scope, not generated binaries.

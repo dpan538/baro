@@ -1,0 +1,33 @@
+{
+  "versionName": "0.10.0-preview.2",
+  "versionCode": 14,
+  "apkSha256": "04b99a675cbd2d8b549c9369f5656e04c2063f244cec4d3c29ddeb258b86e13a",
+  "sourceCommit": "149482a00622d815582c257c6b61763958b574ce",
+  "origin": "Native UiAutomation screenshots on disposable API36 emulator, not physical Xiaomi hardware; downsampled JPEG for README only.",
+  "screenshots": [
+    {
+      "file": "native-preview-2-weather-zh.jpg",
+      "sourceCapture": "density-320/preview-landscape-zh-page0.png",
+      "sourceSha256": "7f59cea5fdfc6351f8caa3e8eed37c59ac2471820f850d22b37b172014bb3484",
+      "sha256": "8c870a9ae0a712b69f46bd4f44193151a20835c57f4cedef91e9203db734ff2d",
+      "width": 1704,
+      "height": 1136
+    },
+    {
+      "file": "native-preview-2-observation-zh.jpg",
+      "sourceCapture": "density-320/preview-landscape-zh-page1.png",
+      "sourceSha256": "9fab99b9bdee0fd9a7e8d8d0a3fd386fdd69a0f55b0c77ee8b7c6af554150789",
+      "sha256": "1e287c7fa199e203bb84de96ec3776ef7f4923893714d9a2ef484d9ffd14b478",
+      "width": 1704,
+      "height": 1136
+    },
+    {
+      "file": "native-preview-2-settings-portrait-zh.jpg",
+      "sourceCapture": "density-320/preview-portrait-zh-appearance.png",
+      "sourceSha256": "f01f10ab4fd5d8218718a9822a4838af194bdebc0041e5cfdf3455280abc84c3",
+      "sha256": "137d7d91869aff6c8d816b50e30c08f1107c446808cf1dbbbcdeeb6a3e59474e",
+      "width": 1136,
+      "height": 1704
+    }
+  ]
+}

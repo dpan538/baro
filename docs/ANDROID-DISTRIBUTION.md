@@ -1,6 +1,6 @@
 # Native distribution and signing
 
-The current build is a **development-signed native preview**, not a stable release. There is no verified public BARO APK or public BARO backend yet. The frozen UI tag remains unchanged. Do not manufacture a GitHub Release for source backup.
+The current public build is **0.10.0-preview.2 / 14**, a non-debug native preview signed with the persistent BARO test certificate. [Download the APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.2/BARO-0.10.0-preview.2.apk) or read [tablet installation instructions](../DOWNLOAD.md). Anonymous public APK delivery is verified against the final package hash; this is a prerelease, not a stable store release. The public BARO backend/feedback relay remains unconfigured. The frozen UI tag remains unchanged. Do not manufacture a GitHub Release for source backup.
 
 Build identity is extracted from the real APK with `scripts/inspect-native-apk.py`, not inferred from filenames. It checks ZIP integrity, package/version, embedded native shader/font assets, absence of a bundled webpage, and the actual APK cryptographic signature/certificate. The output includes SHA-256, byte size, debuggable state and explicit public-download status.
 
@@ -19,7 +19,7 @@ Supply `BARO_KEYSTORE`, `BARO_STORE_PASSWORD`, `BARO_KEY_ALIAS`, `BARO_KEY_PASSW
 
 ## GitHub release contract
 
-A real release contains a signed APK, `SHA256SUMS.txt`, and `baro-update.json`. The manifest fields are `packageName`, integer `versionCode`, `versionName`, `sha256`, `certificateSha256`, byte `size`, and exact HTTPS GitHub `url`. Generate all identity values from the final signed APK. Preview builds query up to 30 non-draft releases, including prereleases; stable builds query `/releases/latest` and reject prereleases. Version ordering uses versionCode. No release and a publication missing a valid Android manifest are separate states.
+A real release contains a signed APK, `SHA256SUMS`, and `baro-update.json`. The manifest fields are `packageName`, integer `versionCode`, `versionName`, `sha256`, `certificateSha256`, byte `size`, and exact HTTPS GitHub `url`. Generate all identity values from the final signed APK. Preview builds query up to 30 non-draft releases, including prereleases; stable builds query `/releases/latest` and reject prereleases. Version ordering uses versionCode. No release and a publication missing a valid Android manifest are separate states.
 
 The client accepts only this repository's HTTPS asset paths, follows bounded redirects to the fixed GitHub asset-host allowlist, enforces size/space/time limits and supports cancellation/retry. Before handing off to Android it verifies file hash, cryptographic APK signature, expected package/version and exact equality to the installed signer. The verified pending package survives process restart. Installation-source permission denial retains it for retry. Successful upgrade cleans pending files. Nothing silently installs or uninstalls.
 

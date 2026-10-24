@@ -1,10 +1,12 @@
 # First Android preview and subsequent updates
 
-The first intended public user test build is `0.10.0-preview.2` (`versionCode 14`). It keeps
+The first published public user test build is `0.10.0-preview.2` (`versionCode 14`). It keeps
 `studio.sundown.weather` and the existing dedicated BARO test certificate. The
 `preview` Gradle variant inherits release settings, disables debugging and cleartext
 network traffic, and uses this persistent local test signer. It is a prerelease,
 not a Play/store production signing identity. Never replace its key between tests.
+
+[Download the published APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.2/BARO-0.10.0-preview.2.apk) · [Pad installation and update instructions](../DOWNLOAD.md) · [exact-package acceptance](../android/verification/preview-0.10.0-preview.2.json). Anonymous public delivery has been verified against the native package hash. The package contains source `149482a`; test-only follow-ups do not alter its bytes.
 
 The launcher/installer uses the selected **G1b** cloud and graphite gradient,
 not the old sunrise line icon. `branding/icons/selection.json` identifies the

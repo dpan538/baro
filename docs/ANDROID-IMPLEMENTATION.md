@@ -2,7 +2,15 @@
 
 Started 2026-10-23 (Australia/Brisbane). This ledger supersedes the old paused Android host status. The immutable `ui-baseline-2026-10-23` tag remains the reference. No Annota application code, service credentials or signing identity is used.
 
-## Current fixed-viewport refinement — 2026-10-24
+## First public Android preview — 2026-10-24
+
+**0.10.0-preview.2 / versionCode 14** is available as a signed, non-debug [public APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.2/BARO-0.10.0-preview.2.apk). Application source/tag is `149482a00622d815582c257c6b61763958b574ce`; the test-only synchronization follow-up is `93589ca1de026451c199bbc5e64a898b64d52278`. The 20,469,240-byte package has SHA-256 `04b99a675cbd2d8b549c9369f5656e04c2063f244cec4d3c29ddeb258b86e13a` and the persistent BARO certificate `aac2bf88afcc1ce08009a9cf5e9f91eb0092b30bb280e16a0f9d095dbf338593`.
+
+The exact package passes four update-safety cases, eleven Settings/About/location/interaction cases, one real keyboard/editor/animated-sky case and the same screenshot matrix at two densities. These are 18 invocations of 17 distinct methods; the matrices yield 72 source-bound native captures covering both languages/orientations at 320/400 dpi. The original operator-induced interruption and successful recollection remain separate. Anonymous public APK, manifest and checksum delivery are verified; the README includes direct Pad download and installation instructions and uses current native screenshots. See [preview acceptance](../android/verification/preview-0.10.0-preview.2.json) and [distribution](ANDROID-PREVIEW-DISTRIBUTION.md).
+
+A recovery attempt at native public discovery/download from the earlier code-12 baseline timed out after 300 seconds while compositor capture stalled; shell commands still responded. That attempt is retained and not counted as a successful public system upgrade. Controlled installer/retention evidence remains bound to its historical source until a current public-package branch is completed. Public feedback/backend deployment, production signing and Xiaomi hardware acceptance remain separate. The published APK has not been rebuilt or replaced.
+
+## Earlier fixed-viewport refinement — 2026-10-24
 
 Application source `f5abafb3e1593193636c4d2075c3eb3b4ddfba01` and standard test source
 `8a73caec9dae46fb9a15f97d23e1855feebdb115` verify removal of every source/status

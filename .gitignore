@@ -37,3 +37,4 @@ backend/data/
 android/verification/*
 !android/verification/README.md
 !android/verification/acceptance.json
+!android/verification/preview-0.10.0-preview.2.json
