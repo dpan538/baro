@@ -28,8 +28,12 @@ Evidence collection also identified an ADB directory-nesting hazard: pulling a d
 
 Further magnified review of `cd93b54` found the primary gust compass crossing its direction footer. A native stroke/text intersection assertion reproduces the problem; reserving the footer below that compass removes the collision without changing the normal wind card. The boundary regression now checks four purposes in both languages and orientations. A separate composed-pixel test also distinguishes model settlement from actual presentation: on the dedicated software renderer, all three page anchors matched after about 2.4 seconds. Fixed-delay gesture snapshots are intermediate frames, not presentation acceptance. The presentation-confirmed native image and measured delay are retained; no target-hardware latency claim follows from this emulator result.
 
-## Final source-bound closure
+## Earlier source-bound closure
 
 Source `de57619672fa9471caeb64aa9b0340fc0631657d` passes 30 native cases including the additional presentation gate, the high-scaling case and both update cases (33 native cases total), alongside 20 domain and 14 backend tests, assembly/lint/source checks and both hosted workflows. Its 52 standard and four high-scaling real-provider images are individually pulled and hashed. The actual system installer upgrades the controlled same-signer fixture while retaining settings/draft/private data; the accepted preview is then restored, pulled, hashed and cold-started.
 
 The final gallery contains all 56 native selections, eight frozen references, correction comparisons, a presentation-confirmed image and three actual recordings: interaction 100.468 seconds, Fine 56.920 seconds and Block 59.885 seconds. The initial Fine clip failed the duration gate at 44.445 seconds and is retained as rejected evidence. The longer retry uses the same fresh provider payload. Fine's roughly 0.49 fps and Block's roughly 6.86 fps are software-emulator observations; target-tablet frame rate, physical vibration strength and touch feel remain open. Current source/package/signature/evidence identities and all remaining production/hardware boundaries are in the acceptance record.
+
+## Subsequent 300-group audit
+
+The current application is `6d6c62c`, with source-bound 300-group, 200-combination glyph, 56-image, resource and installer evidence in [the continuous audit](NATIVE-SOAK-2026-10-24.md). Additional review corrected pressure endpoint clipping and incomplete wheel previews without changing card/arc geometry. Cache-state classification, excluded interrupted runs and the observed software Fine background settling delay are preserved there. The earlier `de57619` package/results above remain historical evidence, not the current artifact identity.
