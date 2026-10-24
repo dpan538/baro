@@ -32,7 +32,7 @@ class NativeSmallViewportTest {
             val image=i.uiAutomation.takeScreenshot();assertNotNull(image)
             // The page frame has a stable distinct tone, clear of artwork and glyphs.
             // The panorama's white rim makes a paper-only test ambiguous at 400 dpi.
-            val edge=image.getPixel(4,image.height/2)
+            val edge=image.getPixel(4,if(page==0)image.height/4 else image.height/2)
             val frame=android.graphics.Color.red(edge)
             val pixel=image.getPixel(40,200)
             val paper=android.graphics.Color.red(pixel)>245&&android.graphics.Color.green(pixel)>245
