@@ -406,7 +406,28 @@
   "upgrade": {
     "sameCertificateAsEarlierPreviews": true,
     "installedThroughAdbWithDataPreserved": true,
-    "publicNativeSettingsToSystemInstallerUpgradeVerified": false
+    "publicNativeSettingsToSystemInstallerUpgradeVerified": true,
+    "fromVersionCode": 16,
+    "toVersionCode": 17,
+    "nativePublicDiscoveryAndDownload": true,
+    "verifiedCandidateRestoredAfterProcessDeath": true,
+    "observedSystemUpdateConfirmed": true,
+    "systemInstalledSha256": "016263e73e2654d5d038f3570eab2cdcf4d8a867f4f3915cffc9bdee904f928d",
+    "retention": {
+      "versionCode": 17,
+      "settingsRetained": true,
+      "feedbackDraftRetained": true,
+      "privateCanaryRetained": true,
+      "installedCandidateCleaned": true
+    },
+    "systemInstallerPresentedImageSha256": "8cc1a0ea7dfbd27bf174b9e02ec6628672f892c709a240c160bc5eb3cde6d434",
+    "logs": [
+      "public-native-download-corrected.log",
+      "public-native-installer.log",
+      "public-upgrade-retention.log"
+    ],
+    "initialAttempt": "The opt-in test used an outdated English button name, Check for updates. Corrected to the product label Check updates and reran the full real public upgrade; original failure retained locally.",
+    "screenshotScope": "The installer was confirmed from actual system UI XML and system-installer-presented.png; the earlier fixed-delay test screenshot was not used as presentation proof."
   },
   "limits": [
     "API 36 emulator acceptance is not Xiaomi hardware acceptance for GPS, touch feel, frame rate or power.",

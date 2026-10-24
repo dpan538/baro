@@ -46,7 +46,7 @@ class NativePublicUpdateTest {
         File(ctx.filesDir,"upgrade-canary.txt").writeText("BARO private data remains intact\n")
         ActivityScenario.launch(MainActivity::class.java).use{s->
             s.onActivity{a->a.updates.apk.delete();File(ctx.cacheDir,"updates/pending.json").delete();a.settings.open()};SystemClock.sleep(350)
-            tap(s,"About");tap(s,"Check for updates")
+            tap(s,"About");tap(s,"Check updates")
             val deadline=SystemClock.uptimeMillis()+45000;var available=false
             while(!available&&SystemClock.uptimeMillis()<deadline){s.onActivity{available=find(it.settings,"Download update")!=null};SystemClock.sleep(150)}
             assertTrue("Actual public release was not discovered",available);capture("public-update-available.png")
@@ -64,7 +64,7 @@ class NativePublicUpdateTest {
         assertEquals("yes",args.getString("publicUpdate"))
         ActivityScenario.launch(MainActivity::class.java).use{s->
             s.onActivity{a->assertEquals(args.getString("expectedSha"),a.updates.pending()!!.sha);a.settings.open()};SystemClock.sleep(350)
-            tap(s,"About");tap(s,"Check for updates")
+            tap(s,"About");tap(s,"Check updates")
             s.onActivity{a->assertNotNull(find(a.settings,"Open system installer"));assertNotNull(a.updates.pending())}
             capture("public-update-restored.png")
             // Source permission has already been exercised in the controlled
