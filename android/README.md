@@ -1,6 +1,6 @@
 # BARO native Kotlin Android
 
-Kotlin Activity, native Canvas dashboards and native settings, OpenGL ES 3 artwork hosted in TextureView. No WebView, webpage wrapper or JavaScript runtime is shipped as the UI. The original shader programs are extracted by `scripts/prepare-native-assets.py`; measured native layout specifications preserve the frozen browser design. The application ID stays `studio.sundown.weather`, min SDK 29, compile/target SDK 36, JVM 17. Current candidate: **0.10.0-native-preview / versionCode 12**.
+Kotlin Activity, native Canvas dashboards and native settings, OpenGL ES 3 artwork hosted in TextureView. No WebView, webpage wrapper or JavaScript runtime is shipped as the UI. The original shader programs are extracted by `scripts/prepare-native-assets.py`; measured native layout specifications preserve the frozen browser design. The application ID stays `studio.sundown.weather`, min SDK 29, compile/target SDK 36, JVM 17. Current user-test candidate: **0.10.0-preview.2 / versionCode 14**, with the selected G1b icon and source-aligned half-screen portrait Settings. See [preview distribution](../docs/ANDROID-PREVIEW-DISTRIBUTION.md).
 
 ```sh
 # JDK 17/21 and SDK 36 via JAVA_HOME / ANDROID_HOME or ignored local.properties

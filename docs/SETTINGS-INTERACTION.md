@@ -30,3 +30,15 @@ The browser workflow does not install updates or download packages. The existing
 - `/settings-qa.html` runs the real app with only the GitHub response simulated. It supports available/current/empty/failure-then-retry/slow cases, both languages and both tablet orientations. It is a developer test page, not an application setting.
 - This revision checked 11 simulated result/layout cases, all three groups remaining present, touch bounds, failure/retry, slow-request cancellation, Escape and rapid close, unit/language changes and keyboard scrolling. The actual configured repository returned no published release.
 - Gear/close button geometry matched exactly in all four language/orientation combinations. Browser geometry and interaction checks do not establish native-device performance or physical touch acceptance.
+
+## Native implementation alignment
+
+The native port uses the same measured information-cell bounds: the upper half
+in portrait and left half in landscape. The three shortcuts continue to scroll
+one seven-control list. Source typography, index numbers, accent dots, option
+SVGs, selected indicator insets, switch geometry and footer are retained. The
+update card is bounded and scrollable over the exposed sky, with native download,
+verification and installer actions added. It does not cover the portrait Settings
+pane. The sky keeps animating in foreground; a real system IME can resize the
+Settings viewport without recreating the active feedback editor. Native status
+and version copy describe actual data/services rather than the browser examples.

@@ -19,8 +19,8 @@ class NativeAboutTest {
         for(lang in listOf("zh","en")){
             i.targetContext.getSharedPreferences("baro-native",Context.MODE_PRIVATE).edit().putString("language",lang).putBoolean("motion",false).commit()
             ActivityScenario.launch(MainActivity::class.java).use{s->s.onActivity{a->a.settings.open()};i.waitForIdleSync()
-                s.onActivity{a->val all=texts(a.settings);assertEquals(7,all.count{it.text.matches(Regex("0[1-7]   .+"))});all.single{it.text.toString()==a.model.tr("关于","About")}.performClick()};SystemClock.sleep(350)
-                s.onActivity{a->val sc=scroll(a.settings)!!;val content=sc.getChildAt(0);val source=texts(content).single{it.text.toString()==a.model.tr("数据来源与许可","Sources & licenses")};source.performClick()};i.waitForIdleSync()
+                s.onActivity{a->val all=texts(a.settings);assertEquals(7,all.count{it.tag=="baro-setting-index"});all.single{it.text.toString()==a.model.tr("关于","About")}.performClick()};SystemClock.sleep(350)
+                s.onActivity{a->texts(a.settings).single{it.text.toString()==a.model.tr("数据来源 Open-Meteo · BARO","Powered by Open-Meteo · BARO")}.performClick()};i.waitForIdleSync()
                 s.onActivity{a->val all=texts(a.settings);val text=all.joinToString("\n"){it.text};for(credit in listOf("Open-Meteo","CAMS","GeoNames","GitHub API","AndroidX","apksig","Kotlin","JetBrains","Guava","MiSans","Inter","Roboto Mono","SunCalc","Apache-2.0.txt","Runtime-dependencies.txt"))assertTrue("Missing About credit: $lang/$credit",text.contains(credit))
                     all.filter{it.layout!=null}.forEach{v->for(line in 0 until v.layout.lineCount)assertEquals("Ellipsis in About: ${v.text}",0,v.layout.getEllipsisCount(line))}
                     assertTrue(a.assets.open("licenses/Runtime-dependencies.txt").bufferedReader().readText().contains("kotlinx-coroutines"));a.settings.back();a.settings.close()

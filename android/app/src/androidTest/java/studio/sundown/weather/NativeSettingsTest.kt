@@ -17,7 +17,8 @@ class NativeSettingsTest {
     private val i=InstrumentationRegistry.getInstrumentation()
     private fun seed(){i.targetContext.getSharedPreferences("baro-native",Context.MODE_PRIVATE).edit().clear().putBoolean("motion",false).putBoolean("block",InstrumentationRegistry.getArguments().getString("pixels")=="block").commit()}
     private fun find(root:View,label:String):View? {
-        if(root is TextView&&root.text.toString()==label)return root
+        if(root.contentDescription?.toString()==label)return root
+        if(root is TextView&&(root.text.toString()==label||label in listOf("°C","°F")&&root.text.toString().startsWith("$label ")))return root
         if(root is ViewGroup)for(n in 0 until root.childCount)find(root.getChildAt(n),label)?.let{return it}
         return null
     }

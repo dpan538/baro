@@ -108,8 +108,9 @@ class MainActivity:Activity(){
     }
     private fun artLifecycle(){
         val transition=pageTransition
-        weatherArt.pauseForInteraction(transition||touchInProgress);observationArt.pauseForInteraction(transition||touchInProgress)
-        val exposed=visible&&!pager.overlayOpen
+        val pause=transition||(touchInProgress&&!pager.overlayOpen)
+        weatherArt.pauseForInteraction(pause);observationArt.pauseForInteraction(pause)
+        val exposed=visible
         weatherArt.active=exposed&&model.weather!=null&&(model.page==0||transition)
         observationArt.active=exposed&&model.weather?.let{it.scene(model.window(it).start)!="unknown"}==true&&(model.page==1||transition)
     }

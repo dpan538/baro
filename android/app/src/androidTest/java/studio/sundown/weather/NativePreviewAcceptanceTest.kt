@@ -42,11 +42,12 @@ class NativePreviewAcceptanceTest {
         }
     }
     private fun capture(s: ActivityScenario<MainActivity>, name: String, settings: Boolean = true, controlled: Boolean = false) {
-        pause(500);if (settings) audit(s)
+        pause(500)
         val image = i.uiAutomation.takeScreenshot()!!
         File(ctx.getExternalFilesDir(null), "preview-$name.png").outputStream().use { image.compress(Bitmap.CompressFormat.PNG, 100, it) }
         records.put(JSONObject().put("file", "preview-$name.png").put("width", image.width).put("height", image.height).put("controlledLongNotes", controlled))
         image.recycle()
+        if(settings)audit(s)
     }
     private fun present(s: ActivityScenario<MainActivity>, page: Int) {
         s.onActivity { a -> a.model.page = page;a.redraw() };pause(700)
@@ -79,12 +80,23 @@ class NativePreviewAcceptanceTest {
                     val prefix = "${if (portrait) "portrait" else "landscape"}-$lang"
                     s.onActivity { a -> File(ctx.getExternalFilesDir(null), "preview-$prefix-live.json").writeText(a.repository.rawFor(a.model.place)!!) }
                     for (page in 0..1) { present(s, page);capture(s, "$prefix-page$page", false) }
+                    present(s,0)
                     s.onActivity { it.settings.open() };pause()
+                    s.onActivity { a ->
+                        val pane=a.settings.findViewWithTag<View>("baro-settings-pane")!!;val r=Rect();val art=Rect();pane.getGlobalVisibleRect(r);a.pager.weatherPage.art.getGlobalVisibleRect(art)
+                        if(portrait)assertTrue("Portrait Settings must end at the living sky",kotlin.math.abs(r.bottom-art.top)<=3)
+                        else assertTrue("Landscape Settings must end at the living sky",kotlin.math.abs(r.right-art.left)<=3)
+                    }
                     capture(s, "$prefix-appearance")
+                    s.onActivity{a->
+                        fun find(v:View):View?{if(v.contentDescription?.toString()==a.model.tr("天气动画","Weather animation"))return v;if(v is ViewGroup)for(n in 0 until v.childCount)find(v.getChildAt(n))?.let{return it};return null}
+                        val toggle=find(a.settings)!!;val group=toggle.parent.parent as View;group.requestRectangleOnScreen(Rect(0,0,group.width,group.height),true)
+                    }
+                    capture(s,"$prefix-appearance-scrolled")
                     click(s, if (lang == "zh") "单位" else "Units");capture(s, "$prefix-units")
                     click(s, if (lang == "zh") "关于" else "About");capture(s, "$prefix-about")
-                    s.onActivity { a -> assertEquals(7, texts(a.settings).count { it.text.matches(Regex("0[1-7]   .+")) }) }
-                    click(s, if (lang == "zh") "检查更新" else "Check for updates")
+                    s.onActivity { a -> assertEquals(7, texts(a.settings).count { it.tag=="baro-setting-index" }) }
+                    click(s, if (lang == "zh") "检查更新" else "Check updates")
                     var message = "";val checked = SystemClock.uptimeMillis() + 20000
                     while (SystemClock.uptimeMillis() < checked) {
                         s.onActivity { a -> message = (SettingsPanel::class.java.getDeclaredField("updateMessage").apply { isAccessible = true }.get(a.settings) as TextView).text.toString() }
@@ -94,16 +106,21 @@ class NativePreviewAcceptanceTest {
                     assertTrue("Actual GitHub API check failed: $message", message.contains("尚无发布包") || message.contains("No release") || message.contains("最新版本") || message.contains("latest version"))
                     capture(s, "$prefix-update-live")
                     s.onActivity { a ->
+                        val card=a.settings.findViewWithTag<View>("baro-update-card")!!;val r=Rect();val art=Rect();card.getGlobalVisibleRect(r);a.pager.weatherPage.art.getGlobalVisibleRect(art)
+                        assertTrue("Update card must stay over the living sky: card=$r, sky=$art",r.left>=art.left&&r.top>=art.top&&r.right<=art.right&&r.bottom<=art.bottom)
+                        assertEquals(card.height,r.height())
+                    }
+                    s.onActivity { a ->
                         val messageView = SettingsPanel::class.java.getDeclaredField("updateMessage").apply { isAccessible = true }.get(a.settings) as TextView
                         messageView.text = (if (lang == "zh") "较长发布说明，验证滚动区域与安装按钮始终可用。\n" else "Long release notes to verify scrolling and accessible installation controls.\n").repeat(55)
                     }
                     pause();capture(s, "$prefix-update-long-notes", controlled = true)
                     s.onActivity { a ->
-                        val button = SettingsPanel::class.java.getDeclaredField("updateAction").apply { isAccessible = true }.get(a.settings) as View
+                        val button = texts(a.settings).single { it.text.toString()==a.model.tr("查看发布页 ↗","View releases ↗") }
                         val r = Rect();assertTrue(button.getGlobalVisibleRect(r));assertEquals(button.height, r.height())
                         a.settings.back()
                     };pause()
-                    click(s, if (lang == "zh") "数据来源与许可" else "Sources & licenses");capture(s, "$prefix-credits")
+                    click(s, if (lang == "zh") "数据来源 Open-Meteo · BARO" else "Powered by Open-Meteo · BARO");capture(s, "$prefix-credits")
                     s.onActivity { it.settings.close() }
                 }
             }

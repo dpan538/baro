@@ -1,6 +1,6 @@
 # First Android preview and subsequent updates
 
-The first user test build is `0.10.0-preview.1` (`versionCode 13`). It keeps
+The first intended public user test build is `0.10.0-preview.2` (`versionCode 14`). It keeps
 `studio.sundown.weather` and the existing dedicated BARO test certificate. The
 `preview` Gradle variant inherits release settings, disables debugging and cleartext
 network traffic, and uses this persistent local test signer. It is a prerelease,
@@ -71,3 +71,25 @@ relay. The default unconfigured app retains feedback drafts and never reports
 delivery without a verified receipt. Do not describe that as working public
 submission. Xiaomi power, physical haptics and device-specific installation
 still require hardware testing.
+
+## Settings source alignment
+
+The original portrait Settings pane occupies exactly the weather information
+cell, leaving the lower living sky visible. Landscape uses the left information
+cell. Both bounds come from the frozen native geometry, not an approximate
+full-screen sheet. Seven controls remain in one list; Appearance/Units/About
+are scroll shortcuts with an active underline. Index/type roles, accent dots,
+option SVGs and shared centering, switches, footer and non-modal update card
+follow the source design. Real status/version information replaces sample copy.
+
+The exposed weather keeps rendering while Settings is open. App backgrounding
+still pauses rendering. Height-only IME changes resize the pane without rebuilding
+the focused editor; drafts and ordinary preferences persist. Native acceptance
+checks the pane/sky boundary, update-card containment, text bounds, real keyboard
+visibility and continuing GLES frames. An earlier preview.1 candidate with
+full-height portrait Settings remains an unpublished draft and is superseded.
+
+Internal refinement retained its failed first card-placement gate, the second
+36-capture pass, and a third 36-capture pass plus the real IME/GLES test. Those
+working-tree candidates are not public distribution artifacts. The signed final
+APK must have a full source commit and its own exact-package acceptance.
