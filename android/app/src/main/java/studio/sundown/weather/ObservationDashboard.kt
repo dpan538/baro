@@ -8,6 +8,9 @@ import java.time.Instant
 import kotlin.math.*
 
 class ObservationDashboard(context:Context,model:AppModel):Dashboard(context,model){
+    // Keep the approved full-page composition at every display-density setting.
+    // This is one shared coordinate space, not smaller fonts or a taller scroll canvas.
+    override val density get()=if(width>0)width/(if(portrait)1136f else 1704f)else resources.displayMetrics.density
     private var wx:Weather?=null
     private var at=0L
     private var title=26f

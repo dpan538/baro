@@ -15,7 +15,7 @@ foregrounds.
   Long units wrap while retaining their original size.
 - Pressure remains a semicircle. Landscape pressure donates surplus height to
   dew-point spread. Standard portrait redistributes a smaller amount in the same
-  column; the readable scrolling fallback retains its taller cards. The
+  column. The
   landscape Moon/upper-wind boundary also follows the full-height figure budget.
 - Humidity, cloud layers, column water, soil, solar angle, bearing, radiation,
   Moon, upper wind and precipitation use taller authored plots. No image assets,
@@ -31,6 +31,27 @@ foregrounds.
   approximately 8.90:1 to 12.19:1. Intentionally faded edge labels are a separate
   state and are not covered by that regular-text ratio.
 
+## Fixed viewport and clean artwork — latest direction
+
+The user rejected all corner badges over weather and observation illustrations,
+including provider/time, loading and missing-data pills. Both the TextView overlay
+and the stale-weather Canvas caption are removed. Weather availability/stale state
+uses the existing condition row; observation retains its information-area source
+and missing-data explanation. About retains the complete attribution inventory.
+
+Both main pages now use a fixed FrameLayout. Observation maps the actual viewport
+width onto the approved 1704/1136-unit reference width, using one scale for Canvas,
+EGL artwork bounds, corner outlines and all gesture coordinates. At the same
+physical resolution, switching Android density from 320 to 400 retains physical
+figure/type size and the full-height figure ratio. This replaces the former tall
+scroll canvas rather than reducing individual instruments. The available height
+and real status-bar inset remain measured. Settings scroll independently.
+
+Regression includes real high-density landscape/portrait, both languages and all
+twelve purposes, plus no-caption checks in ready/stale/loading/missing states.
+The previous scroll-acceptance screenshots and tests are historical iterations,
+not acceptance for this latest direction.
+
 ## Iterations and evidence
 
 Local raw output is retained under `output/native-development/refinement-full-height/`.
@@ -45,7 +66,7 @@ Local raw output is retained under `output/native-development/refinement-full-he
    native captures and the failures are preserved.
 3. R3 resolves the portrait overlap through card redistribution, adds the small
    corners and refines contrast. The expanded audit covers normal landscape,
-   normal portrait and the narrow readable scroll composition: 296 text cases
+   normal portrait and the former narrow scrolling composition: 296 text cases
    with no glyph clipping/ellipsis/meaningful text intersections; 996 main-figure
    measurements, minimum 85.99995%; 1,872 composed tile checks with all four
    corners visibly distinct from the tile surface. A wind test initially

@@ -24,12 +24,13 @@ class NativeFigureScaleTest {
             a.model.now=recorded.validAt
             val top=a.root.paddingTop
             val landscapeTop=a.window.decorView.rootWindowInsets.getInsetsIgnoringVisibility(android.view.WindowInsets.Type.statusBars()).top
-            for(lang in listOf("zh","en"))for(profile in listOf(Triple(false,1704,1136),Triple(true,1136,1704),Triple(true,909,2130)))for(purpose in 0..11){
+            for(lang in listOf("zh","en"))for(profile in listOf(Triple(false,1704,1136),Triple(true,1136,1704),Triple(true,909,1363)))for(purpose in 0..11){
                 val (portrait,width,height)=profile
                 a.model.lang=lang;a.model.purpose=purpose;a.model.weather=recorded
                 val d=a.resources.displayMetrics.density
                 val inset=if(portrait)0 else landscapeTop;a.root.setPadding(0,inset,0,0)
-                val m=DesignMetrics(a,"observation-${if(portrait)"portrait"else "landscape"}-$lang-$purpose");m.configure(width.toFloat(),height-inset/d,inset/d)
+                val board=ObservationDashboard(a,a.model);board.layout(0,0,(width*d).toInt(),(height*d).toInt()-inset)
+                val m=DesignMetrics(a,"observation-${if(portrait)"portrait"else "landscape"}-$lang-$purpose");m.configure(board.w,board.h,inset/board.coordinateScale)
                 val names=mutableListOf("ins-wind","ins-pressure","ins-dew","ins-moisture","ins-clouds","ins-column","ins-soil","ins-solar","ins-bearing","ins-radiation","ins-drift","ins-rain")
                 if(purpose!=7)names.add("ins-lunar")
                 if(purpose!=8)names.add("ins-focus")
@@ -56,7 +57,7 @@ class NativeFigureScaleTest {
                     override fun drawArc(r:RectF,start:Float,sweep:Float,useCenter:Boolean,paint:Paint){val p=Path().apply{addArc(r,start,sweep)};val b=RectF();p.computeBounds(b,true);b.inset(-paint.strokeWidth/2,-paint.strokeWidth/2);shape(b,paint);super.drawArc(r,start,sweep,useCenter,paint)}
                     override fun drawPath(path:Path,paint:Paint){val b=RectF();path.computeBounds(b,true);shape(b,paint);super.drawPath(path,paint)}
                 }
-                val board=ObservationDashboard(a,a.model);board.layout(0,0,(width*d).toInt(),(height*d).toInt()-inset);board.draw(Recorder())
+                board.draw(Recorder())
                 for((name,module)in modules){
                     val figure=figures[name]?:RectF();val ratio=figure.height()/module.height()
                     if(ratio<.85f)issues+="$lang/$portrait/$purpose/$name: $ratio"

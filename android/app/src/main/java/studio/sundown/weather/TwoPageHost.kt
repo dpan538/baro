@@ -28,7 +28,7 @@ class TwoPageHost(context:Context,val model:AppModel,val weatherPage:NativePage,
         if(overlayOpen)return false
         when(event.actionMasked){
             MotionEvent.ACTION_DOWN->{animator?.end();animator=null;tracker?.recycle();tracker=VelocityTracker.obtain();tracker?.addMovement(event);dx=0f
-                val board=current().dashboard;val x=event.x/density;val y=(event.y+current().scrollY)/density
+                val board=current().dashboard;val x=event.x/board.coordinateScale;val y=event.y/board.coordinateScale
                 val excluded=board.dialRect.contains(x,y)||board.gearRect.contains(x,y)||board.paletteRect.contains(x,y)||board.placeRect.contains(x,y)
                 val insets=if(android.os.Build.VERSION.SDK_INT>=30)rootWindowInsets?.getInsets(android.view.WindowInsets.Type.systemGestures()) else null
                 val edge=max(24*density,max(insets?.left?:0,insets?.right?:0).toFloat())

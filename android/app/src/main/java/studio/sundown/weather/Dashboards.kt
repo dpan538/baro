@@ -22,7 +22,9 @@ val ORANGE=Color.rgb(255,122,26)
 val YELLOW=Color.rgb(255,220,31)
 
 abstract class Dashboard(context:Context,val model:AppModel):View(context){
-    protected val density=resources.displayMetrics.density
+    protected open val density get()=resources.displayMetrics.density
+    /** Pixels per drawing unit, shared by drawing, artwork placement and touch hit testing. */
+    val coordinateScale get()=density
     protected val p=Paint(Paint.ANTI_ALIAS_FLAG)
     protected val inter=Typeface.createFromAsset(context.assets,"fonts/Inter.ttf")
     protected val mono=Typeface.createFromAsset(context.assets,"fonts/RobotoMono.ttf")
@@ -191,7 +193,12 @@ class WeatherDashboard(context:Context,model:AppModel):Dashboard(context,model){
         val day=wx?.today();css(".temperature-range","↑ ${model.temp(day?.high)}°  ↓ ${model.temp(day?.low)}°")
         val icon=when(scene){"clear"->"sun";"night"->"moon";"dawn"->"sunrise";"sunset"->"sunset";else->scene}
         svg(icon,m.rect("#condition-icon"),stroke=stroke)
-        css("#condition-primary",model.conditionName(wx),maxRight=m.rect("#solar-event-time").left-24)
+        val condition=when{
+            wx==null->if(model.status=="loading")tr("正在获取天气…","Loading weather…")else tr("暂无天气 · 点击地点重试","Unavailable · tap place")
+            wx.stale(System.currentTimeMillis()/1000)||model.status=="offline"->tr("过期缓存 · ","Stale · ")+model.conditionName(wx)
+            else->model.conditionName(wx)
+        }
+        css("#condition-primary",condition,maxRight=m.rect("#solar-event-time").left-24)
         val event=wx?.nextSolar();css("#solar-event-label .label-primary",if(event==null)tr("暂无事件","NO EVENT")else if(event.first)tr("日出时间","SUNRISE")else tr("日落时间","SUNSET"))
         val solar=event?.second?.let{java.time.Instant.ofEpochSecond(it).atZone(wx!!.zone)}
         val solarClock=if(model.lang=="en")solar?.format(java.time.format.DateTimeFormatter.ofPattern("h:mm",java.util.Locale.US))?:"—"else wx?.clock(event?.second)?:"—"
@@ -235,44 +242,23 @@ class WeatherDashboard(context:Context,model:AppModel):Dashboard(context,model){
         // Preserve the exact approved outer corners; artwork itself remains a live EGL surface.
         val mask=Path().apply{fillType=Path.FillType.EVEN_ODD;addRect(0f,0f,w,h,Path.Direction.CW);addPath(frameOutline!!)}
         p.reset();p.isAntiAlias=true;p.color=0xff191e1d.toInt();c!!.drawPath(mask,p)
-        if(wx==null||wx.stale(System.currentTimeMillis()/1000)||model.status=="offline"){text(model.source(),artRect.left+16,artRect.bottom-32,16f,PAPER,mono)}
     }
 }
 
-class NativePage(context:Context,val dashboard:Dashboard,val art:PixelArt):android.widget.ScrollView(context){
+class NativePage(context:Context,val dashboard:Dashboard,val art:PixelArt):FrameLayout(context){
     private val layer=FrameLayout(context)
-    private var contentHeight=0
-    private var dialTouch=false
     fun pageMotion(progress:Float,engaged:Boolean){
         val fraction=if(ValueAnimator.areAnimatorsEnabled())progress.coerceIn(0f,1f)else 0f;val d=resources.displayMetrics.density
         val type=if(engaged)View.LAYER_TYPE_HARDWARE else View.LAYER_TYPE_NONE
         if(dashboard.layerType!=type)dashboard.setLayerType(type,null)
-        layer.pivotX=width/2f;layer.pivotY=scrollY+height/2f
+        layer.pivotX=width/2f;layer.pivotY=height/2f
         layer.scaleX=1f-fraction*.006f;layer.scaleY=1f-fraction*.006f;layer.translationY=fraction*3*d
     }
-    override fun onMeasure(widthSpec:Int,heightSpec:Int){
-        val d=resources.displayMetrics.density;val width=MeasureSpec.getSize(widthSpec);val height=MeasureSpec.getSize(heightSpec)
-        val widthDp=width/d;val heightDp=height/d
-        val fallback=dashboard is ObservationDashboard&&height>width&&widthDp>700&&heightDp<=1550
-        contentHeight=if(fallback)max(height,(1704f*max(1f,1136f/widthDp)*d).roundToInt())else height
-        layer.layoutParams.height=contentHeight
-        layer.minimumHeight=contentHeight
-        super.onMeasure(widthSpec,heightSpec)
-    }
-    override fun onInterceptTouchEvent(e:MotionEvent):Boolean {
-        if(e.actionMasked==MotionEvent.ACTION_DOWN)dialTouch=dashboard.dialRect.contains(e.x/resources.displayMetrics.density,(e.y+scrollY)/resources.displayMetrics.density)
-        if(dialTouch||contentHeight<=height)return false
-        return super.onInterceptTouchEvent(e)
-    }
-    private val caption=android.widget.TextView(context).apply{setTextColor(PAPER);textSize=16f;setPadding(12,4,12,4);setBackgroundColor(0x80000000.toInt())}
-    init {isFillViewport=true;overScrollMode=OVER_SCROLL_NEVER;setBackgroundColor(if(dashboard is WeatherDashboard)0xff191e1d.toInt()else FRAME);addView(layer,LayoutParams(-1,-1));layer.addView(dashboard,FrameLayout.LayoutParams(-1,-1));layer.addView(art);layer.addView(caption);clipChildren=true;art.clipToOutline=true;art.outlineProvider=object:android.view.ViewOutlineProvider(){override fun getOutline(v:View,outline:android.graphics.Outline){outline.setRoundRect(0,0,v.width,v.height,dashboard.artCornerRadius*resources.displayMetrics.density)}}}
+    init {setBackgroundColor(if(dashboard is WeatherDashboard)0xff191e1d.toInt()else FRAME);addView(layer,LayoutParams(-1,-1));layer.addView(dashboard,LayoutParams(-1,-1));layer.addView(art);clipChildren=true;art.clipToOutline=true;art.outlineProvider=object:android.view.ViewOutlineProvider(){override fun getOutline(v:View,outline:android.graphics.Outline){outline.setRoundRect(0,0,v.width,v.height,dashboard.artCornerRadius*dashboard.coordinateScale)}}}
     fun updateState(){
         val m=dashboard.model;val wx=m.weather
         val known=wx!=null&&(dashboard !is ObservationDashboard||wx.scene(m.window(wx).start)!="unknown")
         art.visibility=if(known)View.VISIBLE else View.INVISIBLE
-        val source=if(dashboard is ObservationDashboard&&!known)m.tr("该时段无天气数据","No weather data for this window")else m.source()
-        if(caption.text.toString()!=source)caption.text=source
-        caption.visibility=if(dashboard is ObservationDashboard&&known)View.GONE else View.VISIBLE
     }
 
     override fun dispatchDraw(canvas:Canvas){
@@ -285,13 +271,12 @@ class NativePage(context:Context,val dashboard:Dashboard,val art:PixelArt):andro
     }
     override fun onLayout(changed:Boolean,l:Int,t:Int,r:Int,b:Int){
         super.onLayout(changed,l,t,r,b)
-        dashboard.layout(0,0,width,contentHeight)
-        // Geometry is derived from the actual dp viewport, then converted once to pixels.
+        dashboard.layout(0,0,width,height)
+        // Artwork and dashboard use the same viewport-derived drawing scale.
         val bitmap=Bitmap.createBitmap(1,1,Bitmap.Config.ARGB_8888);dashboard.draw(Canvas(bitmap));bitmap.recycle()
-        val d=resources.displayMetrics.density;val a=dashboard.artRect
+        val d=dashboard.coordinateScale;val a=dashboard.artRect
         val artLeft=(a.left*d).roundToInt();val artTop=(a.top*d).roundToInt();val artRight=(a.right*d).roundToInt();val artBottom=(a.bottom*d).roundToInt()
         art.measure(MeasureSpec.makeMeasureSpec(artRight-artLeft,MeasureSpec.EXACTLY),MeasureSpec.makeMeasureSpec(artBottom-artTop,MeasureSpec.EXACTLY))
         art.layout(artLeft,artTop,artRight,artBottom);art.invalidateOutline()
-        caption.measure(MeasureSpec.makeMeasureSpec((a.width()*d).toInt(),MeasureSpec.AT_MOST),MeasureSpec.makeMeasureSpec(80,MeasureSpec.AT_MOST));caption.layout((a.left*d).toInt()+24,(a.bottom*d).toInt()-caption.measuredHeight-20,(a.left*d).toInt()+24+caption.measuredWidth,(a.bottom*d).toInt()-20)
     }
 }

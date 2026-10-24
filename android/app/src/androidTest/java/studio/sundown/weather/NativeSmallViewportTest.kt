@@ -3,7 +3,6 @@ package studio.sundown.weather
 import android.graphics.Bitmap
 import android.os.SystemClock
 import android.view.MotionEvent
-import android.view.View
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Test
@@ -26,9 +25,9 @@ class NativeSmallViewportTest {
         val image=i.uiAutomation.takeScreenshot();assertNotNull(image)
         File(i.targetContext.getExternalFilesDir(null),"small-$name.png").outputStream().use{image.compress(Bitmap.CompressFormat.PNG,100,it)};image.recycle()
     }
-    @Test fun readablePortraitScrollAndDialRetainSeparateGestureOwnership(){
+    @Test fun bothOrientationsStayOnOneScreenWhileDialOwnsVerticalTouches(){
         ActivityScenario.launch(MainActivity::class.java).use{s->
-            s.onActivity{a->a.model.motion=false;a.model.block=InstrumentationRegistry.getArguments().getString("pixels")=="block";a.model.page=1;a.model.purpose=11;a.redraw()}
+            s.onActivity{a->a.model.motion=false;a.model.fahrenheit=false;a.model.wind="kmh";a.model.place=Place("Brisbane",-27.47,153.03,"Australia/Brisbane");a.model.block=InstrumentationRegistry.getArguments().getString("pixels")=="block";a.model.page=1;a.model.purpose=0;a.redraw()}
             if(!NativeTestEnvironment.uiOnly)s.onActivity{it.repository.clear();it.model.weather=null;it.refresh(true)}
             var ready=false
             for(attempt in 0..59){s.onActivity{ready=it.model.weather!=null&&(NativeTestEnvironment.uiOnly||it.model.status=="ready")};if(ready)break;SystemClock.sleep(500)}
@@ -37,24 +36,40 @@ class NativeSmallViewportTest {
                 val raw=a.repository.rawFor(a.model.place);assertNotNull(raw)
                 File(i.targetContext.getExternalFilesDir(null),"small-live-response.json").writeText(raw!!)
             }
-            for(lang in listOf("zh","en")){
-                s.onActivity{a->a.model.lang=lang;a.model.purpose=11;a.redraw();a.pager.observationPage.scrollTo(0,0)};i.waitForIdleSync();SystemClock.sleep(500)
-                s.onActivity{a->val p=a.pager.observationPage;val d=a.resources.displayMetrics.density;assertTrue(p.width/d in 700f..1135f);assertTrue(p.height/d<=1550);assertTrue(p.dashboard.height>p.height)}
-                capture("portrait-$lang-top")
-                var x=0f;var y=0f;var endY=0f
-                s.onActivity{a->val p=a.pager.observationPage;val loc=IntArray(2);p.getLocationOnScreen(loc);x=loc[0]+p.width*.3f;y=loc[1]+p.height*.78f;endY=loc[1]+p.height*.25f}
-                drag(x,y,endY)
-                s.onActivity{a->assertEquals(1,a.model.page);assertTrue(a.pager.observationPage.scrollY>0);a.pager.observationPage.fullScroll(View.FOCUS_DOWN)}
-                i.waitForIdleSync();SystemClock.sleep(500);capture("portrait-$lang-bottom")
-                var oldScroll=0;var oldPurpose=0
-                s.onActivity{a->val p=a.pager.observationPage;val d=a.resources.displayMetrics.density;val r=p.dashboard.dialRect;val loc=IntArray(2);p.getLocationOnScreen(loc);x=loc[0]+r.centerX()*d;y=loc[1]+r.centerY()*d-p.scrollY;endY=y-450;assertTrue(y in 450f..(p.height.toFloat()));oldScroll=p.scrollY;oldPurpose=a.model.purpose}
-                drag(x,y,endY)
-                s.onActivity{a->assertEquals(1,a.model.page);assertNotEquals(oldPurpose,a.model.purpose);assertEquals(oldScroll,a.pager.observationPage.scrollY)}
+            for(portrait in listOf(false,true)){
+                i.uiAutomation.executeShellCommand("wm user-rotation lock ${if(portrait)1 else 0}").close();SystemClock.sleep(1800);i.waitForIdleSync()
+                val orientation=if(portrait)"portrait"else "landscape"
+                for(lang in listOf("zh","en")){
+                    for(purpose in 0..11){
+                        s.onActivity{a->a.model.lang=lang;a.model.page=1;a.model.purpose=purpose;a.redraw()};i.waitForIdleSync();SystemClock.sleep(350)
+                        s.onActivity{a->
+                            val p=a.pager.observationPage;val board=p.dashboard
+                            assertEquals(portrait,p.height>p.width)
+                            assertEquals("The full dashboard must fit the viewport",p.height,board.height)
+                            assertEquals(p.width,board.width);assertEquals(0,p.scrollY)
+                            assertFalse(p.canScrollVertically(1));assertFalse(p.canScrollVertically(-1))
+                            val d=board.coordinateScale;val dial=board.dialRect
+                            assertTrue(dial.top*d>=0&&dial.bottom*d<=p.height)
+                            assertTrue(board.artRect.bottom*d<=p.height)
+                            assertEquals(1136f,if(portrait)board.w else board.w/1.5f,.01f)
+                        }
+                        if(purpose in listOf(0,2,11))capture("$orientation-$lang"+(if(purpose==0)""else "-purpose-$purpose"))
+                    }
+                    var x=0f;var y=0f;var endY=0f
+                    s.onActivity{a->val p=a.pager.observationPage;val loc=IntArray(2);p.getLocationOnScreen(loc);x=loc[0]+p.width*.3f;y=loc[1]+p.height*.75f;endY=loc[1]+p.height*.25f}
+                    drag(x,y,endY);drag(x,endY,y)
+                    s.onActivity{a->assertEquals(1,a.model.page);assertEquals(11,a.model.purpose);assertEquals(0,a.pager.observationPage.scrollY)}
+                    var oldPurpose=0
+                    s.onActivity{a->val p=a.pager.observationPage;val d=p.dashboard.coordinateScale;val r=p.dashboard.dialRect;val loc=IntArray(2);p.getLocationOnScreen(loc);x=loc[0]+r.centerX()*d;y=loc[1]+r.centerY()*d;endY=y-450;oldPurpose=a.model.purpose}
+                    drag(x,y,endY)
+                    s.onActivity{a->assertEquals(1,a.model.page);assertNotEquals(oldPurpose,a.model.purpose);assertEquals(0,a.pager.observationPage.scrollY)}
+                    s.onActivity{a->a.model.page=0;a.redraw()};i.waitForIdleSync();SystemClock.sleep(500);capture("weather-$orientation-$lang")
+                    var distance=0f
+                    s.onActivity{a->val p=a.pager;val loc=IntArray(2);p.getLocationOnScreen(loc);x=loc[0]+p.width*.35f;y=loc[1]+p.height*.82f;distance=p.width*.3f}
+                    drag(x,y,y,endX=x+distance);s.onActivity{assertEquals(1,it.model.page)}
+                    drag(x,y,y,endX=x-distance);s.onActivity{assertEquals(0,it.model.page)}
+                }
             }
-            var x=0f;var y=0f;var distance=0f
-            s.onActivity{a->val p=a.pager;val loc=IntArray(2);p.getLocationOnScreen(loc);x=loc[0]+p.width*.35f;y=loc[1]+p.height*.4f;distance=p.width*.3f}
-            drag(x,y,y,endX=x+distance);s.onActivity{assertEquals(0,it.model.page)}
-            drag(x,y,y,endX=x-distance);s.onActivity{assertEquals(1,it.model.page)}
         }
     }
 }

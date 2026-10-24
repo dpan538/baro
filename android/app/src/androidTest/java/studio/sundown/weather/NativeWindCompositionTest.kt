@@ -41,7 +41,7 @@ class NativeWindCompositionTest {
                     super.drawLine(x,y,xx,yy,paint)
                 }
             }
-            for(lang in listOf("zh","en"))for(profile in listOf(Triple(false,1704,1136),Triple(true,1136,1704),Triple(true,909,2130)))for(primary in listOf(false,true))for(wind in listOf("kmh","mph"))for(stress in listOf(false,true)){
+            for(lang in listOf("zh","en"))for(profile in listOf(Triple(false,1704,1136),Triple(true,1136,1704),Triple(true,909,1363)))for(primary in listOf(false,true))for(wind in listOf("kmh","mph"))for(stress in listOf(false,true)){
                 val (portrait,width,height)=profile
                 a.model.lang=lang;a.model.purpose=if(primary)2 else 0;a.model.wind=wind
                 val high=mapOf("wind_gusts_10m" to 250.0,"wind_speed_10m" to 125.0,"wind_direction_10m" to 359.0)
@@ -50,7 +50,7 @@ class NativeWindCompositionTest {
                 val inset=if(portrait)0 else landscapeTop;a.root.setPadding(0,inset,0,0)
                 val board=ObservationDashboard(a,a.model);board.layout(0,0,(width*d).toInt(),(height*d).toInt()-inset)
                 val canvas=Recorder();board.draw(canvas)
-                val m=DesignMetrics(a,"observation-${if(portrait)"portrait"else "landscape"}-$lang-${a.model.purpose}");m.configure(width.toFloat(),height-inset/d,inset/d)
+                val m=DesignMetrics(a,"observation-${if(portrait)"portrait"else "landscape"}-$lang-${a.model.purpose}");m.configure(board.w,board.h,inset/board.coordinateScale)
                 val key=if(primary)"ins-focus"else "ins-wind";val module=m.rect(key)
                 val runs=canvas.runs.filter{module.contains(it.ink)}
                 val headingText=a.model.tr(if(primary)"阵风"else "风速",if(primary)"Wind gust"else "Wind")
