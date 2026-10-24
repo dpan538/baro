@@ -43,3 +43,4 @@ android/verification/*
 !android/verification/preview-0.10.0-preview.5.json
 !android/verification/conditions-2026-10-24.json
 !android/verification/preview-0.10.0-preview.6-r2.json
+!android/verification/release-1.0.0.json

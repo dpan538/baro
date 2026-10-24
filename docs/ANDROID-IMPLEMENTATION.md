@@ -2,7 +2,15 @@
 
 Started 2026-10-23 (Australia/Brisbane). This ledger supersedes the old paused Android host status. The immutable `ui-baseline-2026-10-23` tag remains the reference. No Annota application code, service credentials or signing identity is used.
 
-## Current public preview.6-r2 — 2026-10-25
+## First stable release — 1.0.0 / 20 — 2026-10-25
+
+The user completed the testing stage and authorized **1.0.0** as the first stable release. [Download the APK](https://github.com/dpan538/baro/releases/download/v1.0.0/BARO-1.0.0.apk) · [Pad installation/update](../DOWNLOAD.md) · [source-bound release record](../android/verification/release-1.0.0.json). The tag points to `1bbb7f37f612749bec3b0d244b283d222cde528c`. GitHub marks it non-prerelease and Latest; the update manifest has `preview=false`.
+
+The actual `release` variant is non-debug and retains the accepted BARO certificate. Its existing keypair is rewrapped into a strongly protected release store and backed up locally outside Git; no new signing identity is introduced. Forty-seven release unit tests, lint and both source/native CI pass. The exact package passes draft-state tests and genuine API/GLES launch checks in both languages/orientations. Anonymous APK/manifest/checksum copies match. A real public preview.6-r2 /19 → 1.0.0 /20 native Settings/system-installer upgrade retains preferences, feedback draft and private canary. The installed stable app's current-version update UI is reviewed in both languages/orientations.
+
+Product behavior is unchanged from the accepted preview. Its 480-case two-line matrix and real feedback Issue acceptance remain bound to their original source; they are linked, not counted as fresh 1.0.0 tests. Original previews, fonts/licenses, poster masters and all process evidence are preserved. Xiaomi Pad 9 Pro Max remains the release target; other Xiaomi Pad sizes will be adapted progressively. Emulator results do not establish physical-device performance.
+
+## Historical public preview.6-r2 — 2026-10-25
 
 **0.10.0-preview.6-r2 / 19**, source `7fa603771a821afcdb949578037e3509304b6968`, is the current signed non-debug [APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.6-r2/BARO-0.10.0-preview.6-r2.apk). The [exact-package record](../android/verification/preview-0.10.0-preview.6-r2.json) contains hashes, CI, test scope and publication/upgrade evidence.
 

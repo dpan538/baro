@@ -1,6 +1,8 @@
-# First Android preview and subsequent updates
+# Historical Android previews and subsequent updates
 
-The current public user test build is `0.10.0-preview.6-r2` (`versionCode 19`). It keeps
+The current formal release is [BARO 1.0.0](../DOWNLOAD.md). This document preserves preview distribution history; see [stable distribution](ANDROID-DISTRIBUTION.md) for the current channel.
+
+The final public user test build was `0.10.0-preview.6-r2` (`versionCode 19`). It keeps
 `studio.sundown.weather` and the existing dedicated BARO test certificate. The
 `preview` Gradle variant inherits release settings, disables debugging and cleartext
 network traffic, and uses this persistent local test signer. It is a prerelease,
@@ -114,6 +116,6 @@ The same-signer non-debug APK is 20,523,012 bytes; SHA-256 `016263e73e2654d5d038
 
 Public preview.4 → preview.5 was additionally exercised through the installed app’s actual Settings discovery/download, process-death restoration and Android system installer. The host confirmed the observed system Update control on the disposable AVD; installed bytes matched the public APK and a post-install native test verified retained language/units/purpose/page, feedback draft and private canary, with the installed candidate cleaned up. The opt-in test’s old English button label was corrected; the initial failed attempt is retained. This is emulator installation evidence, not a Xiaomi installer claim.
 
-## Current public follow-up: preview.6-r2
+## Historical public follow-up: preview.6-r2
 
 `0.10.0-preview.6-r2 / 19`, source `7fa603771a821afcdb949578037e3509304b6968`, improves page continuity and linear instrument reveal, fits complete conditions into two native lines, and closes the real public feedback flow. Both languages show an in-page submitted or reconnect/retry notice, with a receipt control and retained failed drafts. The [package record](../android/verification/preview-0.10.0-preview.6-r2.json) binds 47 unit tests, 480 controlled two-line cases, 12 genuine-provider captures, actual feedback and public system-upgrade evidence. Original preview.6 / 18 was withdrawn to draft for the added feedback gate; its tag and bytes are preserved.

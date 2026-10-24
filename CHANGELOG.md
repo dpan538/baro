@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.0 — 2026-10-25 · First stable Android release
+
+- Complete the testing stage and release the native full-screen two-page app for Xiaomi Pad 9 Pro Max, with progressive adaptation of other Xiaomi Pad sizes planned.
+- Ship weather/pixel skies, 29 observation modules and 12 activity purposes, separate Chinese/English interfaces and complete two-line conditions advice.
+- Use real model data, bounded foreground refresh/recovery, verified public feedback with retained drafts, and stable-channel APK updates.
+- Keep the accepted BARO signer and increment versionCode to 20 for in-place preview upgrades. Publish the non-debug Release APK, update manifest and checksums as GitHub Latest.
+- Retain three selected README posters, all original artwork/process files, historical previews, font bytes and licenses.
+
+
 ## Browser prototype — 2026-10-23
 
 - Recompose portrait weather into equal information/artwork regions with smaller shared type roles, no cloud-cover row and no solar-event illustration. Keep the event time beside the temperature and leave landscape content intact.

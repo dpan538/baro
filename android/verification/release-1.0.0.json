@@ -1,0 +1,438 @@
+{
+  "date": "2026-10-25",
+  "timezone": "Australia/Brisbane",
+  "channel": "first stable GitHub release",
+  "versionName": "1.0.0",
+  "versionCode": 20,
+  "applicationSourceCommit": "1bbb7f37f612749bec3b0d244b283d222cde528c",
+  "targetDevice": "Xiaomi Pad 9 Pro Max",
+  "futureDeviceScope": "Other Xiaomi Pad sizes will be adapted progressively",
+  "apk": {
+    "sourceIdentity": {
+      "sourceCommit": "1bbb7f37f612749bec3b0d244b283d222cde528c",
+      "packageName": "studio.sundown.weather",
+      "versionCode": 20,
+      "versionName": "1.0.0",
+      "backendOrigin": "",
+      "feedbackOrigin": "https://baro-feedback-dpan538s-projects.vercel.app"
+    },
+    "packageName": "studio.sundown.weather",
+    "versionCode": 20,
+    "versionName": "1.0.0",
+    "size": 20560668,
+    "sha256": "ac607651bc37d175418bf7b546fe059387fffc48b3ca2f49d80d6d6e3b0afe90",
+    "certificateSha256": "aac2bf88afcc1ce08009a9cf5e9f91eb0092b30bb280e16a0f9d095dbf338593",
+    "debuggable": false,
+    "signatureVerified": true,
+    "productionSampleDataAbsent": true,
+    "publicDownloadVerified": true,
+    "launcherIdentity": {
+      "selection": "G1b",
+      "master": "branding/icons/v10/G1b-darker/icon-4096.png",
+      "masterSha256": "fa58809a2b329c5d5107222e1c1e51cd038626486feed9de3ae4ba71d5cebc0f",
+      "foreground": "branding/icons/v8/S1a-refined-soft/foreground-4096.png",
+      "foregroundSha256": "2f045d9b6d541f27e2b9bca19cae7ed015ebd1eb892b216de16f4d05b1d685d8",
+      "adaptiveForegroundSha256": "7c09ef15fc2a2e806cba794a85f048873a17fc8baa16cc7213b4d6319e38aac7",
+      "legacyIconSha256": "6c26f94d35e0f2c7682c78096b04d64d4644a6de936f5dc617272d60b434f946",
+      "backgroundStops": [
+        "#252525",
+        "#1a1a1a",
+        "#121212"
+      ],
+      "imageGenerationUsed": false,
+      "artworkModified": false
+    },
+    "selectedLauncherPixelsVerified": true
+  },
+  "publication": {
+    "tag": "v1.0.0",
+    "releaseUrl": "https://github.com/dpan538/baro/releases/tag/v1.0.0",
+    "publishedAt": "2026-10-24T15:54:06Z",
+    "prerelease": false,
+    "latestStable": true,
+    "sourcePushed": true,
+    "publicDelivery": {
+      "anonymousDownloadsVerified": true,
+      "authenticationSent": false,
+      "assets": [
+        {
+          "file": "BARO-1.0.0.apk",
+          "url": "https://github.com/dpan538/baro/releases/download/v1.0.0/BARO-1.0.0.apk",
+          "status": 200,
+          "size": 20560668,
+          "sha256": "ac607651bc37d175418bf7b546fe059387fffc48b3ca2f49d80d6d6e3b0afe90",
+          "anonymous": true
+        },
+        {
+          "file": "baro-update.json",
+          "url": "https://github.com/dpan538/baro/releases/download/v1.0.0/baro-update.json",
+          "status": 200,
+          "size": 450,
+          "sha256": "af5fa5b8540d50e64689b30a2801bae3243e869a932778dcbb813d1052eb7025",
+          "anonymous": true
+        },
+        {
+          "file": "SHA256SUMS",
+          "url": "https://github.com/dpan538/baro/releases/download/v1.0.0/SHA256SUMS",
+          "status": 200,
+          "size": 164,
+          "sha256": "992867d3ce43adc0ca444e536f29b05d2aee2daade131bff801cd07deb367de8",
+          "anonymous": true
+        }
+      ],
+      "apkManifestAgreement": true,
+      "tagMatchesApplicationSource": true,
+      "sourceCommit": "1bbb7f37f612749bec3b0d244b283d222cde528c",
+      "stableLatestVerified": true
+    }
+  },
+  "checks": {
+    "releaseUnitTests": 47,
+    "releaseBuildAndLint": true,
+    "backendTests": 15,
+    "feedbackRelayTests": 11,
+    "sourceCI": [
+      {
+        "conclusion": "success",
+        "databaseId": 40108198686,
+        "name": "Source and preview checks",
+        "status": "completed",
+        "url": "https://github.com/dpan538/baro/actions/runs/40108198686"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 40108198640,
+        "name": "Kotlin Android and BARO backend",
+        "status": "completed",
+        "url": "https://github.com/dpan538/baro/actions/runs/40108198640"
+      }
+    ],
+    "installedBytesMatched": true,
+    "prepublicationNative": [
+      {
+        "log": "native-feedback-state.log",
+        "methods": 2,
+        "passed": true,
+        "seconds": 0.72
+      },
+      {
+        "log": "genuine-stable-pages.log",
+        "methods": 1,
+        "passed": true,
+        "seconds": 36.86
+      }
+    ],
+    "postpublicationNative": [
+      {
+        "log": "public-native-download.log",
+        "methods": 1,
+        "passed": true
+      },
+      {
+        "log": "public-native-installer.log",
+        "methods": 1,
+        "passed": true
+      },
+      {
+        "log": "public-upgrade-retention.log",
+        "methods": 1,
+        "passed": true
+      },
+      {
+        "log": "stable-channel-and-settings.log",
+        "methods": 1,
+        "passed": true
+      }
+    ]
+  },
+  "signing": {
+    "sameCertificateAsAcceptedPreviews": true,
+    "certificateSha256": "aac2bf88afcc1ce08009a9cf5e9f91eb0092b30bb280e16a0f9d095dbf338593",
+    "privateStoreAndCredentialsIgnored": true,
+    "stronglyEncryptedStorePrepared": true,
+    "localPrivateBackupPreserved": true
+  },
+  "upgrade": {
+    "fromVersionCode": 19,
+    "toVersionCode": 20,
+    "sameSigner": true,
+    "dataClearingOrUninstallUsed": false,
+    "disposableDebugBridgeUsedForBaselineSetup": true,
+    "nativePublicDiscoveryAndDownload": true,
+    "verifiedCandidateRestoredAfterProcessDeath": true,
+    "observedSystemUpdateConfirmed": true,
+    "installedSha256": "ac607651bc37d175418bf7b546fe059387fffc48b3ca2f49d80d6d6e3b0afe90",
+    "retention": {
+      "versionCode": 20,
+      "settingsRetained": true,
+      "feedbackDraftRetained": true,
+      "privateCanaryRetained": true,
+      "installedCandidateCleaned": true
+    }
+  },
+  "stableChannel": {
+    "endpoint": "https://api.github.com/repos/dpan538/baro/releases/latest",
+    "anonymousLatestVerified": true,
+    "nativeCurrentVersionUiReviewed": true,
+    "prereleasesExcludedByStableClient": true,
+    "languages": [
+      "zh",
+      "en"
+    ],
+    "orientations": [
+      "landscape",
+      "portrait"
+    ]
+  },
+  "nativeCaptures": {
+    "genuinePageCaptures": 8,
+    "settingsMatrixCaptures": 36,
+    "controlledLongNotesCaptures": 4,
+    "apiLevel": 36,
+    "density": 320,
+    "landscapePixels": [
+      3408,
+      2272
+    ],
+    "portraitPixels": [
+      2272,
+      3408
+    ],
+    "captures": [
+      {
+        "file": "purpose-captures/native-observation-landscape-en-purpose-2.png",
+        "sha256": "8b0f13a01eb0e7c9806f94b15f036e4c3f49dbf0d93f617d829898c8dbb1e044",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-observation-landscape-zh-purpose-2.png",
+        "sha256": "2b8e30fd3547f70663024c7af788e78e94c931178f3372d7a8ba71fd42cd6cc0",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-observation-portrait-en-purpose-2.png",
+        "sha256": "f9ac0cc4e7baac36fcd54dd3f7c6e7438c127a552efa7d9d62ba479fb13f6e6d",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-observation-portrait-zh-purpose-2.png",
+        "sha256": "72fe58395417d0916e3c9ec60e4f8a3420a23102109ef9b2521c7f81b1784ca1",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-weather-landscape-en.png",
+        "sha256": "8410244ede1ead026c8f75a53b34af0fb60ceb8aca5891f9b20530fb5ed3a753",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-weather-landscape-zh.png",
+        "sha256": "01bdf6c41adece933fc0d3cda9d65020d62475c04fd909f02cbf7294d5410f0f",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-weather-portrait-en.png",
+        "sha256": "92420c13553ba741c78891192f5b8e5648ae0692f4065906f90feaee01f76a75",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "purpose-captures/native-weather-portrait-zh.png",
+        "sha256": "ba289e93728ccfe869e477ebcb08a5947a7afa0f7755d777962046fe82f97ad2",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-landscape-en-about.png",
+        "sha256": "8ba6eca92c33405076d13afb7fb7ea93f127a8143b2e9cc81185b04ba54f3737",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-landscape-en-appearance-scrolled.png",
+        "sha256": "9759cfa91a6a0665bdb18456457271c343a5f669d86b511c5ebcf9be7d1c2331",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-landscape-en-appearance.png",
+        "sha256": "4c5ed4687fd9a240e1106db1ead56e707dd7ed67c22fa670a6a2f4dcc783fc01",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-landscape-en-credits.png",
+        "sha256": "3592b50b533ef9cdcb35deaa1e827b218fe91d133159e692c31f6b3337b0a0e4",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-landscape-en-page0.png",
+        "sha256": "2c56d3dc2ed9782aa623ee6726c6b0b993d7f357b362602b4a850308576f035a",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-landscape-en-page1.png",
+        "sha256": "6d60e170cb94c8fb6417481764cb2b3b8db5069735a985b4669628a1e10ecddb",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-landscape-en-units.png",
+        "sha256": "01d79173fef21ed89d60f496717881625d72169f2727134bca36703c99cd981b",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-landscape-en-update-live.png",
+        "sha256": "9d4ccb498ca0767eb9de90431c003b6ba1c8d29df4f347b1236483bef475e5df",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-landscape-en-update-long-notes.png",
+        "sha256": "5b027c802eab1e92465ea946b016ba10d05d7dc70c79fa15f6f19cb0b6b655c3",
+        "controlledLongNotes": true
+      },
+      {
+        "file": "stable-channel-captures/preview-landscape-zh-about.png",
+        "sha256": "5ad8d75ad9407a11b3bec787c950ecb4c0a09243462f0695fd485d1fcdeb96cf",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-landscape-zh-appearance-scrolled.png",
+        "sha256": "908e26af7d12c670b29ffa0c11d181afbbcb4553449b59291573ffe78c9c1b73",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-landscape-zh-appearance.png",
+        "sha256": "985bf68690cfc266594a6d299e4e2c56301762603c2303d4cc0aa27deadcbcd5",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-landscape-zh-credits.png",
+        "sha256": "ab0a854d6166d5520f2f15347817e8379d18e6e2f6ffecb0413a2be9ea0f04e9",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-landscape-zh-page0.png",
+        "sha256": "a59fc8aa3b1f547618f4659a4a444c9c8c5eafb38ec923cc78e9e7c9e63bcfa3",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-landscape-zh-page1.png",
+        "sha256": "d1cc2e64ab6cea187184a6a66d788228a9648621564656dbf8e899f95d5b8d06",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-landscape-zh-units.png",
+        "sha256": "621038b56095ab0c582860c0cbc86cf1d0d4cb98b0af4cd67fc08b7f33cbfb78",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-landscape-zh-update-live.png",
+        "sha256": "740b4db0b2e38543e95b9667c79c5f86cb24ecdfaeb9e4f5822344205e8101f1",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-landscape-zh-update-long-notes.png",
+        "sha256": "e6de177c0e8e27196fa59eafcd2ecbed754c943f9d843bafdacf829c600532a6",
+        "controlledLongNotes": true
+      },
+      {
+        "file": "stable-channel-captures/preview-portrait-en-about.png",
+        "sha256": "987aafe793ee06504dd86c31859323bf650e5f3c02a8fd9dd7ca9a4d08753075",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-portrait-en-appearance-scrolled.png",
+        "sha256": "273bf1e72689b231174f5e15fa133242d45f38f3278e7d5bdb45dbb073c4effb",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-portrait-en-appearance.png",
+        "sha256": "bdd1cc06a0be49fae5f4fde3137b65bea86959c1bed87b8f5145fdee5ceb8024",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-portrait-en-credits.png",
+        "sha256": "469be012225305a44d328ccc79801e7e6a57a092104f729c642dd1f0315cd698",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-portrait-en-page0.png",
+        "sha256": "9dca6ac6cd3ea31b5fb0a61860f14b3d2587ef038eeef524d1d39dfc40e94015",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-portrait-en-page1.png",
+        "sha256": "c44c0149bcacb0b2956d24f82eaaf8d2cca78b4f350b1ce961e64ac06abf4650",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-portrait-en-units.png",
+        "sha256": "54f9e5dfd862a2b9127cbd7f832b32d0126a192e20eae7d7731d8caf4bd91902",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-portrait-en-update-live.png",
+        "sha256": "96cf24ad778f3f40ea79066898bccf4ce1f5c7e70f66c1dcf56b25ad439e8df9",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-portrait-en-update-long-notes.png",
+        "sha256": "c08dd8d43969f783be9181dfa071d1e9bb8407198a602f8ed7160bf17562f709",
+        "controlledLongNotes": true
+      },
+      {
+        "file": "stable-channel-captures/preview-portrait-zh-about.png",
+        "sha256": "fcc5c57ded9c5eebd599a2a071ac565b62011ef1991040cfdae45499cd3d13ed",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-portrait-zh-appearance-scrolled.png",
+        "sha256": "463068929ba802155c6c69ed018a269a05b14057b3c6757763e26ca955e81fc1",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-portrait-zh-appearance.png",
+        "sha256": "d4df1f534f9ebadbb64aaa3e8a76db5770338047ecdfcd62187b7ba28d0e812c",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-portrait-zh-credits.png",
+        "sha256": "d37c7d3f85d8abd1fc226cf9b2d19548958a9100f6ca3c1b88099ae8f7294459",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-portrait-zh-page0.png",
+        "sha256": "f40cb36431ba77f063a32294a10a9d1ab554a2e09d5450139f8d2c3e8c9c3833",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-portrait-zh-page1.png",
+        "sha256": "a8f8f9618e845fd9c8a4306cb8a9d4254b63b75755685f059f17789d2f283428",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-portrait-zh-units.png",
+        "sha256": "b9670febe6eea1c3ebd4b58faea4d099eea3f5be5eaf40bf135b25c1ffb85a51",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-portrait-zh-update-live.png",
+        "sha256": "dd5911e1627fb1dfe73553cd60d370e0f02b49d2fe35ef9756a8fcf68f5768a7",
+        "controlledLongNotes": false
+      },
+      {
+        "file": "stable-channel-captures/preview-portrait-zh-update-long-notes.png",
+        "sha256": "ba2bfc834031f7071c1ea634177f3ce3bdeb6eec33cc0f3ea005f1a140332706",
+        "controlledLongNotes": true
+      }
+    ]
+  },
+  "acceptedProductTesting": {
+    "record": "preview-0.10.0-preview.6-r2.json",
+    "applicationSourceCommit": "7fa603771a821afcdb949578037e3509304b6968",
+    "userConfirmedTestingComplete": true,
+    "conditionsCases": 480,
+    "maximumAdviceLines": 2,
+    "publicFeedbackReceipt": "https://github.com/dpan538/baro/issues/1",
+    "scope": "Product UI, data, feedback and animation code are unchanged from the accepted preview. This release changes version/channel and signed distribution packaging. Earlier controlled matrices and real feedback creation are not relabelled as new 1.0.0 tests."
+  },
+  "limits": [
+    "Emulator checks do not establish physical Xiaomi frame rate, power or GPS performance.",
+    "Four long-release-note images are explicitly controlled layout cases.",
+    "Historical previews, source tags, original artwork, fonts/licenses and all design-process files are preserved."
+  ]
+}
