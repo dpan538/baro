@@ -38,7 +38,7 @@ class Tests(unittest.TestCase):
         self.payload={'body':'测试反馈\nBARO feedback','requestId':'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee','version':'0.10.0-preview.6-r2'}
 
     def call(self,payload=None,**env):
-        raw=json.dumps(self.payload if payload is None else payload).encode();status=[]
+        raw=json.dumps(self.payload if payload is None else payload,ensure_ascii=False).encode();status=[]
         response=self.app({'REQUEST_METHOD':'POST','PATH_INFO':'/v1/feedback','CONTENT_TYPE':'application/json',
             'CONTENT_LENGTH':str(len(raw)),'wsgi.input':io.BytesIO(raw),**env},lambda s,h:status.append(s))
         return int(status[0].split()[0]),json.loads(b''.join(response))
