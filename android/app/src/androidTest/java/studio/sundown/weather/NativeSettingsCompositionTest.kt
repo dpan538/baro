@@ -41,8 +41,11 @@ class NativeSettingsCompositionTest {
                 while(!moving&&SystemClock.uptimeMillis()<until){s.onActivity{a->assertTrue(a.pager.overlayOpen);assertTrue(a.pager.weatherPage.art.active);moving=a.pager.weatherPage.art.renderedFrames>before+2};SystemClock.sleep(100)}
                 assertTrue("Visible sky must keep animating under partial Settings",moving)
                 s.onActivity{evidence.put("framesBeforeSettings",before).put("framesUnderSettings",it.pager.weatherPage.art.renderedFrames).put("exposedSkyActive",it.pager.weatherPage.art.active)}
-                s.onActivity{a->find(a.settings){it is TextView&&it.text.toString()=="···"}!!.performClick()};i.waitForIdleSync()
-                s.onActivity{a->find(a.settings){it is TextView&&it.text.toString()=="Feedback"}!!.performClick()};i.waitForIdleSync()
+                // The exposed sky deliberately keeps producing frames. Global
+                // instrumentation idle is not a valid completion condition here;
+                // onActivity synchronizes each mutation with the main thread.
+                s.onActivity{a->find(a.settings){it is TextView&&it.text.toString()=="···"}!!.performClick()};SystemClock.sleep(200)
+                s.onActivity{a->find(a.settings){it is TextView&&it.text.toString()=="Feedback"}!!.performClick()};SystemClock.sleep(200)
                 lateinit var editor:EditText
                 s.onActivity{a->editor=find(a.settings){it is EditText} as EditText;editor.setText(draft);editor.requestFocus();(a.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(editor,InputMethodManager.SHOW_IMPLICIT)}
                 var keyboard=false;val imeDeadline=SystemClock.uptimeMillis()+12000
@@ -61,7 +64,7 @@ class NativeSettingsCompositionTest {
                     (a.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(editor.windowToken,0)
                 }
                 SystemClock.sleep(500);s.onActivity{it.settings.close()};SystemClock.sleep(250)
-                s.recreate();i.waitForIdleSync();s.onActivity{assertEquals(draft,it.feedback.draft);assertFalse(it.pager.overlayOpen)}
+                s.recreate();s.onActivity{assertEquals(draft,it.feedback.draft);assertFalse(it.pager.overlayOpen)}
                 evidence.put("draftRetainedAfterRecreation",true)
                 File(i.targetContext.getExternalFilesDir(null),"settings-ime-evidence.json").writeText(evidence.toString(2))
             }
