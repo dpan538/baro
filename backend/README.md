@@ -28,3 +28,8 @@ SQLite keeps immutable request hashes, pending identities and receipts. A retry 
 `GET /healthz` reports service name, schema and whether feedback is configured, without credentials. Invalid inputs, unavailable providers, exhausted budgets, missing credentials and invalid receipts remain failures. No public deployment or public feedback write has yet been verified. Local test doubles are not evidence of GitHub delivery.
 
 Sources: [Forecast API](https://open-meteo.com/en/docs), [Air Quality](https://open-meteo.com/en/docs/air-quality-api), [Geocoding](https://open-meteo.com/en/docs/geocoding-api), [pricing and licensing](https://open-meteo.com/en/pricing), [GitHub Issues REST API](https://docs.github.com/en/rest/issues/issues).
+
+
+### Dedicated public feedback origin
+
+The distributed native app now configures the feedback-only Vercel origin separately through `baroFeedbackUrl` / `BuildConfig.FEEDBACK_URL`. An empty weather `baroBackendUrl` continues to use the direct official weather/geocoding APIs and does not disable the independent feedback service. This persistent SQLite backend remains a separate optional weather/backend implementation; it is not transplanted into Vercel's ephemeral filesystem. See [`feedback-service/README.md`](../feedback-service/README.md) for the serverless receiver and actual delivery acceptance requirements.

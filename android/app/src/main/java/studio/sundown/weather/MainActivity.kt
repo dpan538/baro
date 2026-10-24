@@ -56,7 +56,7 @@ class MainActivity:Activity(){
     }
     override fun onCreate(savedInstanceState:Bundle?){
         super.onCreate(savedInstanceState)
-        model=AppModel(this);repository=WeatherRepository(this);updates=Updates(this,repository.pool);feedback=Feedback(model.prefs,repository.pool,repository.backend)
+        model=AppModel(this);repository=WeatherRepository(this);updates=Updates(this,repository.pool);feedback=Feedback(model.prefs,repository.pool,BuildConfig.FEEDBACK_URL)
         updates.cleanInstalled()
         WindowCompat.setDecorFitsSystemWindows(window,false)
         window.decorView.setBackgroundColor(PAPER)

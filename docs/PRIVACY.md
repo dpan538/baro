@@ -11,3 +11,8 @@ Feedback is sent only after tapping Submit. It becomes a **public GitHub Issue i
 Update checks run only on user action and use public GitHub release metadata. APK downloads are user initiated, cancellable and verified before the Android system installer is opened. External links open their HTTPS destination through the system browser. These services receive the normal network information associated with those requests.
 
 The frozen browser design remains a labelled, offline sample-data prototype; its older Java host/privacy description is historical. The native build and local-backend evidence do not imply that a public BARO service or public feedback delivery has been deployed or verified.
+
+
+### BARO feedback relay
+
+When the user explicitly submits feedback, the native app sends only the entered text, the draft's request identity and original app version over HTTPS to the separate BARO Vercel service. The message is published as a public Issue in `dpan538/baro`, as stated above the form. The service's GitHub credential remains in Vercel Production and is not shipped in the APK. The service and app independently verify the Issue receipt before acknowledging delivery; failed/cancelled drafts and their identities remain local. Weather/location requests do not pass through this feedback-only endpoint. The service applies a modest repository submission limit and bounded reconciliation; strict cross-instance exactly-once delivery is not claimed.

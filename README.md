@@ -2,6 +2,8 @@
 
 **Half data, half sky.** 一半数据，一半天空。
 
+**专为小米 Pad 9 Pro Max 开发。** 后续将逐步适配其他尺寸的小米 Pad。
+
 [![Android preview](https://img.shields.io/badge/preview-0.10.0--preview.5-2458ce)](https://github.com/dpan538/baro/releases/tag/v0.10.0-preview.5)
 [![Checks](https://github.com/dpan538/baro/actions/workflows/ci.yml/badge.svg)](https://github.com/dpan538/baro/actions/workflows/ci.yml)
 [![Android CI](https://github.com/dpan538/baro/actions/workflows/android.yml/badge.svg)](https://github.com/dpan538/baro/actions/workflows/android.yml)
@@ -34,7 +36,7 @@ BARO 将天气与环境信息收进两页原生界面，无示例数据模式。
 - **冻结 Web 参考**：Node.js 与静态 HTML / CSS / JavaScript 仅用于开发、源码检查和 `/gallery.html` 视觉契约比对，不打包进原生应用。
 - **更新与隐私**：比对 `versionCode`，分别校验 APK 的 SHA-256、包名、版本与签名证书，再交给 Android 系统安装器。无账户、第三方遥测或后台位置追踪；自动定位仅在应用可见时运行。
 
-Two native full-screen pages, real model data, separate Chinese and English interfaces, and source-authored pixel skies. The posters above are design artwork; native screenshots below come from emulator acceptance, not Xiaomi hardware performance tests.
+Developed specifically for **Xiaomi Pad 9 Pro Max**, with support for other Xiaomi Pad sizes planned progressively. Two native full-screen pages, real model data, separate Chinese and English interfaces, and source-authored pixel skies. The posters above are design artwork; native screenshots below come from emulator acceptance, not Xiaomi hardware performance tests.
 
 ![BARO 原生天气主页](docs/images/native-preview-5-weather-zh.jpg)
 

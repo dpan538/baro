@@ -94,7 +94,8 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
     }
     fun back(){if(updateCard!=null)closeUpdate()else if(detail.isNotEmpty()){detail="";build()}else close()}
     fun resumePresentation(){if(visibility==VISIBLE&&renderedLanguage!=model.lang)build()}
-    fun cancelRequests(){languageChange++;contentTransition.clear();sectionAnimator?.cancel();activity.updates.cancel();activity.feedback.cancel();feedbackSend?.isEnabled=true
+    fun cancelRequests(){languageChange++;contentTransition.clear();sectionAnimator?.cancel();activity.updates.cancel();val sending=feedbackSend?.isEnabled==false;activity.feedback.cancel();feedbackSend?.isEnabled=true
+        if(sending)feedbackStatus?.text=tr("发送已中断，草稿已保留。","Sending interrupted. Draft retained.")
         if(updateCard!=null){updateMessage?.text=tr("请求已暂停，可重试","Request paused. Retry when ready.");updateAction?.isEnabled=true;updateAction?.text=tr("重试","Retry");updateAction?.setOnClickListener{checkUpdate()}}
     }
     fun dispose(){uiGeneration++;languageChange++;contentTransition.clear();sectionAnimator?.cancel();animate().cancel();scrollAnimator?.cancel();activity.updates.cancel();activity.feedback.cancel()}

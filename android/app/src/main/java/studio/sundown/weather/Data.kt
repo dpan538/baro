@@ -61,12 +61,12 @@ class NetworkJob {
     val cancelled get()=closed.get()||Thread.currentThread().isInterrupted
     fun cancel(){closed.set(true);connection?.disconnect();future?.cancel(true)}
     fun track(c:HttpURLConnection?){connection=c;if(cancelled)c?.disconnect()}
-    fun request(url: String, body: JSONObject?=null, maxBytes: Int=3_000_000): String {
+    fun request(url: String, body: JSONObject?=null, maxBytes: Int=3_000_000, readTimeoutMs:Int=10000): String {
         check(!cancelled)
         val parsed=URL(url)
         require(parsed.protocol=="https" || (BuildConfig.DEBUG&&parsed.host in setOf("127.0.0.1","10.0.2.2","localhost")&&parsed.protocol=="http"))
         val c=parsed.openConnection() as HttpURLConnection;connection=c
-        c.connectTimeout=8000;c.readTimeout=10000;c.instanceFollowRedirects=false
+        c.connectTimeout=8000;c.readTimeout=readTimeoutMs;c.instanceFollowRedirects=false
         c.setRequestProperty("Accept","application/json");c.setRequestProperty("User-Agent","BARO/${BuildConfig.VERSION_NAME}")
         try {
             if(body!=null){c.requestMethod="POST";c.doOutput=true;c.setRequestProperty("Content-Type","application/json");c.outputStream.use { it.write(body.toString().toByteArray()) }}

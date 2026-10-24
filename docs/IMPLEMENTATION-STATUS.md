@@ -93,3 +93,10 @@ Latest user steering before publication: README now introduces the two-page prod
 
 
 The two-line candidate now passes 480 native actual-font cases (10 controlled scenarios × 12 purposes × 2 languages × 2 orientations), including low-CAPE thunderstorms and inhibited high-CAPE conditions. All paragraphs use at most two lines with no ellipsis, clipping, orphan ending or missing required visibility/convection/radiation context in the combined scenarios. The real-GLES lifecycle check passed offscreen prewarming, holding frames during touch and resuming after background; 47 JVM checks and lint pass. The public package still needs the final source-bound build and distribution verification. Vercel inspection confirms only the separate Annota feedback project exists; BARO public feedback remains unconfigured, not closed or falsely reported as delivered.
+
+
+## 2026-10-25 — feedback is a preview.6 publication gate
+
+The user explicitly requires App submission → independent BARO Vercel → GitHub Issue → receipt verification → automatic native success before publication. The briefly public, feedback-unconfigured versionCode 18 was withdrawn to draft immediately; its source, tag, APK and all process artifacts remain preserved. The completed revision uses the next versionCode and a revision suffix instead of replacing already-exposed bytes.
+
+The dedicated `baro-feedback` Production deployment is READY and anonymous `/healthz` returns configured=true, without reading or exposing the Production Secret. Its eleven controlled relay tests pass. Android now has a separate feedback origin, independent of the weather proxy, a bounded send deadline, and persisted original draft version/request identity across retries and upgrades. Two native state tests, 47 JVM checks and lint pass. A health response is not delivery acceptance: the exact non-debug APK must still create and independently verify an actual public Issue through the real native form, show the success dialog, and retain a different unsent draft during a verified network outage. No preview revision is republished until that opt-in acceptance passes.
