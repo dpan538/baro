@@ -27,11 +27,16 @@ with zipfile.ZipFile(apk) as z:
   import io
   assert launcher_identity['selection']=='G1b'
   root=pathlib.Path(__file__).resolve().parents[1]
-  for suffix,source in [('baro_cloud_g1b.png','android/app/src/main/res/drawable-nodpi/baro_cloud_g1b.png'),('ic_launcher.png','branding/icons/v10/G1b-darker/icon-512.png')]:
-   entry=next(n for n in names if n.startswith('res/') and n.endswith('/'+suffix))
+  resources=subprocess.check_output([str(a.aapt or a.build_tools/'aapt'),'dump','--values','resources',str(apk)],text=True)
+  for resource,source in [('drawable/baro_cloud_g1b','android/app/src/main/res/drawable-nodpi/baro_cloud_g1b.png'),('mipmap/ic_launcher','branding/icons/v10/G1b-darker/icon-512.png')]:
+   entry=re.search(r'\bresource 0x[a-f0-9]+ studio\.sundown\.weather:'+re.escape(resource)+r': [^\n]+\n\s+\(string8\) "([^"]+\.png)"',resources)[1]
    packaged=Image.open(io.BytesIO(z.read(entry))).convert('RGBA');expected=Image.open(root/source).convert('RGBA')
-   assert packaged.size==expected.size and packaged.tobytes()==expected.tobytes(),'Selected G1b launcher pixels differ in APK'
-  assert 'res/drawable/ic_launcher.xml' not in names,'Obsolete sunrise launcher remains'
+   # AAPT canonicalizes unused RGB channels in fully transparent pixels.
+   assert packaged.size==expected.size and all(x==y or x[3]==y[3]==0 for x,y in zip(packaged.getdata(),expected.getdata())),'Selected G1b visible launcher pixels differ in APK'
+  assert 'studio.sundown.weather:drawable/ic_launcher:' not in resources,'Obsolete sunrise launcher remains'
+  launcher_id=re.search(r'spec resource (0x[a-f0-9]+) studio\.sundown\.weather:mipmap/ic_launcher:',resources)[1]
+  manifest_tree=subprocess.check_output([str(a.aapt or a.build_tools/'aapt'),'dump','xmltree',str(apk),'AndroidManifest.xml'],text=True)
+  assert re.search(r'android:icon\([^)]*\)=@'+launcher_id,manifest_tree),'Manifest does not reference the selected launcher'
 record=dict(sourceIdentity=identity_asset,packageName=package,versionCode=int(code),versionName=version,size=len(raw),sha256=digest,certificateSha256=cert,debuggable='application-debuggable' in meta,signatureVerified=True,productionSampleDataAbsent=True,publicDownloadVerified=False)
 if launcher_identity:record['launcherIdentity']=launcher_identity;record['selectedLauncherPixelsVerified']=True
 if identity_asset:
