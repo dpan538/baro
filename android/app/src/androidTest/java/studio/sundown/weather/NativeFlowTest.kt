@@ -41,7 +41,23 @@ class NativeFlowTest {
         seed();ActivityScenario.launch(MainActivity::class.java).use{s->idle();for(direction in listOf(-1,1,1,-1,-1,1)){var before=0;s.onActivity{before=it.model.page};swipe(s,direction,.82f);s.onActivity{assertEquals(1-before,it.model.page);assertEquals(direction,it.pager.lastSettleDirection)}}}
     }
     @Test fun cancelledAndVerticalGesturesStayOnPage(){seed();ActivityScenario.launch(MainActivity::class.java).use{s->idle();swipe(s,1,.65f,cancel=true);s.onActivity{assertEquals(0,it.model.page)};swipe(s,1,.65f,vertical=true);s.onActivity{assertEquals(0,it.model.page)}}}
-    @Test fun settingsAndDialOwnTheirTouchesAndPersist(){seed(1);ActivityScenario.launch(MainActivity::class.java).use{s->idle();s.onActivity{a->val r=a.pager.observationPage.dashboard.dialRect;val x=r.centerX()*a.resources.displayMetrics.density;val y=r.centerY()*a.resources.displayMetrics.density;val v=a.pager.observationPage.dashboard;val time=SystemClock.uptimeMillis();v.dispatchTouchEvent(MotionEvent.obtain(time,time,MotionEvent.ACTION_DOWN,x,y,0));v.dispatchTouchEvent(MotionEvent.obtain(time,time+150,MotionEvent.ACTION_MOVE,x,y-220,0));v.dispatchTouchEvent(MotionEvent.obtain(time,time+180,MotionEvent.ACTION_UP,x,y-220,0));assertEquals(1,a.model.page);assertNotEquals(0,a.model.purpose);a.settings.open();assertTrue(a.pager.overlayOpen)};swipe(s,-1,.5f);s.onActivity{assertEquals(1,it.model.page);it.settings.close();it.model.fahrenheit=true;it.model.lang="en"};s.recreate();idle();s.onActivity{assertEquals(1,it.model.page);assertTrue(it.model.fahrenheit);assertEquals("en",it.model.lang);assertNotEquals(0,it.model.purpose)}}}
+    @Test fun settingsAndDialOwnTheirTouchesAndPersist(){
+        seed(1);ActivityScenario.launch(MainActivity::class.java).use{s->
+            val deadline=SystemClock.uptimeMillis()+10_000;var ready=false
+            while(SystemClock.uptimeMillis()<deadline){s.onActivity{a->val v=a.pager.observationPage.dashboard;ready=v.isShown&&!v.dialRect.isEmpty};if(ready)break;SystemClock.sleep(50)}
+            assertTrue("Purpose dial must be laid out and drawn before touch input",ready)
+            s.onActivity{a->
+                val v=a.pager.observationPage.dashboard;val r=v.dialRect;val scale=v.coordinateScale
+                val x=r.centerX()*scale;val y=r.centerY()*scale;val travel=minOf(170f,r.height()*.35f)*scale
+                val time=SystemClock.uptimeMillis()
+                fun send(action:Int,yy:Float,offset:Long){val e=MotionEvent.obtain(time,time+offset,action,x,yy,0);v.dispatchTouchEvent(e);e.recycle()}
+                send(MotionEvent.ACTION_DOWN,y,0);send(MotionEvent.ACTION_MOVE,y-travel,150);send(MotionEvent.ACTION_UP,y-travel,180)
+                assertEquals(1,a.model.page);assertNotEquals(0,a.model.purpose);a.settings.open();assertTrue(a.pager.overlayOpen)
+            }
+            swipe(s,-1,.5f);s.onActivity{assertEquals(1,it.model.page);it.settings.close();it.model.fahrenheit=true;it.model.lang="en"}
+            s.recreate();idle();s.onActivity{assertEquals(1,it.model.page);assertTrue(it.model.fahrenheit);assertEquals("en",it.model.lang);assertNotEquals(0,it.model.purpose)}
+        }
+    }
     @Test fun fullWeatherDescriptionsKeepTheSolarColumnClear(){
         seed();ActivityScenario.launch(MainActivity::class.java).use{s->s.onActivity{a->
             a.repository.cancelWeather()
