@@ -171,7 +171,14 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
         val box=column().apply{setPadding(dp(24),dp(16),dp(24),dp(24));background=GradientDrawable().apply{setColor(PAPER);cornerRadius=dp(18).toFloat();setStroke(dp(1),0xffaaa99d.toInt())};elevation=dp(10).toFloat()}
         val top=row();top.addView(text("BARO",26f),LinearLayout.LayoutParams(0,-2,1f));top.addView(button("×"){closeUpdate()},LinearLayout.LayoutParams(dp(64),dp(64)));box.addView(top)
         box.addView(text(tr("软件更新","App update"),28f));gap(box,12);box.addView(text(tr("当前版本 ","Installed ")+BuildConfig.VERSION_NAME+" · "+BuildConfig.VERSION_CODE,18f));gap(box,12)
-        updateMessage=text("",20f);box.addView(updateMessage);gap(box,12);updateProgress=ProgressBar(context,null,android.R.attr.progressBarStyleHorizontal).apply{max=100;visibility=GONE};box.addView(updateProgress,LinearLayout.LayoutParams(-1,dp(12)));gap(box,12)
+        updateMessage=text("",20f)
+        val messageScroll=object:ScrollView(context){
+            override fun onMeasure(widthMeasureSpec:Int,heightMeasureSpec:Int){
+                val cap=min(dp(260),max(dp(64),this@SettingsPanel.height-dp(440)))
+                super.onMeasure(widthMeasureSpec,MeasureSpec.makeMeasureSpec(cap,MeasureSpec.AT_MOST))
+            }
+        }.apply{addView(updateMessage)}
+        box.addView(messageScroll);gap(box,12);updateProgress=ProgressBar(context,null,android.R.attr.progressBarStyleHorizontal).apply{max=100;visibility=GONE};box.addView(updateProgress,LinearLayout.LayoutParams(-1,dp(12)));gap(box,12)
         updateAction=button(tr("检查中…","Checking…")){checkUpdate()};updateAction!!.isEnabled=false;box.addView(updateAction);gap(box,10);box.addView(button(tr("发布记录","Release history")){activity.external("https://github.com/dpan538/baro/releases")})
         updateCard=box;addView(box,cardLayout());box.alpha=0f;if(ValueAnimator.areAnimatorsEnabled())box.animate().alpha(1f).setDuration(180).setInterpolator(LinearInterpolator()).start()else box.alpha=1f
         val pending=activity.updates.pending()
@@ -182,7 +189,7 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
         activity.updates.check(BuildConfig.DEBUG||BuildConfig.VERSION_NAME.contains("preview")){release,state->
             if(updateCard==null)return@check
             updateAction?.isEnabled=true
-            updateMessage?.text=when(state){"available"->tr("可更新：","Available: ")+release!!.version+" · ${release.code}\n"+release.notes.take(400);"current"->tr("当前通道没有更高 versionCode。","No newer version in this channel.");"empty"->tr("当前通道尚无发布包。","No release in this channel.");"unversioned"->tr("发布缺少有效安卓更新清单。","Release has no valid Android update manifest.");else->tr("检查失败，可重试。","Check failed. Retry.")}
+            updateMessage?.text=when(state){"available"->tr("可更新：","Available: ")+release!!.version+" · ${release.code}\n"+release.notes;"current"->tr("已是当前通道的最新版本。","You have the latest version in this channel.");"empty"->tr("当前通道尚无发布包。","No release in this channel.");"unversioned"->tr("发布暂未提供可用的安卓更新包。","This release has no available Android update package.");else->tr("检查失败，可重试。","Check failed. Retry.")}
             if(release!=null){updateAction?.text=tr("下载更新","Download update");updateAction?.setOnClickListener{download(release)}}else{updateAction?.text=tr("重试","Retry");updateAction?.setOnClickListener{checkUpdate()}}
         }
     }

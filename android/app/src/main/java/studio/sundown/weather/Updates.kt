@@ -30,7 +30,11 @@ data class Release(val code:Long,val version:String,val sha:String,val signer:St
     }
 }
 
-class Updates(private val context:Context,private val pool:ExecutorService) {
+class Updates internal constructor(
+    private val context:Context,
+    private val pool:ExecutorService,
+    private val connection:(URL)->HttpURLConnection = { it.openConnection() as HttpURLConnection }
+) {
     private val main=android.os.Handler(android.os.Looper.getMainLooper())
     private var generation=0
     private var job:NetworkJob?=null
@@ -46,20 +50,33 @@ class Updates(private val context:Context,private val pool:ExecutorService) {
     fun check(preview:Boolean, callback:(Release?,String)->Unit){
         cancel();val gen=generation;val j=NetworkJob();job=j
         j.future=pool.submit{try{
-            val body=j.request("https://api.github.com/repos/dpan538/baro/releases"+(if(preview)"?per_page=30" else "/latest"))
+            val endpoint="https://api.github.com/repos/dpan538/baro/releases"+(if(preview)"?per_page=30" else "/latest")
+            val c=connection(URL(endpoint));j.track(c)
+            c.instanceFollowRedirects=false;c.connectTimeout=8000;c.readTimeout=12000
+            c.setRequestProperty("Accept","application/vnd.github+json")
+            c.setRequestProperty("User-Agent","BARO/${BuildConfig.VERSION_NAME}")
+            val body=try{if(c.responseCode!=200)error("HTTP ${c.responseCode}");read(j,c,2_000_000)}finally{c.disconnect();j.track(null)}
             val releases=if(preview)JSONArray(body) else JSONArray().put(JSONObject(body))
-            val found=mutableListOf<Release>();var incomplete=false
+            val found=mutableListOf<Release>();var incomplete=false;var manifestError:Exception?=null
             for(i in 0 until releases.length()){
                 val r=releases.getJSONObject(i);if(r.optBoolean("draft")||(!preview&&r.optBoolean("prerelease")))continue
                 val assets=r.optJSONArray("assets")?:continue
                 val manifest=(0 until assets.length()).map{assets.getJSONObject(it)}.find{it.optString("name")=="baro-update.json"}
                 if(manifest==null){incomplete=true;continue}
-                val link=manifest.getString("browser_download_url");require(Release.assetUrl(link))
-                val m=JSONObject(fetchAsset(j,link,65536));val item=Release.parse(m,r.optString("body"),r.optBoolean("prerelease"))
-                require((0 until assets.length()).map { assets.getJSONObject(it).optString("browser_download_url") }.contains(item.url))
-                if(item.code>BuildConfig.VERSION_CODE)found.add(item)
+                try {
+                    val link=manifest.getString("browser_download_url");require(Release.assetUrl(link))
+                    val m=JSONObject(fetchAsset(j,link,65536));val item=Release.parse(m,r.optString("body"),r.optBoolean("prerelease"))
+                    require((0 until assets.length()).map { assets.getJSONObject(it).optString("browser_download_url") }.contains(item.url))
+                    if(item.code>BuildConfig.VERSION_CODE)found.add(item)
+                } catch(e:Exception) {
+                    check(!j.cancelled)
+                    // A broken older release must not hide a valid newer APK.
+                    // If none can be read, retain a retryable error state.
+                    manifestError=e
+                }
             }
             val release=found.maxByOrNull{it.code}
+            if(release==null&&manifestError!=null)throw manifestError
             main.post{if(gen==generation&&!j.cancelled){selected=release;callback(release,when{release!=null->"available";releases.length()==0->"empty";incomplete->"unversioned";else->"current"})}}
         }catch(e:Exception){main.post{if(gen==generation&&!j.cancelled)callback(null,if(e.message=="HTTP 404")"empty" else "error: ${e.message}")}}}
     }
@@ -68,7 +85,7 @@ class Updates(private val context:Context,private val pool:ExecutorService) {
         repeat(6){
             check(!j.cancelled)
             val u=URL(link);require(u.protocol=="https"&&u.userInfo==null&&u.port==-1&&u.host in setOf("github.com","objects.githubusercontent.com","release-assets.githubusercontent.com"))
-            val c=u.openConnection() as HttpURLConnection;j.track(c);c.instanceFollowRedirects=false;c.connectTimeout=8000;c.readTimeout=12000;c.setRequestProperty("User-Agent","BARO/${BuildConfig.VERSION_NAME}")
+            val c=connection(u);j.track(c);c.instanceFollowRedirects=false;c.connectTimeout=8000;c.readTimeout=12000;c.setRequestProperty("User-Agent","BARO/${BuildConfig.VERSION_NAME}")
             val code=c.responseCode
             if(code in setOf(301,302,303,307,308)){val next=c.getHeaderField("Location")?:error("Missing redirect");c.disconnect();link=URL(u,next).toString()}
             else{if(code!=200){c.disconnect();error("HTTP $code")};return c}
@@ -76,7 +93,12 @@ class Updates(private val context:Context,private val pool:ExecutorService) {
     }
     private fun fetchAsset(j:NetworkJob,url:String,max:Int):String {
         require(Release.assetUrl(url));val c=redirected(j,url)
-        try{return c.inputStream.use{input->val out=java.io.ByteArrayOutputStream();val buf=ByteArray(8192);while(true){check(!j.cancelled);val n=input.read(buf);if(n<0)break;out.write(buf,0,n);require(out.size()<=max)};out.toString("UTF-8")}}finally{c.disconnect();j.track(null)}
+        try{return read(j,c,max)}finally{c.disconnect();j.track(null)}
+    }
+    private fun read(j:NetworkJob,c:HttpURLConnection,max:Int):String = c.inputStream.use{input->
+        val out=java.io.ByteArrayOutputStream();val buf=ByteArray(8192)
+        while(true){check(!j.cancelled);val n=input.read(buf);if(n<0)break;require(out.size()+n<=max);out.write(buf,0,n)}
+        out.toString("UTF-8")
     }
     fun download(release:Release, callback:(Int,String)->Unit){
         cancel();val gen=generation;val j=NetworkJob();job=j;selected=release

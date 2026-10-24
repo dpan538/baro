@@ -15,23 +15,32 @@ class UpdateFixtureTest {
     private val i=InstrumentationRegistry.getInstrumentation()
     private val ctx get()=i.targetContext
     private fun installedSigner()=sha256(ctx.packageManager.getPackageInfo(ctx.packageName,android.content.pm.PackageManager.GET_SIGNING_CERTIFICATES).signingInfo!!.apkContentsSigners.single().toByteArray())
-    private fun release(file:File,code:Long=13,name:String="0.10.1-local-install-fixture")=Release(code,name,fileHash(file),installedSigner(),file.length(),"https://github.com/dpan538/baro/releases/download/local-test-fixture/candidate.apk","Local fixture; URL is never fetched",true)
+    private fun release(file:File):Release {
+        val info=ctx.packageManager.getPackageArchiveInfo(file.absolutePath,0)!!
+        return Release(info.longVersionCode,info.versionName!!,fileHash(file),installedSigner(),file.length(),"https://github.com/dpan538/baro/releases/download/local-test-fixture/candidate.apk","Local fixture; URL is never fetched",true)
+    }
+    private fun stage(name:String):File {
+        val source=File(ctx.getExternalFilesDir(null),"update-fixtures/$name")
+        val target=File(ctx.cacheDir,"updates/$name");target.parentFile!!.mkdirs()
+        if(source.isFile)source.copyTo(target,overwrite=true)
+        return target
+    }
     @Test fun verifiedCandidateAndRejectedTampering(){
-        val good=File(ctx.cacheDir,"updates/candidate.apk");assertTrue("Stage the explicit fixture before this opt-in test",good.isFile)
+        val good=stage("candidate.apk");assertTrue("Stage the explicit fixture before this opt-in test",good.isFile)
         val prefs=ctx.getSharedPreferences("baro-native",Context.MODE_PRIVATE);prefs.edit().commit()
         ActivityScenario.launch(MainActivity::class.java).use{s->s.onActivity{a->
             val r=release(good);a.updates.verify(good,r)
             assertThrows(IllegalArgumentException::class.java){a.updates.verify(good,r.copy(sha="0".repeat(64)))}
             assertThrows(IllegalArgumentException::class.java){a.updates.verify(good,r.copy(code=99))}
             assertThrows(IllegalArgumentException::class.java){a.updates.verify(good,r.copy(version="wrong"))}
-            val bad=File(ctx.cacheDir,"updates/wrong-signer.apk");assertTrue(bad.exists());val wrong=release(bad).copy(signer=sha256(ctx.packageManager.getPackageArchiveInfo(bad.absolutePath,android.content.pm.PackageManager.GET_SIGNING_CERTIFICATES)!!.signingInfo!!.apkContentsSigners.single().toByteArray()))
+            val bad=stage("wrong-signer.apk");assertTrue(bad.exists());val wrong=release(bad).copy(signer=sha256(ctx.packageManager.getPackageArchiveInfo(bad.absolutePath,android.content.pm.PackageManager.GET_SIGNING_CERTIFICATES)!!.signingInfo!!.apkContentsSigners.single().toByteArray()))
             assertThrows(IllegalArgumentException::class.java){a.updates.verify(bad,wrong)}
             File(ctx.cacheDir,"updates/pending.json").writeText(r.json().toString());assertNotNull(a.updates.pending())
         }}
     }
     @Test fun installerPermissionDenialRetryAndActualHandoff(){
         assertEquals("yes",InstrumentationRegistry.getArguments().getString("installFixture"))
-        val good=File(ctx.cacheDir,"updates/candidate.apk");assertTrue(good.isFile)
+        val good=stage("candidate.apk");assertTrue(good.isFile)
         val prefs=ctx.getSharedPreferences("baro-native",Context.MODE_PRIVATE)
         prefs.edit().putString("language","en").putBoolean("fahrenheit",true).putString("wind","mph").putInt("purpose",11).putInt("page",1).putString("feedback_draft","Upgrade retention 草稿").putString("upgrade_marker","BARO-native-install-20261024").commit()
         File(ctx.filesDir,"upgrade-canary.txt").writeText("BARO private data remains intact\n")
@@ -46,5 +55,19 @@ class UpdateFixtureTest {
             assertTrue(ctx.packageManager.canRequestPackageInstalls());s.onActivity{assertTrue(it.updates.install(it))};SystemClock.sleep(500)
             val image=i.uiAutomation.takeScreenshot();File(ctx.getExternalFilesDir(null),"system-installer-handoff.png").outputStream().use{image.compress(android.graphics.Bitmap.CompressFormat.PNG,100,it)};image.recycle()
         }
+    }
+    @Test fun installedUpgradeRetainsPrivateDataAndCleansCandidate(){
+        assertEquals("yes",InstrumentationRegistry.getArguments().getString("installFixture"))
+        val prefs=ctx.getSharedPreferences("baro-native",Context.MODE_PRIVATE)
+        assertEquals("en",prefs.getString("language",null));assertTrue(prefs.getBoolean("fahrenheit",false))
+        assertEquals("mph",prefs.getString("wind",null));assertEquals(11,prefs.getInt("purpose",-1));assertEquals(1,prefs.getInt("page",-1))
+        assertEquals("Upgrade retention 草稿",prefs.getString("feedback_draft",null))
+        assertEquals("BARO-native-install-20261024",prefs.getString("upgrade_marker",null))
+        assertEquals("BARO private data remains intact\n",File(ctx.filesDir,"upgrade-canary.txt").readText())
+        ActivityScenario.launch(MainActivity::class.java).use{s->s.onActivity{a->
+            assertEquals("en",a.model.lang);assertTrue(a.model.fahrenheit);assertEquals("mph",a.model.wind);assertEquals(11,a.model.purpose);assertEquals(1,a.model.page)
+            assertNull(a.updates.pending());assertFalse(a.updates.apk.exists())
+        }}
+        File(ctx.getExternalFilesDir(null),"upgrade-retention.json").writeText(JSONObject().put("versionCode",ctx.packageManager.getPackageInfo(ctx.packageName,0).longVersionCode).put("settingsRetained",true).put("feedbackDraftRetained",true).put("privateCanaryRetained",true).put("installedCandidateCleaned",true).toString(2))
     }
 }

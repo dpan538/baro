@@ -2,8 +2,8 @@ import java.net.URI
 
 plugins { id("com.android.application"); id("org.jetbrains.kotlin.android") }
 val sourceCommit = providers.gradleProperty("baroSourceCommit").orElse(providers.exec { workingDir(rootProject.projectDir.parentFile); isIgnoreExitValue = true; commandLine("git", "rev-parse", "HEAD") }.standardOutput.asText.map { it.trim().ifEmpty { "unversioned" } }).get()
-val appVersionCode = providers.gradleProperty("baroVersionCode").orElse("12").get().toInt()
-val appVersionName = providers.gradleProperty("baroVersionName").orElse("0.10.0-native-preview").get()
+val appVersionCode = providers.gradleProperty("baroVersionCode").orElse("13").get().toInt()
+val appVersionName = providers.gradleProperty("baroVersionName").orElse("0.10.0-preview.1").get()
 val backendOrigin = providers.gradleProperty("baroBackendUrl").orElse("").get()
 if (backendOrigin.isNotEmpty()) {
     val origin = URI(backendOrigin)
@@ -37,6 +37,7 @@ android {
     }
     sourceSets["main"].assets.srcDir(identityDirectory)
     buildFeatures { buildConfig = true }
+    testBuildType = providers.gradleProperty("baroTestBuildType").orElse("debug").get()
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
     signingConfigs {
         getByName("debug") { storeFile = file("../.tooling/baro-debug.keystore") }
@@ -53,6 +54,14 @@ android {
             isMinifyEnabled = false
             manifestPlaceholders["baroCleartext"] = "false"
             if (signingConfigs.findByName("production") != null) signingConfig = signingConfigs.getByName("production")
+        }
+        create("preview") {
+            initWith(getByName("release"))
+            // Keep the dedicated BARO test identity across previews so Android
+            // upgrades the installed app and retains its private data.
+            signingConfig = signingConfigs.getByName("debug")
+            isDebuggable = false
+            matchingFallbacks += listOf("release")
         }
     }
     lint { abortOnError = true }
