@@ -20,10 +20,26 @@ class NativeSmallViewportTest {
         for(step in 1..16){SystemClock.sleep(12);send(MotionEvent.ACTION_MOVE,y+(endY-y)*step/16,x+(endX-x)*step/16)}
         send(MotionEvent.ACTION_UP,endY,endX);i.waitForIdleSync();SystemClock.sleep(700)
     }
-    private fun capture(name:String){
+    private fun capture(name:String,s:ActivityScenario<MainActivity>,page:Int=1){
         if(NativeTestEnvironment.uiOnly)return
-        val image=i.uiAutomation.takeScreenshot();assertNotNull(image)
-        File(i.targetContext.getExternalFilesDir(null),"small-$name.png").outputStream().use{image.compress(Bitmap.CompressFormat.PNG,100,it)};image.recycle()
+        val deadline=SystemClock.uptimeMillis()+20000
+        while(SystemClock.uptimeMillis()<deadline){
+            s.onActivity{a->
+                assertEquals(page,a.model.page)
+                val p=if(page==0)a.pager.weatherPage else a.pager.observationPage
+                assertEquals(0f,p.translationX,.1f);assertNull(p.art.error)
+            }
+            val image=i.uiAutomation.takeScreenshot();assertNotNull(image)
+            // The weather's paper corner and the panorama at this point differ clearly.
+            // Checking model.page alone accepted two stale-compositor portrait captures.
+            val pixel=image.getPixel(40,200)
+            val paper=android.graphics.Color.red(pixel)>245&&android.graphics.Color.green(pixel)>245
+            if(paper==(page==0)){
+                File(i.targetContext.getExternalFilesDir(null),"small-$name.png").outputStream().use{image.compress(Bitmap.CompressFormat.PNG,100,it)};image.recycle();return
+            }
+            image.recycle();SystemClock.sleep(250)
+        }
+        fail("The actual composed page did not match $name within 20 seconds")
     }
     @Test fun bothOrientationsStayOnOneScreenWhileDialOwnsVerticalTouches(){
         ActivityScenario.launch(MainActivity::class.java).use{s->
@@ -53,7 +69,7 @@ class NativeSmallViewportTest {
                             assertTrue(board.artRect.bottom*d<=p.height)
                             assertEquals(1136f,if(portrait)board.w else board.w/1.5f,.01f)
                         }
-                        if(purpose in listOf(0,2,11))capture("$orientation-$lang"+(if(purpose==0)""else "-purpose-$purpose"))
+                        if(purpose in listOf(0,2,11))capture("$orientation-$lang"+(if(purpose==0)""else "-purpose-$purpose"),s)
                     }
                     var x=0f;var y=0f;var endY=0f
                     s.onActivity{a->val p=a.pager.observationPage;val loc=IntArray(2);p.getLocationOnScreen(loc);x=loc[0]+p.width*.3f;y=loc[1]+p.height*.75f;endY=loc[1]+p.height*.25f}
@@ -63,7 +79,7 @@ class NativeSmallViewportTest {
                     s.onActivity{a->val p=a.pager.observationPage;val d=p.dashboard.coordinateScale;val r=p.dashboard.dialRect;val loc=IntArray(2);p.getLocationOnScreen(loc);x=loc[0]+r.centerX()*d;y=loc[1]+r.centerY()*d;endY=y-450;oldPurpose=a.model.purpose}
                     drag(x,y,endY)
                     s.onActivity{a->assertEquals(1,a.model.page);assertNotEquals(oldPurpose,a.model.purpose);assertEquals(0,a.pager.observationPage.scrollY)}
-                    s.onActivity{a->a.model.page=0;a.redraw()};i.waitForIdleSync();SystemClock.sleep(500);capture("weather-$orientation-$lang")
+                    s.onActivity{a->a.model.page=0;a.redraw()};i.waitForIdleSync();SystemClock.sleep(500);capture("weather-$orientation-$lang",s,0)
                     var distance=0f
                     s.onActivity{a->val p=a.pager;val loc=IntArray(2);p.getLocationOnScreen(loc);x=loc[0]+p.width*.35f;y=loc[1]+p.height*.82f;distance=p.width*.3f}
                     drag(x,y,y,endX=x+distance);s.onActivity{assertEquals(1,it.model.page)}
