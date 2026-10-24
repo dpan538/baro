@@ -1,7 +1,6 @@
 package studio.sundown.weather
 
 import android.content.Context
-import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Rect
@@ -65,9 +64,12 @@ class NativePreviewAcceptanceTest {
     @Test fun twoPagesSettingsAndLiveReleaseCheckAcrossLanguageAndOrientation() {
         try {
             for (portrait in listOf(false, true)) for (lang in listOf("zh", "en")) {
+                i.uiAutomation.executeShellCommand("wm user-rotation lock ${if(portrait) 1 else 0}").use { fd ->
+                    android.os.ParcelFileDescriptor.AutoCloseInputStream(fd).use { it.readBytes() }
+                }
+                SystemClock.sleep(1000)
                 ctx.getSharedPreferences("baro-native", Context.MODE_PRIVATE).edit().clear().putString("language", lang).putBoolean("motion", false).commit()
                 ActivityScenario.launch(MainActivity::class.java).use { s ->
-                    s.onActivity { it.requestedOrientation = if (portrait) ActivityInfo.SCREEN_ORIENTATION_PORTRAIT else ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
                     val until = SystemClock.uptimeMillis() + 30000;var ready = false
                     while (!ready && SystemClock.uptimeMillis() < until) {
                         s.onActivity { a -> ready = a.model.status == "ready" && a.model.weather != null && (a.pager.height > a.pager.width) == portrait && a.pager.weatherPage.art.renderedFrames > 0 }
