@@ -1,12 +1,12 @@
 # First Android preview and subsequent updates
 
-The first published public user test build is `0.10.0-preview.2` (`versionCode 14`). It keeps
+The current public user test build is `0.10.0-preview.4` (`versionCode 16`). It keeps
 `studio.sundown.weather` and the existing dedicated BARO test certificate. The
 `preview` Gradle variant inherits release settings, disables debugging and cleartext
 network traffic, and uses this persistent local test signer. It is a prerelease,
 not a Play/store production signing identity. Never replace its key between tests.
 
-[Download the published APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.2/BARO-0.10.0-preview.2.apk) · [Pad installation and update instructions](../DOWNLOAD.md) · [exact-package acceptance](../android/verification/preview-0.10.0-preview.2.json). Anonymous public delivery has been verified against the native package hash. The package contains source `149482a`; test-only follow-ups do not alter its bytes.
+[Download the published APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.4/BARO-0.10.0-preview.4.apk) · [Pad installation and update instructions](../DOWNLOAD.md) · [exact-package acceptance](../android/verification/preview-0.10.0-preview.4.json). Anonymous public delivery has been verified against the native package hash. The package contains source `1e9cfe1`; test-only follow-ups do not alter its bytes.
 
 The launcher/installer uses the selected **G1b** cloud and graphite gradient,
 not the old sunrise line icon. `branding/icons/selection.json` identifies the
@@ -97,13 +97,13 @@ working-tree candidates are not public distribution artifacts. The signed final
 APK must have a full source commit and its own exact-package acceptance.
 
 
-## Prepared Pad follow-up (not yet published)
+## Historical prepared Pad follow-up: preview.3
 
-`0.10.0-preview.3 / 15` is a local signed, non-debug follow-up from source `11bce1522448814b14893530795c4e29e8f58d2c`. Publication is pending explicit permission after automatic approval blocked the source push. The public download links above still refer to preview.2. [Changes and evidence](ANDROID-PREVIEW-3-CHANGES.md).
+`0.10.0-preview.3 / 15` is a local signed, non-debug follow-up from source `11bce1522448814b14893530795c4e29e8f58d2c`. It was not published as a release; preview.4 includes these fixes. The initial source-push approval block was resolved by the user’s explicit authorization. [Changes and evidence](ANDROID-PREVIEW-3-CHANGES.md).
 
 The user’s latest display requirement supersedes the historical shared landscape status allowance for the native weather page: weather hides system bars, reserves no status-bar padding, removes the preview frame and fills the actual viewport. Observation reserves readable light status chrome inside its own page; the shared swipe viewport stays fixed. Display cutouts, caption bars and the IME retain their actual platform insets.
 
 
-## Current prepared follow-up: preview.4 (unpublished)
+## Current public follow-up: preview.4
 
-`0.10.0-preview.4 / 16`, source `1e9cfe1`, includes the earlier full-bleed fixes and the user’s later refresh, typography and memory requirements. Frontend weather refreshes every 15 minutes while visible, retries failures after five minutes and has a 45-second deadline. Expired readings are removed rather than retained as offline fallback. The backend cache is 15 minutes; its code is tested locally and has no claimed public deployment. The signed APK is locally verified; public links still point to preview.2 pending publication permission. [Current changes and exact-package acceptance](ANDROID-PREVIEW-4-CHANGES.md).
+`0.10.0-preview.4 / 16`, source `1e9cfe1`, includes the earlier full-bleed fixes and the user’s later refresh, typography and memory requirements. Frontend weather refreshes every 15 minutes while visible, retries failures after five minutes and has a 45-second deadline. Expired readings are removed rather than retained as offline fallback. The backend cache is 15 minutes; its code is tested locally and has no claimed public deployment. The signed APK is published. All three assets were downloaded anonymously and matched their local hashes; the tag points to the exact application source. [Current changes and exact-package acceptance](ANDROID-PREVIEW-4-CHANGES.md).

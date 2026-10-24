@@ -1,7 +1,7 @@
 {
   "date": "2026-10-24",
   "timezone": "Australia/Brisbane",
-  "channel": "local signed preview; unpublished",
+  "channel": "published signed prerelease",
   "applicationSourceCommit": "1e9cfe1d789c919e515bb9ef59fbe9c4cee79403",
   "versionName": "0.10.0-preview.4",
   "versionCode": 16,
@@ -14,14 +14,48 @@
     "signatureVerified": true,
     "productionSampleDataAbsent": true,
     "selectedLauncherPixelsVerified": true,
-    "publicDownloadVerified": false
+    "publicDownloadVerified": true
   },
   "publication": {
-    "sourcePushed": false,
-    "releasePublished": false,
-    "publicDownloadVerified": false,
+    "sourcePushed": true,
+    "releasePublished": true,
+    "publicDownloadVerified": true,
     "preparedTag": "v0.10.0-preview.4",
-    "automaticApprovalBlocked": "GitHub source push requires explicit external-publication permission"
+    "releaseUrl": "https://github.com/dpan538/baro/releases/tag/v0.10.0-preview.4",
+    "tagVerifiedSource": "1e9cfe1d789c919e515bb9ef59fbe9c4cee79403",
+    "publishedAt": "2026-10-24T10:33:03Z",
+    "initialApprovalBlockResolved": "User explicitly authorized source push: 我允许推送源码",
+    "publicDelivery": {
+      "anonymousDownloadsVerified": true,
+      "authenticationSent": false,
+      "assets": [
+        {
+          "file": "BARO-0.10.0-preview.4.apk",
+          "url": "https://github.com/dpan538/baro/releases/download/v0.10.0-preview.4/BARO-0.10.0-preview.4.apk",
+          "status": 200,
+          "size": 20483468,
+          "sha256": "5f62793d7894bbfd99c2dd1720d547377460c22698f7884dda70e96892c46f5c",
+          "anonymous": true
+        },
+        {
+          "file": "baro-update.json",
+          "url": "https://github.com/dpan538/baro/releases/download/v0.10.0-preview.4/baro-update.json",
+          "status": 200,
+          "size": 482,
+          "sha256": "f8f108c856414571a782b528034a9f42804ad9059caff78f45f4a2cce90669de",
+          "anonymous": true
+        },
+        {
+          "file": "SHA256SUMS",
+          "url": "https://github.com/dpan538/baro/releases/download/v0.10.0-preview.4/SHA256SUMS",
+          "status": 200,
+          "size": 175,
+          "sha256": "8bed58b0e6172e27fa64fa32174d4223d8f69da656205c5c7866a51d18bcd041",
+          "anonymous": true
+        }
+      ],
+      "apkManifestAgreement": true
+    }
   },
   "checks": {
     "previewUnitTests": 27,
@@ -376,7 +410,6 @@
     "scope": "Earlier full-bleed/location/animation implementation has its own 72-capture two-density record; not relabelled as preview.4 validation."
   },
   "limits": [
-    "No new public APK delivery or public installer upgrade has been verified; existing preview.2 remains public.",
     "The backend cache change is tested locally; no live public backend deployment is claimed.",
     "Clock-accelerated tests establish scheduling/control flow, not a real 15-minute Xiaomi soak.",
     "Xiaomi GPS, system bars, physical haptics, power and animation performance require user follow-up."

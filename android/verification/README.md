@@ -1,6 +1,6 @@
 # Native evidence
 
-The current local follow-up **0.10.0-preview.4 / 16** has a [separate source-bound record](preview-0.10.0-preview.4.json): 27 unit tests, 15 backend cases, ten controlled HTTP/heartbeat methods, five exact-preview field methods and a 36-capture genuine-provider matrix. It replaces expired-data fallback with regular foreground reads and bounded recovery. It is unpublished; earlier preview.3 evidence below remains bound to its own artifact.
+The current public follow-up **0.10.0-preview.4 / 16** has a [separate source-bound record](preview-0.10.0-preview.4.json): 27 unit tests, 15 backend cases, ten controlled HTTP/heartbeat methods, five exact-preview field methods and a 36-capture genuine-provider matrix. It replaces expired-data fallback with regular foreground reads and bounded recovery. Source and release are published; anonymous APK/manifest/checksum delivery is verified. Earlier preview.3 evidence below remains bound to its own artifact.
 
 The prepared **0.10.0-preview.3 / 15** is still local and unpublished. Its [exact-package record](preview-0.10.0-preview.3.json) covers the full-bleed Pad fixes, 22 unit tests, 20 distinct native methods (22 successful invocations including repeated modes/densities) and 72 screenshot-matrix captures. It preserves initial failures and does not claim public preview.3 delivery or Xiaomi acceptance.
 

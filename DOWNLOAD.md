@@ -1,23 +1,21 @@
 # BARO Android 测试版下载
 
-新修复版 **0.10.0-preview.4 / 16** 已在本地准备并验证，尚未公开发布。以下公网链接仍为 preview.2。[本次更新与验收](docs/ANDROID-PREVIEW-4-CHANGES.md)。
+当前公开测试版：**0.10.0-preview.4（versionCode 16）**，使用选定的 **G1b** 图标。Android 10 及以上，安装包 20,483,468 字节（约 20.5 MB）。
 
-首个公开测试版：**0.10.0-preview.2（versionCode 14）**，使用选定的 **G1b** 图标。Android 10 及以上，安装包 20,469,240 字节（约 20.5 MB）。
-
-**[点击直接下载 APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.2/BARO-0.10.0-preview.2.apk)**
+**[点击直接下载 APK](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.4/BARO-0.10.0-preview.4.apk)**
 
 也可以复制下面的完整地址，在平板浏览器中打开：
 
 ```text
-https://github.com/dpan538/baro/releases/download/v0.10.0-preview.2/BARO-0.10.0-preview.2.apk
+https://github.com/dpan538/baro/releases/download/v0.10.0-preview.4/BARO-0.10.0-preview.4.apk
 ```
 
-[版本说明与全部附件](https://github.com/dpan538/baro/releases/tag/v0.10.0-preview.2) · [SHA-256 校验文件](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.2/SHA256SUMS)
+[版本说明与全部附件](https://github.com/dpan538/baro/releases/tag/v0.10.0-preview.4) · [SHA-256 校验文件](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.4/SHA256SUMS)
 
 ## 在 Pad 上安装
 
 1. 用平板浏览器点击上面的「点击直接下载 APK」，无需登录 GitHub。
-2. 下载后打开 `BARO-0.10.0-preview.2.apk`。首次安装时，按 Android 提示允许当前浏览器或文件管理器安装应用，再确认安装。
+2. 下载后打开 `BARO-0.10.0-preview.4.apk`。首次安装时，按 Android 提示允许当前浏览器或文件管理器安装应用，再确认安装。
 3. 打开 **BARO / 晴雨**。左右任一方向完成滑动，都可在天气页与环境观测页之间切换；齿轮打开设置。
 
 ## 后续直接覆盖升级
@@ -32,13 +30,13 @@ https://github.com/dpan538/baro/releases/download/v0.10.0-preview.2/BARO-0.10.0-
 APK SHA-256：
 
 ```text
-04b99a675cbd2d8b549c9369f5656e04c2063f244cec4d3c29ddeb258b86e13a
+5f62793d7894bbfd99c2dd1720d547377460c22698f7884dda70e96892c46f5c
 ```
 
-匿名公网下载副本与验收 APK 的哈希一致，包名为 `studio.sundown.weather`。源码与详细验收见[测试版分发说明](docs/ANDROID-PREVIEW-DISTRIBUTION.md)和[本包验收记录](android/verification/preview-0.10.0-preview.2.json)。
+匿名公网下载副本与验收 APK 的哈希一致，包名为 `studio.sundown.weather`。源码与详细验收见[测试版分发说明](docs/ANDROID-PREVIEW-DISTRIBUTION.md)和[本包验收记录](android/verification/preview-0.10.0-preview.4.json)。
 
 ## English
 
-[**Download the Android test APK ↗**](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.2/BARO-0.10.0-preview.2.apk)
+[**Download the Android test APK ↗**](https://github.com/dpan538/baro/releases/download/v0.10.0-preview.4/BARO-0.10.0-preview.4.apk)
 
 Open the link in your tablet browser, then open the downloaded APK and follow Android's installation prompts. Later, use **Settings → About → Check for updates**. Updates signed with the same BARO test certificate install over the existing app and retain preferences and drafts; Android still requires confirmation. This is a public, non-debug preview, not a stable store release.

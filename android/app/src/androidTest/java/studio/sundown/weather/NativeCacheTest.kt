@@ -119,7 +119,9 @@ class NativeCacheTest {
     @Test fun totalRequestDeadlineCompletesAndAllowsRecovery(){
         val clock=Clock();server(clock).use{server->
             lateinit var repo:WeatherRepository
-            i.runOnMainSync{repo=WeatherRepository(i.targetContext,server.origin,{clock.wall.get()},{clock.monotonic.get()},500);repo.clear()}
+            // The server gate guarantees a timeout. Leave enough CPU time for
+            // the recovery request to parse real provider JSON on hosted CI.
+            i.runOnMainSync{repo=WeatherRepository(i.targetContext,server.origin,{clock.wall.get()},{clock.monotonic.get()},3_000);repo.clear()}
             try{
                 val gate=CountDownLatch(1);server.gate=gate;val failed=read(repo)
                 assertNull(failed.first);assertEquals("request_timeout",failed.second);assertEquals(1,server.requests.get())
