@@ -24,6 +24,7 @@ jobs:
           packages: platform-tools
           log-accepted-android-sdk-licenses: false
       - run: python3 -m unittest discover -s backend/tests -v
+      - run: python3 -m unittest discover -s feedback-service -p 'test_*.py' -v
       - run: scripts/prepare-native-dev.sh
       - run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
       - run: android/gradlew -p android --no-daemon testDebugUnitTest assembleDebug assembleDebugAndroidTest lintDebug

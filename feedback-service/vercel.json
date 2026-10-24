@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {"source": "/v1/feedback", "destination": "/api/index"},
+    {"source": "/healthz", "destination": "/api/index"}
+  ],
+  "functions": {"api/index.py": {"maxDuration": 60, "excludeFiles": "{test_*,.venv/**,__pycache__/**,*.sqlite*}"}}
+}
