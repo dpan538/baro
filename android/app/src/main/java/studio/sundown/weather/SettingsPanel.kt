@@ -47,6 +47,7 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
     private var feedbackSend:Button?=null
     private var feedbackStatus:TextView?=null
     private var feedbackInput:EditText?=null
+    private fun feedbackNotice(message:String){feedbackStatus?.text=message;Toast.makeText(context,message,Toast.LENGTH_SHORT).show()}
     private var uiGeneration=0L
     private var languageChange=0L
     private var renderedLanguage=""
@@ -94,7 +95,7 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
     }
     fun back(){if(updateCard!=null)closeUpdate()else if(detail.isNotEmpty()){detail="";build()}else close()}
     fun resumePresentation(){if(visibility==VISIBLE&&renderedLanguage!=model.lang)build()}
-    fun cancelRequests(){languageChange++;contentTransition.clear();sectionAnimator?.cancel();activity.updates.cancel();val sending=feedbackSend?.isEnabled==false;activity.feedback.cancel();feedbackSend?.isEnabled=true
+    fun cancelRequests(){languageChange++;contentTransition.clear();sectionAnimator?.cancel();activity.updates.cancel();val sending=feedbackSend?.isEnabled==false;activity.feedback.cancel();feedbackSend?.isEnabled=true;feedbackSend?.text=tr("提交反馈","Submit feedback")
         if(sending)feedbackStatus?.text=tr("发送已中断，草稿已保留。","Sending interrupted. Draft retained.")
         if(updateCard!=null){updateMessage?.text=tr("请求已暂停，可重试","Request paused. Retry when ready.");updateAction?.isEnabled=true;updateAction?.text=tr("重试","Retry");updateAction?.setOnClickListener{checkUpdate()}}
     }
@@ -249,14 +250,17 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
             "feedback"->{
                 body.addView(text(tr("反馈会公开发布到 BARO 的 GitHub Issue。请勿填写隐私信息。","Feedback is posted publicly as a BARO GitHub issue. Leave out private information."),18f));gap(body,16)
                 val input=EditText(context).apply{textSize=20f;typeface=font;minLines=6;gravity=Gravity.TOP;setText(activity.feedback.draft);hint=tr("描述问题或建议（最多 1000 字符）","Describe the issue or suggestion (1000 characters)");addTextChangedListener(object:TextWatcher{override fun beforeTextChanged(s:CharSequence?,start:Int,count:Int,after:Int){};override fun onTextChanged(s:CharSequence?,start:Int,before:Int,count:Int){activity.feedback.draft=s.toString()};override fun afterTextChanged(s:Editable?){} })};feedbackInput=input;body.addView(input);gap(body,16)
-                feedbackStatus=text("",18f);feedbackSend=button(tr("提交反馈","Submit feedback")){
-                    feedbackSend?.isEnabled=false;feedbackStatus?.text=tr("正在发送并核实回执…","Sending and verifying receipt…")
-                    activity.feedback.send{ok,message->feedbackSend?.isEnabled=true
-                        if(ok){if(activity.feedback.draft.isEmpty())feedbackInput?.setText("");feedbackStatus?.text=tr("已收到反馈：","Received: ")+message;AlertDialog.Builder(context).setTitle(tr("反馈已送达","Feedback received")).setMessage(message).setPositiveButton(tr("完成","Done"),null).show()}
-                        else feedbackStatus?.text=when(message){"invalid"->tr("请输入 1–1000 字符，草稿已保留。","Enter 1–1000 characters. Draft retained.");"unconfigured"->tr("BARO 反馈服务尚未配置，草稿已保留。","BARO feedback service is not configured. Draft retained.");else->tr("未核实送达，请重试。草稿已保留。","Delivery could not be verified. Retry; draft retained.")}
+                feedbackStatus=text(tr("提交后会自动告知结果。","You will receive a confirmation after submitting."),18f).apply{tag="feedback-status";accessibilityLiveRegion=View.ACCESSIBILITY_LIVE_REGION_POLITE}
+                val receiptButton=button(tr("查看反馈回执","View feedback receipt")){model.prefs.getString("feedback_receipt",null)?.let(activity::external)}.apply{visibility=if(model.prefs.getString("feedback_receipt",null)==null)GONE else VISIBLE}
+                feedbackSend=button(tr("提交反馈","Submit feedback")){
+                    feedbackSend?.isEnabled=false;feedbackSend?.text=tr("提交中…","Submitting…");feedbackStatus?.text=tr("正在发送并核实回执…","Sending and verifying receipt…")
+                    activity.feedback.send{ok,message->feedbackSend?.isEnabled=true;feedbackSend?.text=tr("提交反馈","Submit feedback")
+                        if(ok){if(activity.feedback.draft.isEmpty())feedbackInput?.setText("");receiptButton.visibility=VISIBLE;feedbackNotice(tr("已提交，感谢你的反馈。","Submitted. Thank you for your feedback."))}
+                        else if(message=="invalid")feedbackStatus?.text=tr("请输入 1–1000 字符，草稿已保留。","Enter 1–1000 characters. Draft retained.")
+                        else feedbackNotice(tr("请联网刷新后重试，草稿已保留。","Connect to the internet, refresh and retry. Draft retained."))
                     }
                 };body.addView(feedbackSend);gap(body,12);body.addView(feedbackStatus)
-                val old=model.prefs.getString("feedback_receipt",null);if(old!=null)body.addView(button(tr("上次反馈回执","Previous receipt")){activity.external(old)})
+                body.addView(receiptButton)
             }
             "licenses"->{
                 body.addView(text(tr("天气与空气质量：Open-Meteo / CAMS，CC BY 4.0。读数是模型估计，非现场传感器实测。位置搜索使用 GeoNames / Open-Meteo。","Weather and air quality: Open-Meteo / CAMS, CC BY 4.0. Values are model estimates, not on-site sensor measurements. Places: GeoNames / Open-Meteo."),20f));gap(body,18)
