@@ -43,7 +43,8 @@ class NativeFeedbackAcceptanceTest {
     }
     private fun node(root:AccessibilityNodeInfo?,label:String):AccessibilityNodeInfo?{
         if(root==null)return null
-        if(root.text?.toString()==label)return root
+        // Framework AlertDialog buttons expose their all-caps display text.
+        if(root.text?.toString()?.equals(label,ignoreCase=true)==true)return root
         for(n in 0 until root.childCount)node(root.getChild(n),label)?.let{return it}
         return null
     }
