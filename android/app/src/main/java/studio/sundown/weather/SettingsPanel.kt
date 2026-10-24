@@ -47,7 +47,8 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
     private var feedbackSend:Button?=null
     private var feedbackStatus:TextView?=null
     private var feedbackInput:EditText?=null
-    private fun feedbackNotice(message:String){feedbackStatus?.text=message;Toast.makeText(context,message,Toast.LENGTH_SHORT).show()}
+    private var feedbackToast:Toast?=null
+    private fun feedbackNotice(message:String){feedbackStatus?.text=message;feedbackToast?.cancel();feedbackToast=Toast.makeText(context,message,Toast.LENGTH_SHORT).also{it.show()}}
     private var uiGeneration=0L
     private var languageChange=0L
     private var renderedLanguage=""
@@ -89,7 +90,7 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
         requestFocus();activity.redraw()
     }
     fun close(){
-        uiGeneration++;languageChange++;contentTransition.clear();sectionAnimator?.cancel();val generation=uiGeneration;closeUpdate();activity.feedback.cancel();scrollAnimator?.cancel();animate().cancel();detail="";feedbackInput=null
+        uiGeneration++;languageChange++;contentTransition.clear();sectionAnimator?.cancel();val generation=uiGeneration;closeUpdate();activity.feedback.cancel();feedbackToast?.cancel();scrollAnimator?.cancel();animate().cancel();detail="";feedbackInput=null
         fun finish(){if(generation==uiGeneration){visibility=GONE;activity.pager.overlayOpen=false;activity.redraw()}}
         if(ValueAnimator.areAnimatorsEnabled())animate().alpha(0f).translationX(-dp(28).toFloat()).setDuration(300).setInterpolator(LinearInterpolator()).withEndAction{finish()}.start()else finish()
     }
@@ -99,7 +100,7 @@ class SettingsPanel(private val activity:MainActivity):FrameLayout(activity){
         if(sending)feedbackStatus?.text=tr("发送已中断，草稿已保留。","Sending interrupted. Draft retained.")
         if(updateCard!=null){updateMessage?.text=tr("请求已暂停，可重试","Request paused. Retry when ready.");updateAction?.isEnabled=true;updateAction?.text=tr("重试","Retry");updateAction?.setOnClickListener{checkUpdate()}}
     }
-    fun dispose(){uiGeneration++;languageChange++;contentTransition.clear();sectionAnimator?.cancel();animate().cancel();scrollAnimator?.cancel();activity.updates.cancel();activity.feedback.cancel()}
+    fun dispose(){uiGeneration++;languageChange++;contentTransition.clear();sectionAnimator?.cancel();animate().cancel();scrollAnimator?.cancel();activity.updates.cancel();activity.feedback.cancel();feedbackToast?.cancel()}
     private fun options(labels:List<String>,chosen:Int,language:Boolean=false,pixels:Boolean=false,action:(Int)->Unit):View{
         val box=FrameLayout(context).apply{setPadding(dp(5),dp(5),dp(5),dp(5));background=GradientDrawable().apply{setColor(0xfff2f2ed.toInt());cornerRadius=dp(12).toFloat();setStroke(dp(1),0xffcecec6.toInt())}}
         val pill=View(context).apply{tag="baro-segment-indicator";importantForAccessibility=View.IMPORTANT_FOR_ACCESSIBILITY_NO;background=GradientDrawable().apply{setColor(ink);cornerRadius=dp(8).toFloat()}}
